@@ -13,5 +13,5 @@ def unnormalize(x, mean, std):
 def to_numpy(tensor: t.Tensor):
     return tensor.detach().numpy()
 
-def to_torch(x, type = t.float64, grad = False):
-    return t.tensor(x, dtype = type, requires_grad = grad)
+def to_torch(x, type = t.float64, device = 'cpu', grad = False):
+    return t.tensor(x, dtype = type, device = device, requires_grad = grad)

@@ -8,10 +8,11 @@ class __CDF(t.autograd.Function):
 
     @staticmethod
     def forward(ctx, x: t.Tensor) -> t.Tensor:
+        type, device = x.dtype, x.device
         _x = to_numpy(x)
-        pdf = to_torch(norm.pdf(_x), grad = False)
+        pdf = to_torch(norm.pdf(_x), type = type, device = device, grad = False)
         ctx.save_for_backward(pdf)
-        return to_torch(norm.cdf(_x), grad = False)
+        return to_torch(norm.cdf(_x), type = type, device = device, grad = False)
 
     @staticmethod
     def backward(ctx, grad_output):
