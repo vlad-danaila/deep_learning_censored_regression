@@ -37,13 +37,14 @@ class TobitOptimizationTest(unittest.TestCase):
 
         return y_single_valued, y_left_censored, y_right_censored, mean, std
 
-    def check_mean_std(self, y_intervals, expected_mean, expected_std, delta_real = .4):
-        y_single_valued, y_left_censored, y_right_censored, data_mean, data_std = self.read_tensors_from_intervals(y_intervals)
-        delta = to_torch(0, grad = True)
+    def fit_mean_std_with_tobit(self, y_intervals):
+        y_single_valued, y_left_censored, y_right_censored, data_mean, data_std = self.read_tensors_from_intervals(
+            y_intervals)
+        delta = to_torch(0, grad=True)
         # tuple for single valued, left censored, right censored
         x_tuple = (delta, delta, delta)
         y_tuple = (y_single_valued, y_left_censored, y_right_censored)
-        tobit = TobitLoss(device = 'cpu')
+        tobit = TobitLoss(device='cpu')
         optimizer = t.optim.SGD([delta, tobit.gamma], lr=1e-1)
         patience = 5
         for i in range(10_000):
@@ -63,6 +64,10 @@ class TobitOptimizationTest(unittest.TestCase):
                 print(i, delta, tobit.gamma)
         mean, std = delta / tobit.gamma, 1 / tobit.gamma
         mean, std = unnormalize(mean, data_mean, data_std), std * data_std
+        return mean, std
+
+    def check_mean_std(self, y_intervals, expected_mean, expected_std, delta_real = .4):
+        mean, std = self.fit_mean_std_with_tobit(y_intervals)
         self.assertAlmostEqual(mean.item(), expected_mean, delta = delta_real)
         self.assertAlmostEqual(std.item(), expected_std, delta = delta_real)
 
