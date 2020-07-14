@@ -2,8 +2,9 @@ import unittest
 import portion as p
 import numpy as np
 import torch as t
-from implementation.util import normalize, to_torch
+from implementation.util import normalize, unnormalize, to_torch
 from implementation.tobit_loss_module import TobitLoss
+import math
 
 ENABLE_LONG_RUNNING_TESTS = True
 
@@ -36,14 +37,34 @@ class TobitOptimizationTest(unittest.TestCase):
 
         return y_single_valued, y_left_censored, y_right_censored, mean, std
 
-    def check_mean_std(self, y_intervals, expected_mean, expected_std, delta_real = .4, delta_aprox = .5):
-        y_single_valued, y_left_censored, y_right_censored, mean, std = self.read_tensors_from_intervals(y_intervals)
-        
-        beta = to_torch(0, grad = True)
-        
-        # mean, std = tobit_fit_mean_and_std(y_intervals)
-        # self.assertAlmostEqual(mean.item(), expected_mean, delta = delta_real)
-        # self.assertAlmostEqual(std.item(), expected_std, delta = delta_real)
+    def check_mean_std(self, y_intervals, expected_mean, expected_std, delta_real = .4):
+        y_single_valued, y_left_censored, y_right_censored, data_mean, data_std = self.read_tensors_from_intervals(y_intervals)
+        delta = to_torch(0, grad = True)
+        # tuple for single valued, left censored, right censored
+        x_tuple = (delta, delta, delta)
+        y_tuple = (y_single_valued, y_left_censored, y_right_censored)
+        tobit = TobitLoss(device = 'cpu')
+        optimizer = t.optim.SGD([delta, tobit.gamma], lr=1e-1)
+        patience = 5
+        for i in range(10_000):
+            prev_delta, prev_gamma = delta.clone(), tobit.gamma.clone()
+            optimizer.zero_grad()
+            loss = tobit(x_tuple, y_tuple)
+            loss.backward()
+            optimizer.step()
+            early_stop = math.fabs(delta - prev_delta) + math.fabs(tobit.gamma - prev_gamma) < 1e-5
+            if early_stop:
+                patience -= 1
+                if patience == 0:
+                    break
+            else:
+                patience = 5
+            if i % 100 == 0:
+                print(i, delta, tobit.gamma)
+        mean, std = delta / tobit.gamma, 1 / tobit.gamma
+        mean, std = unnormalize(mean, data_mean, data_std), std * data_std
+        self.assertAlmostEqual(mean.item(), expected_mean, delta = delta_real)
+        self.assertAlmostEqual(std.item(), expected_std, delta = delta_real)
 
     # 1) 20 30 40
     def test_single_valued_only(self):
