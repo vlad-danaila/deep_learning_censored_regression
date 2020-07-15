@@ -1,6 +1,6 @@
-from implementation.util import to_numpy, to_torch
+from deep_tobit.util import to_torch
 import torch as t
-from implementation.normal_cumulative_distribution_function import cdf
+from deep_tobit.normal_cumulative_distribution_function import cdf
 from typing import Tuple
 
 class TobitLoss(t.nn.Module):

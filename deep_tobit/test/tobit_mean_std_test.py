@@ -2,11 +2,11 @@ import unittest
 import portion as p
 import numpy as np
 import torch as t
-from implementation.util import normalize, unnormalize, to_torch
-from implementation.tobit_loss_module import TobitLoss
+from deep_tobit.util import normalize, unnormalize, to_torch
+from deep_tobit.tobit_loss_module import TobitLoss
 import math
 
-ENABLE_LONG_RUNNING_TESTS = True
+ENABLE_LONG_RUNNING_TESTS = False
 
 class TobitOptimizationTest(unittest.TestCase):
 

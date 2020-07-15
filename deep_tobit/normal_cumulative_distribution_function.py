@@ -1,8 +1,8 @@
-from implementation.util import to_numpy, to_torch
+from deep_tobit.util import to_numpy, to_torch
 import torch as t
 from scipy.stats import norm
 import numpy as np
-from implementation.util import normalize
+from deep_tobit.util import normalize
 
 class __CDF(t.autograd.Function):
 
@@ -40,12 +40,9 @@ if __name__ == '__main__':
     # in this test mean & std are considered constants
     x_normalized = normalize(x, mean, std)
     cdf_result = cdf(x_normalized)
-    # assert_almost_equal(to_numpy(cdf_result), expected_cdf)
 
     log_likelihood_result = t.log(cdf_result)
-    # assert
 
     loss = t.sum(log_likelihood_result)
     loss.backward()
     print(x.grad, expected_grad_log_likelihood_by_x)
-    # assert_almost_equal(to_numpy(x.grad), expected_grad_cdf_by_x)

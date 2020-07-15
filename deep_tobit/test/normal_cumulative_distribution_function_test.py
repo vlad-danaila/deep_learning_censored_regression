@@ -1,9 +1,9 @@
-from implementation.util import to_torch, to_numpy, normalize
+from deep_tobit.util import to_torch, to_numpy, normalize
 import torch as t
 from scipy.stats import norm
 import unittest
 import numpy as np
-from implementation.normal_cumulative_distribution_function import cdf
+from deep_tobit.normal_cumulative_distribution_function import cdf
 from numpy.testing import assert_almost_equal
 
 class CDFTest(unittest.TestCase):
