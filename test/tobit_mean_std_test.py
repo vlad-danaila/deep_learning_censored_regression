@@ -44,16 +44,17 @@ class TobitOptimizationTest(unittest.TestCase):
         # tuple for single valued, left censored, right censored
         x_tuple = (delta, delta, delta)
         y_tuple = (y_single_valued, y_left_censored, y_right_censored)
-        tobit = TobitLoss(device='cpu')
-        optimizer = t.optim.SGD([delta, tobit.gamma], lr=1e-1)
+        gamma = to_torch(1, device = 'cpu', grad = True)
+        tobit = TobitLoss(gamma, device = 'cpu')
+        optimizer = t.optim.SGD([delta, gamma], lr=1e-1)
         patience = 5
         for i in range(10_000):
-            prev_delta, prev_gamma = delta.clone(), tobit.gamma.clone()
+            prev_delta, prev_gamma = delta.clone(), gamma.clone()
             optimizer.zero_grad()
             loss = tobit(x_tuple, y_tuple)
             loss.backward()
             optimizer.step()
-            early_stop = math.fabs(delta - prev_delta) + math.fabs(tobit.gamma - prev_gamma) < 1e-5
+            early_stop = math.fabs(delta - prev_delta) + math.fabs(gamma - prev_gamma) < 1e-5
             if early_stop:
                 patience -= 1
                 if patience == 0:
@@ -61,8 +62,8 @@ class TobitOptimizationTest(unittest.TestCase):
             else:
                 patience = 5
             if i % 100 == 0:
-                print(i, delta, tobit.gamma)
-        mean, std = delta / tobit.gamma, 1 / tobit.gamma
+                print(i, delta, gamma)
+        mean, std = delta / gamma, 1 / gamma
         mean, std = unnormalize(mean, data_mean, data_std), std * data_std
         return mean, std
 

@@ -5,10 +5,11 @@ from typing import Tuple
 
 class TobitLoss(t.nn.Module):
 
-    def __init__(self, device):
+    def __init__(self, gamma, device):
         super(TobitLoss, self).__init__()
         self.device = device
-        self.gamma = to_torch(1, device = self.device, grad = True)
+        self.gamma = gamma
+        # self.gamma = to_torch(1, device = self.device, grad = True)
 
     def forward(self, x: Tuple[t.Tensor, t.Tensor, t.Tensor], y: Tuple[t.Tensor, t.Tensor, t.Tensor]):
         x_single_value, x_left_censored, x_right_censored = x
