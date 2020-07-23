@@ -6,7 +6,7 @@ from deep_tobit.util import normalize, unnormalize, to_torch
 from deep_tobit.tobit_loss_module import TobitLoss
 import math
 
-ENABLE_LONG_RUNNING_TESTS = False
+ENABLE_LONG_RUNNING_TESTS = True
 
 class TobitOptimizationTest(unittest.TestCase):
 
