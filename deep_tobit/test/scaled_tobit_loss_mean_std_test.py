@@ -3,7 +3,7 @@ import portion as p
 import numpy as np
 import torch as t
 from deep_tobit.util import normalize, unnormalize, to_torch
-from deep_tobit.tobit_loss_module import TobitLoss
+from deep_tobit.tobit import Scaled_Tobit_Loss
 import math
 
 ENABLE_LONG_RUNNING_TESTS = True
@@ -40,21 +40,21 @@ class TobitOptimizationTest(unittest.TestCase):
     def fit_mean_std_with_tobit(self, y_intervals):
         y_single_valued, y_left_censored, y_right_censored, data_mean, data_std = self.read_tensors_from_intervals(
             y_intervals)
-        delta = to_torch(0, grad=True)
+        mean = to_torch(0, grad=True)
         # tuple for single valued, left censored, right censored
-        x_tuple = (delta, delta, delta)
+        x_tuple = (mean, mean, mean)
         y_tuple = (y_single_valued, y_left_censored, y_right_censored)
-        gamma = to_torch(1, device = 'cpu', grad = True)
-        tobit = TobitLoss(gamma, device = 'cpu')
-        optimizer = t.optim.SGD([delta, gamma], lr=1e-1)
+        std = to_torch(1, device = 'cpu', grad = True)
+        tobit = Scaled_Tobit_Loss(std, device = 'cpu')
+        optimizer = t.optim.SGD([mean, std], lr=1e-1)
         patience = 5
         for i in range(10_000):
-            prev_delta, prev_gamma = delta.clone(), gamma.clone()
+            prev_delta, prev_std = mean.clone(), std.clone()
             optimizer.zero_grad()
             loss = tobit(x_tuple, y_tuple)
             loss.backward()
             optimizer.step()
-            early_stop = math.fabs(delta - prev_delta) + math.fabs(gamma - prev_gamma) < 1e-5
+            early_stop = math.fabs(mean - prev_delta) + math.fabs(std - prev_std) < 1e-5
             if early_stop:
                 patience -= 1
                 if patience == 0:
@@ -62,9 +62,9 @@ class TobitOptimizationTest(unittest.TestCase):
             else:
                 patience = 5
             if i % 100 == 0:
-                print(i, delta, gamma)
-        mean, std = delta / gamma, 1 / gamma
-        mean, std = unnormalize(mean, data_mean, data_std), std * data_std
+                print(i, mean, std)
+        mean, std = unnormalize(mean, data_mean, data_std), tobit.get_scale() * data_std
+        print(f'mean = {mean} std = {std}')
         return mean, std
 
     def check_mean_std(self, y_intervals, expected_mean, expected_std, delta_real = .4):
@@ -205,14 +205,14 @@ class TobitOptimizationTest(unittest.TestCase):
         if ENABLE_LONG_RUNNING_TESTS:
             y_intervals = [p.closed(-p.inf, 20), p.closed(30, p.inf)]
             # is the negative std correct ?
-            self.check_mean_std(y_intervals, 25, -1.2508)
+            self.check_mean_std(y_intervals, 25, 58.61)
 
     # interesting case only the lower 25 bound is taken into account
     # 26) <20 >25 >50 >50 >50
     def test_diverge_20_25_50_50_50(self):
         if ENABLE_LONG_RUNNING_TESTS:
             y_intervals = [p.closed(-p.inf, 20), p.closed(25, p.inf), p.closed(50, p.inf), p.closed(50, p.inf), p.closed(50, p.inf)]
-            self.check_mean_std(y_intervals, 22.5357, -0.9952)
+            self.check_mean_std(y_intervals, 116.83, 95.42)
 
     # 27) >30 35 37 <50
     def test_left_right_censoring_30_35_37_50(self):
