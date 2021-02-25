@@ -3,7 +3,7 @@ import portion as p
 import numpy as np
 import torch as t
 from deep_tobit.util import normalize, unnormalize, to_torch
-from deep_tobit.tobit import Scaled_Tobit_Loss
+from deep_tobit.loss import Scaled_Tobit_Loss
 import math
 
 ENABLE_LONG_RUNNING_TESTS = True
