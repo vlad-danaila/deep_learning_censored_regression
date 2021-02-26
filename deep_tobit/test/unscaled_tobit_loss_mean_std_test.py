@@ -3,7 +3,7 @@ import portion as p
 import numpy as np
 import torch as t
 from deep_tobit.util import normalize, unnormalize, to_torch
-from deep_tobit.loss import Tobit_Loss
+from deep_tobit.loss import Unscaled_Tobit_Loss
 import math
 
 ENABLE_LONG_RUNNING_TESTS = True
@@ -44,7 +44,7 @@ class TobitOptimizationTest(unittest.TestCase):
         # tuple for single valued, left censored, right censored
         x_tuple = (delta, delta, delta)
         y_tuple = (y_single_valued, y_left_censored, y_right_censored)
-        tobit = Tobit_Loss(device = 'cpu')
+        tobit = Unscaled_Tobit_Loss(device = 'cpu')
         optimizer = t.optim.SGD([delta], lr=1e-1)
         patience = 5
         for i in range(10_000):

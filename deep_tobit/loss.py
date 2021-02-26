@@ -3,10 +3,10 @@ import torch as t
 from deep_tobit.normal_cumulative_distribution_function import cdf
 from typing import Tuple, Union
 
-class Tobit_Loss(t.nn.Module):
+class Unscaled_Tobit_Loss(t.nn.Module):
 
     def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40):
-        super(Tobit_Loss, self).__init__()
+        super(Unscaled_Tobit_Loss, self).__init__()
         self.device = device
         self.truncated_low = truncated_low
         self.truncated_high = truncated_high
@@ -41,9 +41,6 @@ class Tobit_Loss(t.nn.Module):
         log_likelihood = log_likelihood_pdf + log_likelihood_cdf + log_likelihood_1_minus_cdf
 
         return log_likelihood
-
-    def get_scale(self) -> t.Tensor:
-        return 1
 
 class Scaled_Tobit_Loss(t.nn.Module):
 
