@@ -134,3 +134,44 @@ class Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
 
     def get_scale(self) -> t.Tensor:
         return 1 / t.abs(self.gamma)
+
+class Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
+
+    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40):
+        super(Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, self).__init__()
+        self.device = device
+        self.truncated_low = truncated_low
+        self.truncated_high = truncated_high
+        self.epsilon = t.tensor(epsilon, dtype=t.float32, device=device, requires_grad=False)
+
+    def forward(self, x: Tuple[t.Tensor, t.Tensor, t.Tensor], y: Tuple[t.Tensor, t.Tensor, t.Tensor], gamma: Tuple[t.Tensor, t.Tensor, t.Tensor]) -> t.Tensor:
+        x_single_value, x_left_censored, x_right_censored = x
+        y_single_value, y_left_censored, y_right_censored = y
+        gamma_single_value, gamma_left_censored, gamma_right_censored = gamma
+        gamma_single_value, gamma_left_censored, gamma_right_censored = t.abs(gamma_single_value), t.abs(gamma_left_censored), t.abs(gamma_right_censored)
+        N = len(y_single_value) + len(y_left_censored) + len(y_right_censored)
+
+        # Step 1: compute loss for uncensored data based on pdf:
+        # -sum(ln(gamma) + ln(pdf(gamma * y - x)))
+        log_likelihood_pdf = to_torch(0, device = self.device, grad = True)
+        if len(y_single_value) > 0:
+            log_likelihood_pdf = -t.sum(t.log(gamma_single_value + self.epsilon) - ((gamma_single_value * y_single_value - x_single_value) ** 2) / 2)
+
+        # Step 2: compute loss for left censored data:
+        # -sum(ln(cdf(gamma * y - x) - cdf(gamma * truncation - x)))
+        log_likelihood_cdf = to_torch(0, device = self.device, grad = True)
+        if len(y_left_censored) > 0:
+            truncation_low_penalty = 0 if not self.truncated_low else cdf(gamma_left_censored * self.truncated_low - x_left_censored)
+            log_likelihood_cdf = -t.sum(t.log(cdf(gamma_left_censored * y_left_censored - x_left_censored) - truncation_low_penalty + self.epsilon))
+
+        # Step 3: compute the loss for right censored data:
+        # -sum(ln(cdf(x - gamma * y) - cdf(x - gamma * truncation)))
+        # Notice that: log(1 - cdf(z)) = log(cdf(-z)), thus compared to step 2, the signs for gamma and x are swapped
+        log_likelihood_1_minus_cdf = to_torch(0, device = self.device, grad = True)
+        if len(y_right_censored) > 0:
+            truncation_high_penalty = 0 if not self.truncated_high else cdf(-gamma_right_censored * self.truncated_high + x_right_censored)
+            log_likelihood_1_minus_cdf = -t.sum(t.log(cdf(-gamma_right_censored * y_right_censored + x_right_censored) - truncation_high_penalty + self.epsilon))
+
+        log_likelihood = log_likelihood_pdf + log_likelihood_cdf + log_likelihood_1_minus_cdf
+
+        return log_likelihood
