@@ -18,8 +18,8 @@ def censored_mae(y_pred, y, lower_censoring_bound = -math.inf, upper_censoring_b
   y_pred = t.where((y < upper_censoring_bound) + (y_pred < upper_censoring_bound), y_pred, t.tensor(upper_censoring_bound, device = device))
   return mae(y_pred, y)
 
-def censored_mae_with_truncation_penalty(y_pred, y, lower_censoring_bound = -math.inf, upper_censoring_bound = math.inf, lower_truncation_limit = None, upper_truncation_limit = None):
-  return censored_mae(y_pred, y, lower_censoring_bound = lower_censoring_bound, upper_censoring_bound = upper_censoring_bound) \
+def censored_mae_with_truncation_penalty(y_pred, y, lower_censoring_bound = -math.inf, upper_censoring_bound = math.inf, lower_truncation_limit = None, upper_truncation_limit = None, device = 'cpu'):
+  return censored_mae(y_pred, y, lower_censoring_bound = lower_censoring_bound, upper_censoring_bound = upper_censoring_bound, device = device) \
          + truncation_mae_penalty(y_pred, lower_truncation_limit = lower_truncation_limit, upper_truncation_limit = upper_truncation_limit)
 
 
