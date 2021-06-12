@@ -54,7 +54,7 @@ def truncation_mse_penalty(y_pred, lower_truncation_limit = None, upper_truncati
     upper_truncation_penalty = mse(above_upper_truncation_limit, t.full_like(above_upper_truncation_limit, upper_truncation_limit))
   return lower_truncation_penalty + upper_truncation_penalty
 
-def censored_mse(y_pred, y, lower_censoring_bound = -math.inf, upper_censoring_bound = math.inf, device = 'cpu', clamp_all = False):
+def censored_mse(y_pred, y, lower_censoring_bound = -math.inf, upper_censoring_bound = math.inf, device = 'cpu', clamp_all = True):
   if clamp_all:
     y_pred = t.clamp(y_pred, min = lower_censoring_bound, max = upper_censoring_bound)
   else:
@@ -70,7 +70,7 @@ def censored_mse_with_truncation_penalty(
         lower_truncation_limit = None,
         upper_truncation_limit = None,
         device = 'cpu',
-        clamp_all = False
+        clamp_all = True
   ):
   return censored_mse(y_pred, y, lower_censoring_bound = lower_censoring_bound, upper_censoring_bound = upper_censoring_bound, device = device, clamp_all = clamp_all) \
          + truncation_mse_penalty(y_pred, lower_truncation_limit = lower_truncation_limit, upper_truncation_limit = upper_truncation_limit)
