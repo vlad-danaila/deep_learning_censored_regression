@@ -20,7 +20,7 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_UNcensored
+from experiments.synthetic.grid_search import train_and_evaluate_UNcensored, plot_and_evaluate_model_UNcensored
 
 """Constants"""
 
@@ -87,7 +87,8 @@ train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
 
 """Load the best model"""
 
-plot_and_evaluate_model_UNcensored(CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
+plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+                                   dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
 
 # plot_and_evaluate_model_UNcensored(CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
 

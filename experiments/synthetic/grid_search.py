@@ -120,14 +120,14 @@ def config_validation(conf):
 
 """# Plot Selected(With Grid) Model"""
 
-def plot_and_evaluate_model_UNcensored(dataset_val, dataset_test, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
     checkpoint = t.load(('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_beta(label = 'true distribution')
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model)
+    plot_net(model, dataset_val)
     loss_fn = criterion()
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
@@ -143,12 +143,12 @@ def plot_and_evaluate_model_UNcensored(dataset_val, dataset_test, checkpoint_nam
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-    val_metrics = eval_network(model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, len(dataset_test), shuffle = False, num_workers = 0)
-    test_metrics = eval_network(model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
