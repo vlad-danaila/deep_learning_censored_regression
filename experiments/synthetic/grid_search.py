@@ -23,7 +23,7 @@ from experiments.synthetic.plot import *
 
 """# Grid Search Setup"""
 
-def grid_search(grid_config, train_callback, checkpoint_name, nb_iterations = 1, conf_validation = None):
+def grid_search(dataset_train, dataset_val, bound_min, bound_max, grid_config, train_callback, checkpoint_name, nb_iterations = 1, conf_validation = None):
     configs = ParameterGrid(grid_config)
     configs_len = len(configs)
     counter = 0
@@ -63,7 +63,7 @@ def grid_search(grid_config, train_callback, checkpoint_name, nb_iterations = 1,
         for i in range(nb_iterations):
             if nb_iterations != 1:
                 print('Iteration', i + 1)
-            metrics = train_callback(conf)
+            metrics = train_callback(dataset_train, dataset_val, bound_min, bound_max, conf)
 
             # if metrics[R_SQUARED] > best[R_SQUARED]:
             if metrics[ABS_ERR] < best[ABS_ERR]:
