@@ -59,7 +59,7 @@ def train_once_gll():
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                    ROOT_GLL, CHECKPOINT_GLL, lambda: GausianLogLikelihoodLoss, isGrid = False)
+                                    ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
 
 def grid_search_gll():
     grid_config = [{
@@ -80,7 +80,7 @@ def grid_search_gll():
 
 def eval_gll():
     plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                    ROOT_GLL, CHECKPOINT_GLL, lambda: GausianLogLikelihoodLoss, isGrid = True)
+                                    ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
     grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
     best_metrics = grid_results[str(best_config)]
