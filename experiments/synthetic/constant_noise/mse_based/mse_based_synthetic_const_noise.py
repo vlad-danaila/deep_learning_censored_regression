@@ -84,6 +84,9 @@ def eval_mse_simple():
   print(best_config)
   print(best_metrics)
 
+
+
+
 """# Bounded MSE"""
 
 mse = t.nn.MSELoss()
@@ -92,51 +95,56 @@ def bounded_loss(y_pred, y):
   y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
   return mse(y_pred, y)
 
-"""### Learning Rate Range Test"""
-
-# lr_range_test_UNcensored(lambda: bounded_loss, batch_size = 100, epochs = 2, start_lr = 1e-2, end_lr = 1e-1, log_view = False, plt_file_name = 'bounded_mse')
-
 """### Grid Search"""
 
 train_and_evaluate_net = train_and_evaluate_UNcensored(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
 
-# conf = {
-#     'max_lr': 3e-2,
-#     'epochs': 10,
-#     'batch': 100,
-#     'pct_start': 0.3,
-#     'anneal_strategy': 'linear',
-#     'base_momentum': 0.85,
-#     'max_momentum': 0.95,
-#     'div_factor': 3,
-#     'final_div_factor': 1e4,
-#     'weight_decay': 0
-# }
-# train_and_evaluate_net(conf)
+def train_once_mse_cens_NO_trunc():
+    conf = {
+        'max_lr': 3e-2,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 3,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE,
+                                       CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = False)
 
-# grid_config = [{
-#     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-#     'epochs': [10, 20],
-#     'batch': [100, 200],
-#     'pct_start': [0.45],
-#     'anneal_strategy': ['linear'],
-#     'base_momentum': [0.85],
-#     'max_momentum': [0.95],
-#     'div_factor': [10, 5, 2],
-#     'final_div_factor': [1e4],
-#     'weight_decay': [0]
-# }]
-# grid_best = grid_search(grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE, conf_validation = config_validation)
-# print(grid_best)
+def grid_search_mse_cens_NO_trunc():
+    grid_config = [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
+    grid_best = grid_search(ROOT_BOUNDED_MSE, dataset_train, dataset_val, bound_min, bound_max,
+        grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE, conf_validation = config_validation)
+    return grid_best
 
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = False)
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = True)
+def eval_mse_cens_NO_trunc():
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE,
+        CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = True)
+    grid_results = t.load(ROOT_BOUNDED_MSE + '/' + GRID_RESULTS_FILE)
+    best_config = grid_results['best']
+    best_metrics = grid_results[str(best_config)]
+    print(best_config)
+    print(best_metrics)
 
-# grid_results = t.load(GRID_RESULTS_FILE)
-# best_config = grid_results['best']
-# best_metrics = grid_results[str(best_config)]
-# print(best_config)
-# print(best_metrics)
+
+
+
 
 """# Bounded MSE With Penalty"""
 
@@ -147,46 +155,51 @@ def below_zero_mse_penalty(y_pred):
 def bounded_loss_with_penalty(y_pred, y):
   return bounded_loss(y_pred, y) + below_zero_mse_penalty(y_pred)
 
-"""### Learning Rate Range Test"""
-
-# lr_range_test_UNcensored(lambda: bounded_loss_with_penalty, batch_size = 100, epochs = 2, start_lr = 1e-2, end_lr = 1e-1, log_view = False, plt_file_name = 'bounded_mse_with_penalty')
-
 train_and_evaluate_net = train_and_evaluate_UNcensored(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, plot = False, log = False)
 
-# conf = {
-#     'max_lr': 2e-2,
-#     'epochs': 10,
-#     'batch': 100,
-#     'pct_start': 0.3,
-#     'anneal_strategy': 'linear',
-#     'base_momentum': 0.85,
-#     'max_momentum': 0.95,
-#     'div_factor': 2,
-#     'final_div_factor': 1e4,
-#     'weight_decay': 0
-# }
-# train_and_evaluate_net(conf)
+def train_once_mse_cens_WITH_trunc():
+    conf = {
+        'max_lr': 2e-2,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 2,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
+        CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
 
-# grid_config = [{
-#     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-#     'epochs': [10, 20],
-#     'batch': [100, 200],
-#     'pct_start': [0.45],
-#     'anneal_strategy': ['linear'],
-#     'base_momentum': [0.85],
-#     'max_momentum': [0.95],
-#     'div_factor': [10, 5, 2],
-#     'final_div_factor': [1e4],
-#     'weight_decay': [0]
-# }]
-# grid_best = grid_search(grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, conf_validation = config_validation)
-# print(grid_best)
+def grid_search_mse_cens_WITH_trunc():
+    grid_config = [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
+    grid_best = grid_search(ROOT_BOUNDED_MSE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
+        grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, conf_validation = config_validation)
+    return grid_best
 
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = True)
+def eval_mse_cens_WITH_trunc():
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
+        CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = True)
+    grid_results = t.load(ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + GRID_RESULTS_FILE)
+    best_config = grid_results['best']
+    best_metrics = grid_results[str(best_config)]
+    print(best_config)
+    print(best_metrics)
 
-# grid_results = t.load(GRID_RESULTS_FILE)
-# best_config = grid_results['best']
-# best_metrics = grid_results[str(best_config)]
-# print(best_config)
-# print(best_metrics)
+eval_mse_simple()
+eval_mse_cens_NO_trunc()
+eval_mse_cens_WITH_trunc()
