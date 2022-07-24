@@ -5,13 +5,13 @@ from experiments.synthetic.grid_search import train_and_evaluate_UNcensored, plo
 
 """Constants"""
 ROOT_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_simple'
-CHECKPOINT_MAE = 'mae simple model'
+CHECKPOINT_MAE = 'mae model'
 
 ROOT_BOUNDED_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_cens_NO_trunc'
-CHECKPOINT_BOUNDED_MAE = 'mae cens model'
+CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
 ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/constant_noise/mae_based/mae_cens_WITH_trunc'
-CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae cens trunc model'
+CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 """Reproducible experiments"""
 
@@ -198,3 +198,7 @@ def eval_mae_cens_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+eval_mae_simple()
+eval_mae_cens_NO_trunc()
+eval_mae_cens_WITH_trunc()
