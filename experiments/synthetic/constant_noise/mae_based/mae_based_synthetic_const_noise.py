@@ -36,34 +36,34 @@ train_and_evaluate_net = train_and_evaluate_UNcensored(ROOT_MAE + '/' + CHECKPOI
 
 """Train once with default settings"""
 
-# conf = {
-#     'max_lr': 3e-2,
-#     'epochs': 10,
-#     'batch': 100,
-#     'pct_start': 0.3,
-#     'anneal_strategy': 'linear',
-#     'base_momentum': 0.85,
-#     'max_momentum': 0.95,
-#     'div_factor': 3,
-#     'final_div_factor': 1e4,
-#     'weight_decay': 0
-# }
-# train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+conf = {
+    'max_lr': 3e-2,
+    'epochs': 10,
+    'batch': 100,
+    'pct_start': 0.3,
+    'anneal_strategy': 'linear',
+    'base_momentum': 0.85,
+    'max_momentum': 0.95,
+    'div_factor': 3,
+    'final_div_factor': 1e4,
+    'weight_decay': 0
+}
+train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
 
 """Grid search"""
 
-grid_config = [{
-    'max_lr': [1e-5],
-    'epochs': [10],
-    'batch': [100, 200],
-    'pct_start': [0.45],
-    'anneal_strategy': ['linear'],
-    'base_momentum': [0.85],
-    'max_momentum': [0.95],
-    'div_factor': [10],
-    'final_div_factor': [1e4],
-    'weight_decay': [0]
-}]
+# grid_config = [{
+#     'max_lr': [1e-5],
+#     'epochs': [10],
+#     'batch': [100, 200],
+#     'pct_start': [0.45],
+#     'anneal_strategy': ['linear'],
+#     'base_momentum': [0.85],
+#     'max_momentum': [0.95],
+#     'div_factor': [10],
+#     'final_div_factor': [1e4],
+#     'weight_decay': [0]
+# }]
 
 # grid_config = [{
 #     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
@@ -77,13 +77,13 @@ grid_config = [{
 #     'final_div_factor': [1e4],
 #     'weight_decay': [0]
 # }]
-grid_best = grid_search(ROOT_MAE, dataset_train, dataset_val, bound_min, bound_max, grid_config,
-                        train_and_evaluate_net, CHECKPOINT_MAE, conf_validation = config_validation)
+# grid_best = grid_search(ROOT_MAE, dataset_train, dataset_val, bound_min, bound_max, grid_config,
+#                         train_and_evaluate_net, CHECKPOINT_MAE, conf_validation = config_validation)
 
 """Load the best model"""
 
-# plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
-#                                    dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
+plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+                                   dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
 # plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
 #                                    dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
 
