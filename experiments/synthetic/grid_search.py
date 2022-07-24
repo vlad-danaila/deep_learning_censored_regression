@@ -105,9 +105,9 @@ def config_validation(conf):
 
 """# Plot Selected(With Grid) Model"""
 
-def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
-    checkpoint = t.load(('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    checkpoint = t.load(root_folder + '/' + checkpoint_name + (' grid' if isGrid else '') + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
@@ -121,9 +121,9 @@ def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_me
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
-    plt.savefig('{}.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(checkpoint_name), dpi = 200, format = 'png')
+    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
     if not loader_val:
