@@ -1,21 +1,6 @@
-import sys
-import torch as t
-from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import beta
-import random
-import numpy as np
-import sklearn as sk
-import sklearn.metrics
-import math
 from sklearn.model_selection import ParameterGrid
-from torch_lr_finder import LRFinder, TrainDataLoaderIter, ValDataLoaderIter
 import os
-import numpy.random
-import collections
 from experiments.synthetic.constants import *
-from experiments.util import set_random_seed
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.train import train_network, eval_network
@@ -23,14 +8,14 @@ from experiments.synthetic.plot import *
 
 """# Grid Search Setup"""
 
-def grid_search(dataset_train, dataset_val, bound_min, bound_max, grid_config, train_callback, checkpoint_name, nb_iterations = 1, conf_validation = None):
+def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, grid_config, train_callback, checkpoint_name, nb_iterations = 1, conf_validation = None):
     configs = ParameterGrid(grid_config)
     configs_len = len(configs)
     counter = 0
-    checkpoint_file = checkpoint_name + '.tar'
-    grid_checkpoint_file = 'grid ' + checkpoint_file
+    checkpoint_file = root_folder + '/' + checkpoint_name + '.tar'
+    grid_checkpoint_file = root_folder + '/' + checkpoint_name + ' grid.tar'
     try:
-        resume_grid_search = t.load(GRID_RESULTS_FILE)
+        resume_grid_search = t.load(root_folder + '/' + GRID_RESULTS_FILE)
     except FileNotFoundError:
         resume_grid_search = None
 
@@ -78,7 +63,7 @@ def grid_search(dataset_train, dataset_val, bound_min, bound_max, grid_config, t
                 os.rename(checkpoint_file, grid_checkpoint_file)
         else:
             results[str(conf)] = best_from_iterations
-            t.save(results, GRID_RESULTS_FILE)
+            t.save(results, root_folder + '/' + GRID_RESULTS_FILE)
 
     return best
 
