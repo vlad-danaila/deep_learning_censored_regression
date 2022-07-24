@@ -24,6 +24,9 @@ def eval_network(bound_min, bound_max, model, loader, loss_fn, batch_size, is_ev
         for x, y in loader:
             y_pred = model.forward(x)
             loss = loss_fn(y_pred, y)
+            if len(y_pred) == 3:
+                y_pred = t.cat(y_pred)
+                y = t.cat(y)
             if is_eval_bounded:
                 y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
             y_pred, y = to_numpy(y_pred), to_numpy(y)
@@ -73,6 +76,8 @@ def train_network(bound_min, bound_max, model, loss_fn, optimizer, scheduler, lo
                             checkpoint_dict = {'model': model.state_dict()}
                             if hasattr(loss_fn, 'gamma'):
                                 checkpoint_dict['gamma'] = loss_fn.gamma
+                            if hasattr(loss_fn, 'sigma'):
+                                checkpoint_dict['sigma'] = loss_fn.sigma
                             t.save(checkpoint_dict, '{}.tar'.format(checkpoint_name))
                         if log:
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))

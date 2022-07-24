@@ -67,7 +67,7 @@ def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, g
 
     return best
 
-def train_and_evaluate_UNcensored(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False, loader_train_fn = None, loader_val_fn = None):
+def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False, loader_train_fn = None, loader_val_fn = None):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         model = model_fn()
         if not loader_train_fn:
@@ -100,12 +100,49 @@ def train_and_evaluate_UNcensored(checkpoint, criterion, model_fn = DenseNetwork
         return best
     return grid_callback
 
+def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, loader_train_fn = None, loader_val_fn = None):
+    def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
+        model = model_fn()
+        if not loader_train_fn:
+            loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
+        else:
+            loader_train = loader_train_fn(conf['batch'])
+        if not loader_val_fn:
+            loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
+        else:
+            loader_val = loader_val_fn(len(dataset_val))
+        sigma = t.tensor(1., requires_grad = True)
+        loss_fn = criterion(sigma)
+        params = [
+            {'params': model.parameters()},
+            {'params': sigma}
+        ]
+        optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
+        scheduler = t.optim.lr_scheduler.OneCycleLR(
+            optimizer,
+            max_lr = conf['max_lr'],
+            steps_per_epoch = len(loader_train),
+            epochs = conf['epochs'],
+            pct_start = conf['pct_start'],
+            anneal_strategy = conf['anneal_strategy'],
+            base_momentum = conf['base_momentum'],
+            max_momentum = conf['max_momentum'],
+            div_factor = conf['div_factor'],
+            final_div_factor = conf['final_div_factor']
+        )
+        train_metrics, val_metrics, best = train_network(
+            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+        if plot:
+            plot_epochs(train_metrics, val_metrics)
+        return best
+    return grid_callback
+
 def config_validation(conf):
     return conf['div_factor'] <= conf['final_div_factor'] and conf['max_momentum'] >= conf['base_momentum']
 
 """# Plot Selected(With Grid) Model"""
 
-def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
@@ -140,3 +177,48 @@ def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_me
 def real_y_std():
     real_x_mean, real_x_std, real_y_mean, real_y_std = calculate_mean_std()
     return real_y_std
+
+def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
+    model = model_fn()
+    checkpoint = t.load(('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    model.load_state_dict(checkpoint['model'])
+    plot_beta(label = 'true distribution')
+    # plot_dataset(dataset_test, size = .3, label = 'test data')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_net(model, sigma = checkpoint['sigma'])
+    loss_fn = criterion(checkpoint['sigma'])
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    plt.savefig('{}.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
+    plt.show()
+
+    plot_beta(label = 'true distribution')
+    # plot_dataset(dataset_test, size = .3, label = 'test data')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_net(model, sigma = checkpoint['sigma'], with_std = True)
+    loss_fn = criterion(checkpoint['sigma'])
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    plt.savefig('{}-with-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}-with-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
+    plt.show()
+
+    if not loader_val:
+        loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
+    val_metrics = eval_network(model, loader_val, loss_fn, len(dataset_val))
+    print('Absolute error - validation', val_metrics[ABS_ERR])
+    print('R2 - validation', val_metrics[R_SQUARED])
+
+    loader_test = t.utils.data.DataLoader(dataset_test, len(dataset_test), shuffle = False, num_workers = 0)
+    test_metrics = eval_network(model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    print('Absolute error - test', test_metrics[ABS_ERR])
+    print('R2 - test', test_metrics[R_SQUARED])

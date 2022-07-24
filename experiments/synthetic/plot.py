@@ -43,7 +43,7 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_loss, test_loss, 'Loss', 'Loss')
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
 
-def plot_net(model, dataset_val, start = 0, end = 1, gamma = None, label = 'model prediction', with_std = False):
+def plot_net(model, dataset_val, sigma = None, gamma = None, label = 'model prediction', with_std = False):
     model.eval()
     x_list, y_list = [], []
     for i in range(len(dataset_val)):
@@ -56,5 +56,9 @@ def plot_net(model, dataset_val, start = 0, end = 1, gamma = None, label = 'mode
     plt.scatter(x_list, y_list, s = .1, label = label)
     if with_std and gamma:
         std = 1 / gamma.item()
+        np_y = np.array(y_list)
+        plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
+    if with_std and sigma:
+        std = sigma.item()
         np_y = np.array(y_list)
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
