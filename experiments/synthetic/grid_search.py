@@ -13,7 +13,7 @@ def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, g
     configs_len = len(configs)
     counter = 0
     checkpoint_file = root_folder + '/' + checkpoint_name + '.tar'
-    grid_checkpoint_file = root_folder + '/' + checkpoint_name + ' grid.tar'
+    grid_checkpoint_file = root_folder + '/grid ' + checkpoint_name + '.tar'
     try:
         resume_grid_search = t.load(root_folder + '/' + GRID_RESULTS_FILE)
     except FileNotFoundError:
@@ -107,7 +107,7 @@ def config_validation(conf):
 
 def plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
-    checkpoint = t.load(root_folder + '/' + checkpoint_name + (' grid' if isGrid else '') + '.tar')
+    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
