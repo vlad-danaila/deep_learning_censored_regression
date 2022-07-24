@@ -144,42 +144,42 @@ def bounded_loss_with_penalty(y_pred, y):
 train_and_evaluate_net = train_and_evaluate_UNcensored(ROOT_BOUNDED_MAE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MAE_WITH_PENALTY,
                                                        lambda: bounded_loss_with_penalty, plot = False, log = False)
 
-# conf = {
-#     'max_lr': 2e-2,
-#     'epochs': 10,
-#     'batch': 100,
-#     'pct_start': 0.3,
-#     'anneal_strategy': 'linear',
-#     'base_momentum': 0.85,
-#     'max_momentum': 0.95,
-#     'div_factor': 2,
-#     'final_div_factor': 1e4,
-#     'weight_decay': 0
-# }
-# train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+def train_once_mae_cens_WITH_trunc():
+    conf = {
+        'max_lr': 2e-2,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 2,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MAE_WITH_PENALTY,
+                CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
 
-# grid_config = [{
-#     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-#     'epochs': [10, 20],
-#     'batch': [100, 200],
-#     'pct_start': [0.45],
-#     'anneal_strategy': ['linear'],
-#     'base_momentum': [0.85],
-#     'max_momentum': [0.95],
-#     'div_factor': [10, 5, 2],
-#     'final_div_factor': [1e4],
-#     'weight_decay': [0]
-# }]
-# grid_best = grid_search(ROOT_BOUNDED_MAE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
-#                         grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, conf_validation = config_validation)
-
-# plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MAE_WITH_PENALTY,
-#             CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
-# plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MAE_WITH_PENALTY,
-#             CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = True)
-
-# grid_results = t.load(ROOT_BOUNDED_MAE_WITH_PENALTY + '/' + GRID_RESULTS_FILE)
-# best_config = grid_results['best']
-# best_metrics = grid_results[str(best_config)]
-# print(best_config)
-# print(best_metrics)
+def grid_search_mae_cens_WITH_trunc():
+    grid_config = [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
+    grid_best = grid_search(ROOT_BOUNDED_MAE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
+                grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, conf_validation = config_validation)
+    plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MAE_WITH_PENALTY,
+                CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = True)
+    grid_results = t.load(ROOT_BOUNDED_MAE_WITH_PENALTY + '/' + GRID_RESULTS_FILE)
+    best_config = grid_results['best']
+    best_metrics = grid_results[str(best_config)]
+    print(best_config)
+    print(best_metrics)
