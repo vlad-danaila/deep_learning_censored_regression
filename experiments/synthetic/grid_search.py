@@ -130,7 +130,7 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network(
+        train_metrics, val_metrics, best = train_network(bound_min, bound_max,
             model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -180,45 +180,49 @@ def real_y_std():
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
-    checkpoint = t.load(('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_beta(label = 'true distribution')
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, sigma = checkpoint['sigma'])
+    plot_net(model, dataset_val, sigma = checkpoint['sigma'])
     loss_fn = criterion(checkpoint['sigma'])
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
     lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
-    plt.savefig('{}.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
-    plt.show()
+    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
 
-    plot_beta(label = 'true distribution')
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, sigma = checkpoint['sigma'], with_std = True)
+    plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
     loss_fn = criterion(checkpoint['sigma'])
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
     lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
-    plt.savefig('{}-with-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
-    plt.show()
+    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-    val_metrics = eval_network(model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, len(dataset_test), shuffle = False, num_workers = 0)
-    test_metrics = eval_network(model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])

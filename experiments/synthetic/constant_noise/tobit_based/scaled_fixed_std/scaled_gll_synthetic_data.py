@@ -42,9 +42,9 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, lambda: GausianLogLikelihoodLoss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss, plot = False, log = False)
 
-def train_once_mae_cens_NO_trunc():
+def train_once_gll():
     conf = {
         'max_lr': 1e-4,
         'epochs': 10,
@@ -61,7 +61,7 @@ def train_once_mae_cens_NO_trunc():
     plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                     ROOT_GLL, CHECKPOINT_GLL, lambda: GausianLogLikelihoodLoss, isGrid = False)
 
-def grid_search_mae_cens_NO_trunc():
+def grid_search_gll():
     grid_config = [{
         'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
         'epochs': [10, 20],
@@ -78,7 +78,7 @@ def grid_search_mae_cens_NO_trunc():
                             grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
     return grid_best
 
-def eval_mae_cens_NO_trunc():
+def eval_gll():
     plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                     ROOT_GLL, CHECKPOINT_GLL, lambda: GausianLogLikelihoodLoss, isGrid = True)
     grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
@@ -86,3 +86,5 @@ def eval_mae_cens_NO_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+train_once_gll()
