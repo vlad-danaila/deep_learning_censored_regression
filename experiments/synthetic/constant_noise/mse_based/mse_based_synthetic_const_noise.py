@@ -37,51 +37,52 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_UNcensored(CHECKPOINT_MSE, t.nn.MSELoss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_UNcensored(ROOT_MSE + '/' + CHECKPOINT_MSE, t.nn.MSELoss, plot = False, log = False)
 
 """Train once with default settings"""
-
-# conf = {
-#     'max_lr': 3e-2,
-#     'epochs': 10,
-#     'batch': 100,
-#     'pct_start': 0.3,
-#     'anneal_strategy': 'linear',
-#     'base_momentum': 0.85,
-#     'max_momentum': 0.95,
-#     'div_factor': 3,
-#     'final_div_factor': 1e4,
-#     'weight_decay': 0
-# }
-# train_and_evaluate_net(conf)
+def train_once_mse_simple():
+  conf = {
+      'max_lr': 3e-2,
+      'epochs': 10,
+      'batch': 100,
+      'pct_start': 0.3,
+      'anneal_strategy': 'linear',
+      'base_momentum': 0.85,
+      'max_momentum': 0.95,
+      'div_factor': 3,
+      'final_div_factor': 1e4,
+      'weight_decay': 0
+  }
+  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+  plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+              dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, isGrid = False)
 
 """Grid search"""
+def grid_search_mse_simple():
+  grid_config = [{
+      'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+      'epochs': [10, 20],
+      'batch': [100, 200],
+      'pct_start': [0.45],
+      'anneal_strategy': ['linear'],
+      'base_momentum': [0.85],
+      'max_momentum': [0.95],
+      'div_factor': [10, 5, 2],
+      'final_div_factor': [1e4],
+      'weight_decay': [0]
+  }]
+  grid_best = grid_search(ROOT_MSE, dataset_train, dataset_val, bound_min, bound_max,
+            grid_config, train_and_evaluate_net, CHECKPOINT_MSE, conf_validation = config_validation)
+  return grid_best
 
-# grid_config = [{
-#     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-#     'epochs': [10, 20],
-#     'batch': [100, 200],
-#     'pct_start': [0.45],
-#     'anneal_strategy': ['linear'],
-#     'base_momentum': [0.85],
-#     'max_momentum': [0.95],
-#     'div_factor': [10, 5, 2],
-#     'final_div_factor': [1e4],
-#     'weight_decay': [0]
-# }]
-# grid_best = grid_search(grid_config, train_and_evaluate_net, CHECKPOINT_MSE, conf_validation = config_validation)
-# print(grid_best)
-
-"""Load the best model"""
-
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_MSE, t.nn.MSELoss, isGrid = False)
-plot_and_evaluate_model_UNcensored(CHECKPOINT_MSE, t.nn.MSELoss, isGrid = True)
-
-# grid_results = t.load(GRID_RESULTS_FILE)
-# best_config = grid_results['best']
-# best_metrics = grid_results[str(best_config)]
-# print(best_config)
-# print(best_metrics)
+def eval_mse_simple():
+  plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_MSE,
+                                     CHECKPOINT_MSE, t.nn.MSELoss, isGrid = True)
+  grid_results = t.load(ROOT_MSE + '/' + GRID_RESULTS_FILE)
+  best_config = grid_results['best']
+  best_metrics = grid_results[str(best_config)]
+  print(best_config)
+  print(best_metrics)
 
 """# Bounded MSE"""
 
