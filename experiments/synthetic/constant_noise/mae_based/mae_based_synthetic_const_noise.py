@@ -74,7 +74,7 @@ grid_best = grid_search(ROOT_MAE, dataset_train, dataset_val, bound_min, bound_m
 plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
                                    dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
 
-# grid_results = t.load(GRID_RESULTS_FILE)
+# grid_results = t.load(ROOT_MAE + '/' + GRID_RESULTS_FILE)
 # best_config = grid_results['best']
 # best_metrics = grid_results[str(best_config)]
 # print(best_config)
