@@ -88,16 +88,16 @@ grid_best = grid_search(dataset_train, dataset_val, bound_min, bound_max, grid_c
 
 """Load the best model"""
 
+# plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+#                                    dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
 plot_and_evaluate_model_UNcensored(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
-                                   dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
+                                   dataset_val, dataset_test, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
 
-# plot_and_evaluate_model_UNcensored(CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
-
-# grid_results = t.load(GRID_RESULTS_FILE)
-# best_config = grid_results['best']
-# best_metrics = grid_results[str(best_config)]
-# print(best_config)
-# print(best_metrics)
+grid_results = t.load(GRID_RESULTS_FILE)
+best_config = grid_results['best']
+best_metrics = grid_results[str(best_config)]
+print(best_config)
+print(best_metrics)
 
 """# Bounded MAE"""
 
