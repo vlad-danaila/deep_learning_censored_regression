@@ -70,22 +70,22 @@ def train_once_deep_tobit_NO_trunc():
   plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                 ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, isGrid = False)
 
-def grid_search_gll():
-  grid_config = [{
-    'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-    'epochs': [10, 20],
-    'batch': [100, 200],
-    'pct_start': [0.45],
-    'anneal_strategy': ['linear'],
-    'base_momentum': [0.85],
-    'max_momentum': [0.95],
-    'div_factor': [10, 5, 2],
-    'final_div_factor': [1e4],
-    'weight_decay': [0]
-  }]
-  grid_best = grid_search(ROOT_GLL, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
-  return grid_best
+def grid_search_deep_tobit_NO_trunc():
+    grid_config = [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
+    grid_best = grid_search(ROOT_DEEP_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
+                          grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED, conf_validation = config_validation)
+    return grid_best
 
 def eval_gll_scaled():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
