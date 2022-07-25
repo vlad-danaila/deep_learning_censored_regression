@@ -2,7 +2,7 @@ from experiments.synthetic.constant_noise.mae_based.mae_based_synthetic_const_no
 from experiments.synthetic.constant_noise.mse_based.mse_based_synthetic_const_noise import eval_mse_simple, eval_mse_cens_NO_trunc, eval_mse_cens_WITH_trunc
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_gll_synthetic_data import eval_gll_scaled
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_tobit_loss_synthetic_data import eval_deep_tobit_NO_trunc, eval_deep_tobit_WITH_trunc,\
-    eval_linear_tobit_NO_trunc
+    eval_linear_tobit_NO_trunc, eval_linear_tobit_WITH_trunc
 
 # MAE Based
 eval_mae_simple()
@@ -21,5 +21,6 @@ eval_gll_scaled()
 eval_deep_tobit_NO_trunc()
 eval_deep_tobit_WITH_trunc()
 eval_linear_tobit_NO_trunc()
+eval_linear_tobit_WITH_trunc()
 
 # Reparametrized
