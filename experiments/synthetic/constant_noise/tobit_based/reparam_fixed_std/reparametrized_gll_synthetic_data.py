@@ -44,7 +44,7 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 
 train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss, plot = False, log = False)
 
-def train_once_gll():
+def train_once_gll_reparam():
   conf = {
       'max_lr': 1e-3,
       'epochs': 10,
@@ -61,13 +61,13 @@ def train_once_gll():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                               ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
 
-def grid_search_gll():
+def grid_search_gll_reparam():
   grid_config = get_grid_search_space()
   grid_best = grid_search(ROOT_GLL, dataset_train, dataset_val, bound_min, bound_max,
                           grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
   return grid_best
 
-def eval_gll_scaled():
+def eval_gll_reparam():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                               ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
   grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
@@ -75,5 +75,3 @@ def eval_gll_scaled():
   best_metrics = grid_results[str(best_config)]
   print(best_config)
   print(best_metrics)
-
-eval_gll_scaled()
