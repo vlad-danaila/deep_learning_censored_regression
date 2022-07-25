@@ -1,9 +1,10 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation
+from experiments.synthetic.grid_search import train_and_evaluate_tobit, plot_and_evaluate_model_tobit, grid_search, config_validation
 from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize, distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss
+from experiments.models import DenseNetwork
 
 """Constants"""
 ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
@@ -37,40 +38,37 @@ bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
+"""# Common Tobit Setup"""
 
-"""# PDF Log-Likelihood"""
+censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
+uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
 
-class GausianLogLikelihoodLoss(t.nn.Module):
+tobit_loader_train = t.utils.data.DataLoader(dataset_train, batch_size = 100, shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
+tobit_loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
+tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
 
-  def __init__(self, sigma):
-    super(GausianLogLikelihoodLoss, self).__init__()
-    self.sigma = sigma
-    self.epsilon = t.tensor(1e-40, dtype = t.float32, requires_grad = False)
-
-  def forward(self, y_pred: t.Tensor, y_true: t.Tensor):
-    sigma = t.abs(self.sigma)
-    return t.sum(t.log(sigma + self.epsilon) + (((y_true - y_pred)/sigma) ** 2) / 2)
+"""# Scaled Deep Tobit"""
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED, plot = False, log = False)
 
-def train_once_gll():
+def train_once_deep_tobit_NO_trunc():
   conf = {
-    'max_lr': 1e-4,
-    'epochs': 10,
-    'batch': 100,
-    'pct_start': 0.3,
-    'anneal_strategy': 'linear',
-    'base_momentum': 0.85,
-    'max_momentum': 0.95,
-    'div_factor': 5,
-    'final_div_factor': 1e4,
-    'weight_decay': 0
+      'max_lr': 2e-4,
+      'epochs': 10,
+      'batch': 100,
+      'pct_start': 0.3,
+      'anneal_strategy': 'linear',
+      'base_momentum': 0.85,
+      'max_momentum': 0.95,
+      'div_factor': 4,
+      'final_div_factor': 1e4,
+      'weight_decay': 0
   }
   train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                              ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
+  plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                                ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, isGrid = False)
 
 def grid_search_gll():
   grid_config = [{
