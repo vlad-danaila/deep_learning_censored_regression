@@ -76,13 +76,12 @@ def grid_search_deep_tobit_NO_trunc():
                           grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED, conf_validation = config_validation)
     return grid_best
 
-def eval_gll_scaled():
-  plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                              ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
-  grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
-  best_config = grid_results['best']
-  best_metrics = grid_results[str(best_config)]
-  print(best_config)
-  print(best_metrics)
+def eval_deep_tobit_NO_trunc():
+    plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                              ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, isGrid = True)
+    grid_results = t.load(ROOT_DEEP_TOBIT_SCALED + '/' + GRID_RESULTS_FILE)
+    best_config = grid_results['best']
+    best_metrics = grid_results[str(best_config)]
+    print(best_config)
+    print(best_metrics)
 
-eval_gll_scaled()
