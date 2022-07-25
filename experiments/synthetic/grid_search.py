@@ -233,8 +233,12 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, dataset_val, sigma = checkpoint['sigma'])
-    loss_fn = criterion(checkpoint['sigma'])
+    if 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma = checkpoint['sigma'])
+        loss_fn = criterion(checkpoint['sigma'])
+    elif 'gamma' in checkpoint:
+        plot_net(model, dataset_val, gamma = checkpoint['gamma'])
+        loss_fn = criterion(checkpoint['gamma'])
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -250,8 +254,12 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
-    loss_fn = criterion(checkpoint['sigma'])
+    if 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
+        loss_fn = criterion(checkpoint['sigma'])
+    elif 'gamma' in checkpoint:
+        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
+        loss_fn = criterion(checkpoint['gamma'])
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
