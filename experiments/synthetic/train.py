@@ -27,6 +27,8 @@ def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch
             if len(y_pred) == 3:
                 y_pred = t.cat(y_pred)
                 y = t.cat(y)
+            if hasattr(loss_fn, 'gamma'):
+                y_pred = y_pred / (loss_fn.gamma)
             if is_eval_bounded:
                 y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
             y_pred, y = to_numpy(y_pred), to_numpy(y)
@@ -82,6 +84,8 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
                     loss.backward()
                     optimizer.step()
                     optimizer.zero_grad()
+                    if hasattr(loss_fn, 'gamma'):
+                        y_pred = y_pred / (loss_fn.gamma)
                     y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
                     y_pred, y = to_numpy(y_pred), to_numpy(y)
                     weight = len(y) / batch_size_train
