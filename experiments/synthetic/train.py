@@ -16,7 +16,7 @@ def adjusted_R2(y, y_pred):
     r2 = sk.metrics.r2_score(y, y_pred)
     return 1 - ( ( (1 - r2) * (n - 1) ) / (n - k - 1) )
 
-def eval_network(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True):
+def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True):
     model.eval()
     with t.no_grad():
         metrics = np.zeros(3)
@@ -38,7 +38,7 @@ def eval_network(bound_min, bound_max, model, loader, loss_fn, batch_size, is_ev
         metrics /= total_weight
         return metrics
 
-def train_network(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
+def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -68,7 +68,7 @@ def train_network(bound_min, bound_max, model, loss_fn, optimizer, scheduler, lo
                         metrics_train_per_epochs.append(train_metrics)
                         train_metrics = np.zeros(3)
                         total_weight = 0
-                        test_metrics = eval_network(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val)
+                        test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val)
                         metrics_test_per_epochs.append(test_metrics)
                         # if test_metrics[R_SQUARED] > best[R_SQUARED]:
                         if test_metrics[ABS_ERR] < best[ABS_ERR]:

@@ -3,7 +3,7 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network, eval_network
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll
 from experiments.synthetic.plot import *
 
 """# Grid Search Setup"""
@@ -93,8 +93,8 @@ def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, p
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network(bound_min, bound_max,
-            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
+                                                                     model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
@@ -130,8 +130,8 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network(bound_min, bound_max,
-            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
+                                                                     model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
@@ -165,12 +165,12 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-    val_metrics = eval_network(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, len(dataset_test), shuffle = False, num_workers = 0)
-    test_metrics = eval_network(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
@@ -218,11 +218,11 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-    val_metrics = eval_network(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, len(dataset_test), shuffle = False, num_workers = 0)
-    test_metrics = eval_network(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
