@@ -87,4 +87,4 @@ def eval_gll():
     print(best_config)
     print(best_metrics)
 
-train_once_gll()
+eval_gll()
