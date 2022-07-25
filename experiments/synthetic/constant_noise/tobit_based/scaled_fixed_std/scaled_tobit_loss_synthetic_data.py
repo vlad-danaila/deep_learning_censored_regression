@@ -84,5 +84,3 @@ def eval_deep_tobit_NO_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
-
-eval_deep_tobit_NO_trunc()
