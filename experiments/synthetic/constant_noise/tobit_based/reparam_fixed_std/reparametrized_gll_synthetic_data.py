@@ -4,7 +4,7 @@ from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
-ROOT_GLL = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/gll'
+ROOT_GLL = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/gll'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
 """Reproducible experiments"""
@@ -31,14 +31,14 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 class GausianLogLikelihoodLoss(t.nn.Module):
 
-  def __init__(self, sigma):
+  def __init__(self, gamma):
     super(GausianLogLikelihoodLoss, self).__init__()
-    self.sigma = sigma
+    self.gamma = gamma
     self.epsilon = t.tensor(1e-40, dtype = t.float32, requires_grad = False)
 
   def forward(self, y_pred: t.Tensor, y_true: t.Tensor):
-    sigma = t.abs(self.sigma)
-    return t.sum(t.log(sigma + self.epsilon) + (((y_true - y_pred)/sigma) ** 2) / 2)
+    gamma = t.abs(self.gamma)
+    return -t.sum(t.log(gamma + self.epsilon) - ((gamma * y_true - y_pred) ** 2) / 2)
 
 """### Grid Search"""
 
@@ -46,16 +46,16 @@ train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL,
 
 def train_once_gll():
   conf = {
-    'max_lr': 1e-4,
-    'epochs': 10,
-    'batch': 100,
-    'pct_start': 0.3,
-    'anneal_strategy': 'linear',
-    'base_momentum': 0.85,
-    'max_momentum': 0.95,
-    'div_factor': 5,
-    'final_div_factor': 1e4,
-    'weight_decay': 0
+      'max_lr': 1e-3,
+      'epochs': 10,
+      'batch': 100,
+      'pct_start': 0.3,
+      'anneal_strategy': 'linear',
+      'base_momentum': 0.85,
+      'max_momentum': 0.95,
+      'div_factor': 10,
+      'final_div_factor': 1e4,
+      'weight_decay': 0
   }
   train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
