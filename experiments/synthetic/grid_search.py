@@ -127,11 +127,11 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-        sigma = t.tensor(1., requires_grad = True)
-        loss_fn = criterion(sigma)
+        scale = t.tensor(1., requires_grad = True) # could be sigma or gamma
+        loss_fn = criterion(scale)
         params = [
             {'params': model.parameters()},
-            {'params': sigma}
+            {'params': scale}
         ]
         optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
         scheduler = t.optim.lr_scheduler.OneCycleLR(
@@ -147,7 +147,7 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
             final_div_factor = conf['final_div_factor']
         )
         train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
-                                                                     model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+              model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
