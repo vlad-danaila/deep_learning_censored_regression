@@ -3,8 +3,10 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit
 from experiments.synthetic.plot import *
+from deep_tobit.util import distinguish_censored_versus_observed_data
+from deep_tobit.loss import Scaled_Tobit_Loss
 
 """# Grid Search Setup"""
 
@@ -120,6 +122,38 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
         )
         train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
                                                                      model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+        if plot:
+            plot_epochs(train_metrics, val_metrics)
+        return best
+    return grid_callback
+
+def train_and_evaluate_tobit(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu', truncated_low = None, truncated_high = None):
+    def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
+        censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
+        model = model_fn()
+        loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
+        loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
+        sigma = t.tensor(1., requires_grad = True)
+        loss_fn = Scaled_Tobit_Loss(sigma, device, truncated_low = truncated_low, truncated_high = truncated_high)
+        params = [
+            {'params': model.parameters()},
+            {'params': sigma}
+        ]
+        optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
+        scheduler = t.optim.lr_scheduler.OneCycleLR(
+            optimizer,
+            max_lr = conf['max_lr'],
+            steps_per_epoch = len(loader_train),
+            epochs = conf['epochs'],
+            pct_start = conf['pct_start'],
+            anneal_strategy = conf['anneal_strategy'],
+            base_momentum = conf['base_momentum'],
+            max_momentum = conf['max_momentum'],
+            div_factor = conf['div_factor'],
+            final_div_factor = conf['final_div_factor']
+        )
+        train_metrics, val_metrics, best = train_network_tobit(bound_min, bound_max,
+            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
