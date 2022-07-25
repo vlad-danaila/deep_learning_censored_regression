@@ -114,4 +114,11 @@ def grid_search_deep_tobit_WITH_trunc():
                             grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, conf_validation = config_validation)
     return grid_best
 
-grid_search_deep_tobit_WITH_trunc()
+def eval_deep_tobit_WITH_trunc():
+    plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+        ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, model_fn = DenseNetwork, isGrid = True)
+    grid_results = t.load(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + GRID_RESULTS_FILE)
+    best_config = grid_results['best']
+    best_metrics = grid_results[str(best_config)]
+    print(best_config)
+    print(best_metrics)
