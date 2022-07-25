@@ -59,21 +59,10 @@ def train_once_mse_simple():
 
 """Grid search"""
 def grid_search_mse_simple():
-  grid_config = [{
-      'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-      'epochs': [10, 20],
-      'batch': [100, 200],
-      'pct_start': [0.45],
-      'anneal_strategy': ['linear'],
-      'base_momentum': [0.85],
-      'max_momentum': [0.95],
-      'div_factor': [10, 5, 2],
-      'final_div_factor': [1e4],
-      'weight_decay': [0]
-  }]
-  grid_best = grid_search(ROOT_MSE, dataset_train, dataset_val, bound_min, bound_max,
+    grid_config = get_grid_search_space()
+    grid_best = grid_search(ROOT_MSE, dataset_train, dataset_val, bound_min, bound_max,
             grid_config, train_and_evaluate_net, CHECKPOINT_MSE, conf_validation = config_validation)
-  return grid_best
+    return grid_best
 
 def eval_mse_simple():
   plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_MSE,
@@ -117,18 +106,7 @@ def train_once_mse_cens_NO_trunc():
                                     CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = False)
 
 def grid_search_mse_cens_NO_trunc():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MSE, dataset_train, dataset_val, bound_min, bound_max,
         grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE, conf_validation = config_validation)
     return grid_best
@@ -175,18 +153,7 @@ def train_once_mse_cens_WITH_trunc():
                                     CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
 
 def grid_search_mse_cens_WITH_trunc():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MSE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
         grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, conf_validation = config_validation)
     return grid_best

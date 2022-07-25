@@ -8,6 +8,20 @@ from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss
 
+def get_grid_search_space():
+    return [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
+
 """# Grid Search Setup"""
 
 def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, grid_config, train_callback, checkpoint_name, nb_iterations = 1, conf_validation = None):

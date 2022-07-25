@@ -1,7 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation
+from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/gll'
@@ -62,18 +62,7 @@ def train_once_gll():
                                     ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
 
 def grid_search_gll():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_GLL, dataset_train, dataset_val, bound_min, bound_max,
                             grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
     return grid_best

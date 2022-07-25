@@ -1,7 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation
+from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
 ROOT_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_simple'
@@ -56,18 +56,7 @@ def train_once_mae_simple():
 
 """Grid search"""
 def grid_search_mae_simple():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_MAE, dataset_train, dataset_val, bound_min, bound_max, grid_config,
                             train_and_evaluate_net, CHECKPOINT_MAE, conf_validation = config_validation)
     return grid_best
@@ -115,18 +104,7 @@ def train_once_mae_cens_NO_trunc():
                                     ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, isGrid = False)
 
 def grid_search_mae_cens_NO_trunc():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MAE, dataset_train, dataset_val, bound_min, bound_max,
                             grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MAE, conf_validation = config_validation)
     return grid_best
@@ -174,18 +152,7 @@ def train_once_mae_cens_WITH_trunc():
                                     CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
 
 def grid_search_mae_cens_WITH_trunc():
-    grid_config = [{
-        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-        'epochs': [10, 20],
-        'batch': [100, 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5, 2],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
+    grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MAE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
                 grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, conf_validation = config_validation)
     return grid_best
