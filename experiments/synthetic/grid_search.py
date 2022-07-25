@@ -3,7 +3,7 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit, eval_network_tobit
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss
@@ -248,3 +248,53 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
+
+def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+    censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
+    uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
+    model = model_fn()
+    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    model.load_state_dict(checkpoint['model'])
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_net(model, dataset_val, sigma = checkpoint['sigma'])
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
+
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
+
+    loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+
+    loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
+    val_metrics = eval_network_tobit(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
+    print('Absolute error - validation', val_metrics[ABS_ERR])
+    print('R2 - validation', val_metrics[R_SQUARED])
+
+    loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
+    test_metrics = eval_network_tobit(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    print('Absolute error - test', test_metrics[ABS_ERR])
+    print('R2 - test', test_metrics[R_SQUARED])
+
+    print('\nstd', checkpoint['sigma'])
