@@ -38,6 +38,33 @@ def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch
         metrics /= total_weight
         return metrics
 
+def eval_network_tobit(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True):
+    model.eval()
+    with t.no_grad():
+        metrics = np.zeros(3)
+        total_weight = 0
+        for x, y, single_valued_indexes, left_censored_indexes, right_censored_indexes in loader:
+            y_single_valued = y[single_valued_indexes]
+            y_left_censored = y[left_censored_indexes]
+            y_right_censored = y[right_censored_indexes]
+            y_tuple = y_single_valued, y_left_censored, y_right_censored
+            y_pred = model.forward(x)
+            y_pred_single_valued = y_pred[single_valued_indexes]
+            y_pred_left_censored = y_pred[left_censored_indexes]
+            y_pred_right_censored = y_pred[right_censored_indexes]
+            y_pred_tuple = y_pred_single_valued, y_pred_left_censored, y_pred_right_censored
+            loss = loss_fn(y_pred_tuple, y_tuple)
+            if is_eval_bounded:
+                y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
+            y_pred, y = to_numpy(y_pred), to_numpy(y)
+            weight = len(y) / batch_size
+            metrics[LOSS] += (loss.item() * weight)
+            metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
+            metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+            total_weight += weight
+        metrics /= total_weight
+        return metrics
+
 def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
