@@ -85,3 +85,4 @@ def eval_deep_tobit_NO_trunc():
     print(best_config)
     print(best_metrics)
 
+eval_deep_tobit_NO_trunc()
