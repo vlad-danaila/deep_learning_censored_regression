@@ -67,17 +67,11 @@ def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, g
 
     return best
 
-def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False, loader_train_fn = None, loader_val_fn = None):
+def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         model = model_fn()
-        if not loader_train_fn:
-            loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
-        else:
-            loader_train = loader_train_fn(conf['batch'])
-        if not loader_val_fn:
-            loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-        else:
-            loader_val = loader_val_fn(len(dataset_val))
+        loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
+        loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
         loss_fn = criterion()
         params = model.parameters()
         optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
@@ -100,17 +94,11 @@ def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, p
         return best
     return grid_callback
 
-def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, loader_train_fn = None, loader_val_fn = None):
+def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         model = model_fn()
-        if not loader_train_fn:
-            loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
-        else:
-            loader_train = loader_train_fn(conf['batch'])
-        if not loader_val_fn:
-            loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
-        else:
-            loader_val = loader_val_fn(len(dataset_val))
+        loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = False, num_workers = 0)
+        loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
         sigma = t.tensor(1., requires_grad = True)
         loss_fn = criterion(sigma)
         params = [
