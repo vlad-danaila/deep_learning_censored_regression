@@ -4,6 +4,8 @@ from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_gl
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_tobit_loss_synthetic_data import eval_deep_tobit_NO_trunc, eval_deep_tobit_WITH_trunc,\
     eval_linear_tobit_NO_trunc, eval_linear_tobit_WITH_trunc
 from experiments.synthetic.constant_noise.tobit_based.reparam_fixed_std.reparametrized_gll_synthetic_data import eval_gll_reparam
+from experiments.synthetic.constant_noise.tobit_based.reparam_fixed_std.reparametrized_tobit_loss_synthetic_data import eval_deep_tobit_NO_trunc,\
+    eval_deep_tobit_WITH_trunc, eval_linear_tobit_NO_trunc, eval_linear_tobit_WITH_trunc
 
 # MAE Based
 eval_mae_simple()
@@ -26,3 +28,7 @@ eval_linear_tobit_WITH_trunc()
 
 # Reparametrized
 eval_gll_reparam()
+eval_deep_tobit_NO_trunc()
+eval_deep_tobit_WITH_trunc()
+eval_linear_tobit_NO_trunc()
+eval_linear_tobit_WITH_trunc()
