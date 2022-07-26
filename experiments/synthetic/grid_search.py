@@ -291,7 +291,12 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, dataset_val, sigma = checkpoint['sigma'])
+    if 'gamma' in checkpoint:
+        plot_net(model, dataset_val, gamma = checkpoint['gamma'])
+    elif 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma = checkpoint['sigma'])
+    else:
+        raise 'Sigma or gamma must be found in checkpoint'
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -306,7 +311,12 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
+    if 'gamma' in checkpoint:
+        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
+    elif 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
+    else:
+        raise 'Sigma or gamma must be found in checkpoint'
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
