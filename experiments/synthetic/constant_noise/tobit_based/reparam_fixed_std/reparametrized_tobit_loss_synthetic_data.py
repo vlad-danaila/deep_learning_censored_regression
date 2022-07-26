@@ -1,7 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_tobit, plot_and_evaluate_model_tobit, grid_search, config_validation, get_grid_search_space
+from experiments.synthetic.grid_search import train_and_evaluate_tobit_fixed_std, plot_and_evaluate_model_tobit, grid_search, config_validation, get_grid_search_space
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.models import DenseNetwork
 
@@ -51,7 +51,7 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 
 """# Reparametrized Deep Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, plot = False, log = False, isReparam=True)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, plot = False, log = False, isReparam=True)
 
 def train_once_deep_tobit_NO_trunc():
   conf = {
@@ -92,8 +92,8 @@ def eval_deep_tobit_NO_trunc():
 
 """# Reparametrized Deep Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
-                                                  model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
+                                                            model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
 def train_once_deep_tobit_WITH_trunc():
     conf = {
@@ -132,8 +132,8 @@ def eval_deep_tobit_WITH_trunc():
 
 """# Reparametrized Linear Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED,
-                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, isReparam=True)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED,
+                                                            model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, isReparam=True)
 
 def train_once_linear_tobit_NO_trunc():
     conf = {
@@ -172,8 +172,8 @@ def eval_linear_tobit_NO_trunc():
 
 """# Reparametrized Linear Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED,
-                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED,
+                                                            model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
 def train_once_linear_tobit_WITH_trunc():
     conf = {

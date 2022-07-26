@@ -1,7 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_tobit, plot_and_evaluate_model_tobit, grid_search, config_validation, get_grid_search_space
+from experiments.synthetic.grid_search import train_and_evaluate_tobit_fixed_std, plot_and_evaluate_model_tobit, grid_search, config_validation, get_grid_search_space
 from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize, distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss
 from experiments.models import DenseNetwork
@@ -52,7 +52,7 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 
 """# Scaled Deep Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED, plot = False, log = False)
 
 def train_once_deep_tobit_NO_trunc():
   conf = {
@@ -91,8 +91,8 @@ def eval_deep_tobit_NO_trunc():
 
 """# Scaled Deep Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED,
-                                                  model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED,
+                                                            model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized)
 
 def train_once_deep_tobit_WITH_trunc():
     conf = {
@@ -131,8 +131,8 @@ def eval_deep_tobit_WITH_trunc():
 
 """# Scaled Linear Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TOBIT_SCALED,
-                                    model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TOBIT_SCALED,
+                                                            model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False)
 
 def train_once_linear_tobit_NO_trunc():
     conf = {
@@ -171,8 +171,8 @@ def eval_linear_tobit_NO_trunc():
 
 """# Scaled Linear Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED,
-                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED,
+                                                            model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized)
 
 def train_once_linear_tobit_WITH_trunc():
     conf = {
