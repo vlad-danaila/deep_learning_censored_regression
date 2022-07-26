@@ -3,7 +3,7 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork, get_sigma
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, eval_network_tobit_fixed_std
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
@@ -319,7 +319,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -381,3 +381,80 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
         print('\nstd', 1 / checkpoint['gamma'])
     elif 'sigma' in checkpoint:
         print('\nstd', checkpoint['sigma'])
+
+def plot_and_evaluate_model_tobit_dynamic_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+    censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
+    uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
+    model = model_fn()
+    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    if not ('gamma' in checkpoint or 'sigma' in checkpoint):
+        raise 'Sigma or gamma must be found in checkpoint'
+    model.load_state_dict(checkpoint['model'])
+    model.eval()
+
+    sigma_model = get_sigma()
+    sigma_model.load_state_dict(checkpoint['sigma'])
+    sigma_model.eval()
+
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    if 'gamma' in checkpoint:
+        pass
+    elif 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma_model = sigma_model)
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
+
+    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
+    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    if 'gamma' in checkpoint:
+        pass
+    elif 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma_model = sigma_model, with_std = True)
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+    plt.ylim((-2.5, 2.5))
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    lgnd.legendHandles[2]._sizes = [10]
+    lgnd.legendHandles[3]._sizes = [10]
+    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
+    plt.close()
+
+    # TODO put real fixed std
+    plot_fixed_and_dynamic_std(dataset_val, model, sigma_model, 0.4017)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('standard deviation')
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    plt.savefig('{}-two-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
+    plt.savefig('{}-two-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
+    plt.savefig('{}-two-std.png'.format(checkpoint_name), dpi = 200, format = 'png')
+    plt.show()
+
+    if 'gamma' in checkpoint:
+        pass
+    elif 'sigma' in checkpoint:
+        loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+    loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
+    val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader_val, loss_fn, len(dataset_val))
+    print('Absolute error - validation', val_metrics[ABS_ERR])
+    print('R2 - validation', val_metrics[R_SQUARED])
+
+    loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
+    test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    print('Absolute error - test', test_metrics[ABS_ERR])
+    print('R2 - test', test_metrics[R_SQUARED])
