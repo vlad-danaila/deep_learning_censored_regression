@@ -6,7 +6,7 @@ from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit, eval_network_tobit
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
-from deep_tobit.loss import Scaled_Tobit_Loss
+from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss
 
 def get_grid_search_space():
     return [{
@@ -153,17 +153,20 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
         return best
     return grid_callback
 
-def train_and_evaluate_tobit(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu', truncated_low = None, truncated_high = None):
+def train_and_evaluate_tobit(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu', truncated_low = None, truncated_high = None, isReparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-        sigma = t.tensor(1., requires_grad = True)
-        loss_fn = Scaled_Tobit_Loss(sigma, device, truncated_low = truncated_low, truncated_high = truncated_high)
+        scale = t.tensor(1., requires_grad = True)
+        if isReparam:
+            loss_fn = Reparametrized_Scaled_Tobit_Loss(scale, device, truncated_low = truncated_low, truncated_high = truncated_high)
+        else:
+            loss_fn = Scaled_Tobit_Loss(scale, device, truncated_low = truncated_low, truncated_high = truncated_high)
         params = [
             {'params': model.parameters()},
-            {'params': sigma}
+            {'params': scale}
         ]
         optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
         scheduler = t.optim.lr_scheduler.OneCycleLR(
@@ -288,6 +291,8 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    if not ('gamma' in checkpoint or 'sigma' in checkpoint):
+        raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
@@ -295,8 +300,6 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
         plot_net(model, dataset_val, gamma = checkpoint['gamma'])
     elif 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'])
-    else:
-        raise 'Sigma or gamma must be found in checkpoint'
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -315,8 +318,6 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
         plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
     elif 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
-    else:
-        raise 'Sigma or gamma must be found in checkpoint'
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -329,8 +330,10 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
-
+    if 'gamma' in checkpoint:
+        loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+    elif 'sigma' in checkpoint:
+        loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
@@ -341,4 +344,7 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-    print('\nstd', checkpoint['sigma'])
+    if 'gamma' in checkpoint:
+        print('\nstd', 1 / checkpoint['gamma'])
+    elif 'sigma' in checkpoint:
+        print('\nstd', checkpoint['sigma'])
