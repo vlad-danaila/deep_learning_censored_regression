@@ -49,7 +49,7 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 
 
 
-"""# Scaled Deep Tobit"""
+"""# Reparametrized Deep Tobit"""
 
 train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, plot = False, log = False, isReparam=True)
 
@@ -88,38 +88,40 @@ def eval_deep_tobit_NO_trunc():
 
 
 
-"""# Scaled Deep Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED,
-                                                  model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized)
+
+"""# Reparametrized Deep Tobit With Truncation"""
+
+train_and_evaluate_net = train_and_evaluate_tobit(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
+                                                  model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
 def train_once_deep_tobit_WITH_trunc():
-  conf = {
-    'max_lr': 2e-4,
-    'epochs': 10,
-    'batch': 100,
-    'pct_start': 0.3,
-    'anneal_strategy': 'linear',
-    'base_momentum': 0.85,
-    'max_momentum': 0.95,
-    'div_factor': 4,
-    'final_div_factor': 1e4,
-    'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, model_fn = DenseNetwork, isGrid = False)
+    conf = {
+        'max_lr': 2e-4,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 4,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                                  ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, model_fn = DenseNetwork, isGrid = False)
 
 def grid_search_deep_tobit_WITH_trunc():
   grid_config = get_grid_search_space()
-  grid_best = grid_search(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, conf_validation = config_validation)
+  grid_best = grid_search(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
+                          grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, conf_validation = config_validation)
   return grid_best
 
 def eval_deep_tobit_WITH_trunc():
   plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, model_fn = DenseNetwork, isGrid = True)
-  grid_results = t.load(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + GRID_RESULTS_FILE)
+                                ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, model_fn = DenseNetwork, isGrid = True)
+  grid_results = t.load(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + GRID_RESULTS_FILE)
   best_config = grid_results['best']
   best_metrics = grid_results[str(best_config)]
   print(best_config)
@@ -128,38 +130,38 @@ def eval_deep_tobit_WITH_trunc():
 
 
 
-"""# Scaled Linear Tobit"""
+"""# Reparametrized Linear Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TOBIT_SCALED,
-                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED,
+                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, isReparam=True)
 
 def train_once_linear_tobit_NO_trunc():
-  conf = {
-    'max_lr': 5e-3,
-    'epochs': 10,
-    'batch': 100,
-    'pct_start': 0.3,
-    'anneal_strategy': 'linear',
-    'base_momentum': 0.85,
-    'max_momentum': 0.95,
-    'div_factor': 5,
-    'final_div_factor': 1e4,
-    'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
+    conf = {
+        'max_lr': 5e-3,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 5,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                                  ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
 
 def grid_search_linear_tobit_NO_trunc():
   grid_config = get_grid_search_space()
-  grid_best = grid_search(ROOT_LINEAR_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TOBIT_SCALED, conf_validation = config_validation)
+  grid_best = grid_search(ROOT_LINEAR_TOBIT_REPARAMETRIZED, dataset_train, dataset_val, bound_min, bound_max,
+                          grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, conf_validation = config_validation)
   return grid_best
 
 def eval_linear_tobit_NO_trunc():
   plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
-  grid_results = t.load(ROOT_LINEAR_TOBIT_SCALED + '/' + GRID_RESULTS_FILE)
+                                ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
+  grid_results = t.load(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + GRID_RESULTS_FILE)
   best_config = grid_results['best']
   best_metrics = grid_results[str(best_config)]
   print(best_config)
@@ -168,39 +170,40 @@ def eval_linear_tobit_NO_trunc():
 
 
 
-"""# Scaled Linear Tobit With Truncation"""
+"""# Reparametrized Linear Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED,
-                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized)
+train_and_evaluate_net = train_and_evaluate_tobit(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED,
+                                                  model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
 def train_once_linear_tobit_WITH_trunc():
-  conf = {
-    'max_lr': 5e-3,
-    'epochs': 10,
-    'batch': 100,
-    'pct_start': 0.3,
-    'anneal_strategy': 'linear',
-    'base_momentum': 0.85,
-    'max_momentum': 0.95,
-    'div_factor': 5,
-    'final_div_factor': 1e4,
-    'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
+    conf = {
+        'max_lr': 5e-3,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 5,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                                  ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
 
 def grid_search_linear_tobit_WITH_trunc():
   grid_config = get_grid_search_space()
-  grid_best = grid_search(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, conf_validation = config_validation)
+  grid_best = grid_search(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, dataset_train, dataset_val, bound_min, bound_max,
+                          grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, conf_validation = config_validation)
   return grid_best
 
 def eval_linear_tobit_WITH_trunc():
   plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
-  grid_results = t.load(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + GRID_RESULTS_FILE)
+                                ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
+  grid_results = t.load(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + GRID_RESULTS_FILE)
   best_config = grid_results['best']
   best_metrics = grid_results[str(best_config)]
   print(best_config)
   print(best_metrics)
+
