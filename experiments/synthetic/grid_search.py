@@ -3,7 +3,7 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit, eval_network_tobit
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, eval_network_tobit_fixed_std
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss
@@ -79,11 +79,8 @@ def grid_search(root_folder, dataset_train, dataset_val, bound_min, bound_max, g
             metrics = train_callback(dataset_train, dataset_val, bound_min, bound_max, conf)
 
             # if metrics[R_SQUARED] > best[R_SQUARED]:
-            if metrics[ABS_ERR] < best[ABS_ERR]:
-                best_from_iterations = metrics
-
-            # if metrics[R_SQUARED] > best[R_SQUARED]:
             if metrics[ABS_ERR] < best[ABS_ERR] and not (math.isnan(metrics[LOSS] or math.isnan(metrics[ABS_ERR]) or math.isnan(metrics[R_SQUARED]))):
+                best_from_iterations = metrics
                 best = metrics
                 results['best'] = conf
                 if os.path.exists(grid_checkpoint_file):
@@ -181,8 +178,8 @@ def train_and_evaluate_tobit(checkpoint, model_fn = DenseNetwork, plot = False, 
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit(bound_min, bound_max,
-            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+        train_metrics, val_metrics, best = train_network_tobit_fixed_std(bound_min, bound_max,
+                                                                         model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
@@ -335,12 +332,12 @@ def plot_and_evaluate_model_tobit(bound_min, bound_max, x_mean, x_std, y_mean, y
     elif 'sigma' in checkpoint:
         loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-    val_metrics = eval_network_tobit(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
-    test_metrics = eval_network_tobit(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 

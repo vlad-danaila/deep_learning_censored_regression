@@ -1,9 +1,10 @@
 import math
 import numpy as np
-from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize
+from deep_tobit.util import to_numpy, normalize
 from scipy.stats import beta
 from experiments.synthetic.constants import ALPHA, BETA, ABS_ERR, LOSS
 import matplotlib.pyplot as plt
+import torch as t
 
 
 def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf, color = None, label = None, std = None):
@@ -43,8 +44,10 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_loss, test_loss, 'Loss', 'Loss')
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
 
-def plot_net(model, dataset_val, sigma = None, gamma = None, label = 'model prediction', with_std = False):
+def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None, label = 'model prediction', with_std = False):
     model.eval()
+    if sigma_model is not None:
+        sigma_model.eval()
     x_list, y_list = [], []
     for i in range(len(dataset_val)):
         x, _ = dataset_val[i]
@@ -62,3 +65,21 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, label = 'model pred
         std = sigma.item()
         np_y = np.array(y_list)
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
+    if with_std and sigma_model is not None:
+        x_list = np.array(x_list).squeeze()
+        np_y = np.array(y_list).squeeze()
+        std = to_numpy(t.abs(sigma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
+        std = std.squeeze()
+        plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
+
+def plot_fixed_and_dynamic_std(dataset_val, model, sigma_model, fixed_sigma):
+    sigma_model.eval()
+    x_list, y_list = [], []
+    for i in range(len(dataset_val)):
+        x, _ = dataset_val[i]
+        x_list.append(x[0].item())
+    x_list = np.array(x_list).squeeze()
+    std = to_numpy(t.abs(sigma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
+    std = std.squeeze()
+    plt.plot(x_list, std, label = 'dynamic std', linewidth = 1)
+    plt.plot(x_list, [fixed_sigma] * len(x_list), label = 'fixed std', linewidth = 1)
