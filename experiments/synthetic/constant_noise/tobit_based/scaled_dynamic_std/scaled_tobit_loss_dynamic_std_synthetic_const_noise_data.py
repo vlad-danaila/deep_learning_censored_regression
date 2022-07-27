@@ -102,6 +102,3 @@ def eval_deep_tobit_WITH_trunc():
     print(best_config)
     print(best_metrics)
 
-# train_once_deep_tobit_WITH_trunc()
-# grid_search_deep_tobit_WITH_trunc()
-eval_deep_tobit_WITH_trunc()

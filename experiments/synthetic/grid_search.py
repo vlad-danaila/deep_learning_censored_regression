@@ -1,7 +1,7 @@
 from sklearn.model_selection import ParameterGrid
 import os
 from experiments.synthetic.constants import *
-from experiments.models import DenseNetwork, get_sigma
+from experiments.models import DenseNetwork, get_scale_network
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, \
     eval_network_tobit_fixed_std, eval_network_tobit_dyn_std, train_network_tobit_dyn_std
@@ -193,7 +193,7 @@ def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot =
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-        sigma_model = get_sigma()
+        sigma_model = get_scale_network()
         if isReparam:
             pass
         else:
@@ -393,7 +393,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     model.load_state_dict(checkpoint['model'])
     model.eval()
 
-    sigma_model = get_sigma()
+    sigma_model = get_scale_network()
     sigma_model.load_state_dict(checkpoint['sigma'])
     sigma_model.eval()
 

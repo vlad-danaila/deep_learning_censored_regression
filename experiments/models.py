@@ -20,7 +20,7 @@ class DenseNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-class SigmaNetwork(t.nn.Module):
+class ScaleNetwork(t.nn.Module):
 
     def __init__(self):
         super().__init__()
@@ -35,6 +35,6 @@ class SigmaNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-def get_sigma():
-    sigma = SigmaNetwork()
-    return sigma
+def get_scale_network():
+    scale_net = ScaleNetwork()
+    return scale_net
