@@ -3,7 +3,8 @@ import os
 from experiments.synthetic.constants import *
 from experiments.models import DenseNetwork, get_sigma
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
+from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, \
+    eval_network_tobit_fixed_std, eval_network_tobit_dyn_std, train_network_tobit_dyn_std
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
@@ -214,7 +215,7 @@ def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot =
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit_fixed_std(bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_tobit_dyn_std(bound_min, bound_max,
               model, sigma_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -382,7 +383,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     elif 'sigma' in checkpoint:
         print('\nstd', checkpoint['sigma'])
 
-def plot_and_evaluate_model_tobit_dynamic_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -443,7 +444,7 @@ def plot_and_evaluate_model_tobit_dynamic_std(bound_min, bound_max, x_mean, x_st
     plt.savefig('{}-two-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}-two-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}-two-std.png'.format(checkpoint_name), dpi = 200, format = 'png')
-    plt.show()
+    plt.close()
 
     if 'gamma' in checkpoint:
         pass
