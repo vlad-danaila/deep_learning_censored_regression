@@ -228,7 +228,8 @@ def config_validation(conf):
 
 """# Plot Selected(With Grid) Model"""
 
-def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
+                                    checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
@@ -264,7 +265,8 @@ def real_y_std():
     real_x_mean, real_x_std, real_y_mean, real_y_std = calculate_mean_std()
     return real_y_std
 
-def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
+def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
+                                checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
@@ -384,7 +386,8 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     elif 'sigma' in checkpoint:
         print('\nstd', checkpoint['sigma'])
 
-def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
+                                          checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -394,16 +397,19 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     model.load_state_dict(checkpoint['model'])
     model.eval()
 
-    sigma_model = get_scale_network()
-    sigma_model.load_state_dict(checkpoint['sigma'])
-    sigma_model.eval()
+    scale_model = get_scale_network()
+    if is_reparam:
+        scale_model.load_state_dict(checkpoint['gamma'])
+    else:
+        scale_model.load_state_dict(checkpoint['sigma'])
+    scale_model.eval()
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
     if 'gamma' in checkpoint:
-        pass
+        plot_net(model, dataset_val, gamma_model = scale_model)
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = sigma_model)
+        plot_net(model, dataset_val, sigma_model = scale_model)
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -419,9 +425,9 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
     if 'gamma' in checkpoint:
-        pass
+        plot_net(model, dataset_val, gamma_model = scale_model, with_std = True)
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = sigma_model, with_std = True)
+        plot_net(model, dataset_val, sigma_model = scale_model, with_std = True)
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -435,8 +441,8 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    # TODO put real fixed std
-    plot_fixed_and_dynamic_std(dataset_val, model, sigma_model, 0.4017)
+    # TODO put real fixed std as a parameter not hardcoded
+    plot_fixed_and_dynamic_std(dataset_val, model, scale_model, 0.5203 if is_reparam else 0.4017, is_reparam=is_reparam)
     plt.xlabel('unidimensional PCA')
     plt.ylabel('standard deviation')
     lgnd = plt.legend()
@@ -448,15 +454,15 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     plt.close()
 
     if 'gamma' in checkpoint:
-        pass
+        loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-    val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam)
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
-    test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False, is_reparam = is_reparam)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])

@@ -82,14 +82,14 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None,
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
     plt.scatter(x_list, y_list, s = .1, label = label)
 
-def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, isReparam = False):
+def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, is_reparam = False):
     scale_model.eval()
     x_list, y_list = [], []
     for i in range(len(dataset_val)):
         x, _ = dataset_val[i]
         x_list.append(x[0].item())
     x_list = np.array(x_list).squeeze()
-    if isReparam:
+    if is_reparam:
         std = to_numpy(1 / t.abs(scale_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
     else:
         std = to_numpy(t.abs(scale_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
