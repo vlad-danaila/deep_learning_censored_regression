@@ -6,16 +6,16 @@ from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.models import DenseNetwork
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/deep_tobit_cens_NO_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/deep_tobit_cens_NO_trunc'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED = 'reparametrized deep tobit model'
 
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
-ROOT_LINEAR_TOBIT_REPARAMETRIZED = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/liniar_tobit_NO_trunc'
+ROOT_LINEAR_TOBIT_REPARAMETRIZED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/liniar_tobit_NO_trunc'
 CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED = 'reparametrized linear tobit model'
 
-ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/liniar_tobit_WITH_trunc'
+ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/liniar_tobit_WITH_trunc'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'reparametrized truncated linear tobit model'
 
 """Reproducible experiments"""

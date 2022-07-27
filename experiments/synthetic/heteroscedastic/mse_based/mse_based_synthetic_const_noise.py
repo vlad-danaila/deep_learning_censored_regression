@@ -6,13 +6,13 @@ from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_a
 """Constants"""
 
 CHECKPOINT_MSE = 'mse model'
-ROOT_MSE = 'experiments/synthetic/constant_noise/mse_based/mse_simple'
+ROOT_MSE = 'experiments/synthetic/heteroscedastic/mse_based/mse_simple'
 
 CHECKPOINT_BOUNDED_MSE = 'mse bounded model'
-ROOT_BOUNDED_MSE = 'experiments/synthetic/constant_noise/mse_based/mse_cens_NO_trunc'
+ROOT_BOUNDED_MSE = 'experiments/synthetic/heteroscedastic/mse_based/mse_cens_NO_trunc'
 
 CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
-ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/synthetic/constant_noise/mse_based/mse_cens_WITH_trunc'
+ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/synthetic/heteroscedastic/mse_based/mse_cens_WITH_trunc'
 
 """Reproducible experiments"""
 

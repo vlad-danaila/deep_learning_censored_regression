@@ -6,7 +6,7 @@ from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.models import DenseNetwork
 
 """Constants"""
-ROOT_DEEP_TOBIT_TRUNCATED = 'experiments/synthetic/constant_noise/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_TRUNCATED = 'scaled truncated deep tobit model'
 
 """Reproducible experiments"""

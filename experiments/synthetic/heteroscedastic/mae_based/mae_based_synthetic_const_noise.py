@@ -4,13 +4,13 @@ from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
-ROOT_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_simple'
+ROOT_MAE = 'experiments/synthetic/heteroscedastic/mae_based/mae_simple'
 CHECKPOINT_MAE = 'mae model'
 
-ROOT_BOUNDED_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_cens_NO_trunc'
+ROOT_BOUNDED_MAE = 'experiments/synthetic/heteroscedastic/mae_based/mae_cens_NO_trunc'
 CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
-ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/constant_noise/mae_based/mae_cens_WITH_trunc'
+ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/heteroscedastic/mae_based/mae_cens_WITH_trunc'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 """Reproducible experiments"""

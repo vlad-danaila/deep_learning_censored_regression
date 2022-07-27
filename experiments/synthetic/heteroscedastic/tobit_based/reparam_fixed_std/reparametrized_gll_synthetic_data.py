@@ -4,7 +4,7 @@ from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
-ROOT_GLL = 'experiments/synthetic/constant_noise/tobit_based/reparam_fixed_std/gll'
+ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/gll'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
 """Reproducible experiments"""
