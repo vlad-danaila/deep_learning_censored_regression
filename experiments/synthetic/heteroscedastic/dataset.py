@@ -13,7 +13,7 @@ def calculate_mean_std(lower_bound = -math.inf, upper_bound = math.inf, nb_sampl
     beta_distribution = beta(a = distribution_alpha, b = distribution_beta)
     x = np.linspace(start, end, nb_samples)
     y = beta_distribution.pdf(x)
-    y += np.random.normal(0, noise, nb_samples)
+    y += (np.random.normal(0, noise, nb_samples) * y)
     y = np.clip(y, lower_bound, upper_bound)
     return x.mean(), x.std(), y.mean(), y.std()
 
@@ -35,7 +35,8 @@ class TruncatedBetaDistributionDataset(t.utils.data.Dataset):
     def __getitem__(self, i):
         x = random.uniform(0, 1)
         y = self.beta_distribution.pdf(x)
-        y += random.gauss(0, self.noise)
+        noise = random.gauss(0, self.noise) * y
+        y += noise
         y = np.clip(y, self.lower_bound, self.upper_bound)
         x = normalize(x, mean = self.x_mean, std = self.x_std)
         y = normalize(y, mean = self.y_mean, std = self.y_std)
@@ -50,7 +51,8 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
         super().__init__(x_mean, x_std, y_mean, y_std, lower_bound, upper_bound, nb_samples, distribution_alpha, distribution_beta)
         self.x = np.linspace(start, end, nb_samples)
         self.y = self.beta_distribution.pdf(self.x)
-        self.y += np.random.normal(0, noise, nb_samples)
+        noise = np.random.normal(0, noise, nb_samples) * self.y
+        self.y += noise
         self.y = np.clip(self.y, self.lower_bound, self.upper_bound)
         self.x = normalize(self.x, mean = x_mean, std = x_std)
         self.y = normalize(self.y, mean = y_mean, std = y_std)
