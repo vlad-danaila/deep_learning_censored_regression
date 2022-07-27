@@ -64,31 +64,18 @@ def train_once_deep_tobit_WITH_trunc():
 
 def grid_search_deep_tobit_WITH_trunc():
     grid_config = [{
-        'max_lr': [1e-5, ],
-        'epochs': [10],
-        'batch': [ 200],
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
         'pct_start': [0.45],
         'anneal_strategy': ['linear'],
         'base_momentum': [0.85],
         'max_momentum': [0.95],
-        'div_factor': [10],
+        'div_factor': [10, 5, 2],
         'final_div_factor': [1e4],
         'weight_decay': [0],
-        'grad_clip': [10, ]
+        'grad_clip': [1e-2, 1e-1, 1, 10, 100]
     }]
-    # grid_config = [{
-    #     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-    #     'epochs': [10, 20],
-    #     'batch': [100, 200],
-    #     'pct_start': [0.45],
-    #     'anneal_strategy': ['linear'],
-    #     'base_momentum': [0.85],
-    #     'max_momentum': [0.95],
-    #     'div_factor': [10, 5, 2],
-    #     'final_div_factor': [1e4],
-    #     'weight_decay': [0],
-    #     'grad_clip': [1e-2, 1e-1, 1, 10, 100]
-    # }]
     grid_best = grid_search(ROOT_DEEP_TOBIT_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
                             grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_TRUNCATED, conf_validation = config_validation)
     return grid_best

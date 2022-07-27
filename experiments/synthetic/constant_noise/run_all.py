@@ -32,3 +32,8 @@ eval_deep_tobit_NO_trunc()
 eval_deep_tobit_WITH_trunc()
 eval_linear_tobit_NO_trunc()
 eval_linear_tobit_WITH_trunc()
+
+# Dynamic Std Scaled
+
+
+# Dynamic Std Reparametrized
