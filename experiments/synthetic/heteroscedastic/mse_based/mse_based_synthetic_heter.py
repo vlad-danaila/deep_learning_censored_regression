@@ -1,7 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation
+from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
 
@@ -168,7 +168,3 @@ def eval_mse_cens_WITH_trunc():
     print(best_metrics)
 
 
-
-eval_mse_simple()
-eval_mse_cens_NO_trunc()
-eval_mse_cens_WITH_trunc()

@@ -166,6 +166,3 @@ def eval_mae_cens_WITH_trunc():
     print(best_config)
     print(best_metrics)
 
-eval_mae_simple()
-eval_mae_cens_NO_trunc()
-eval_mae_cens_WITH_trunc()
