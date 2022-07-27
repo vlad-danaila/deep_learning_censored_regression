@@ -82,14 +82,17 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None,
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
     plt.scatter(x_list, y_list, s = .1, label = label)
 
-def plot_fixed_and_dynamic_std(dataset_val, model, sigma_model, fixed_sigma):
-    sigma_model.eval()
+def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, isReparam = False):
+    scale_model.eval()
     x_list, y_list = [], []
     for i in range(len(dataset_val)):
         x, _ = dataset_val[i]
         x_list.append(x[0].item())
     x_list = np.array(x_list).squeeze()
-    std = to_numpy(t.abs(sigma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
+    if isReparam:
+        std = to_numpy(1 / t.abs(scale_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
+    else:
+        std = to_numpy(t.abs(scale_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
     std = std.squeeze()
     plt.plot(x_list, std, label = 'dynamic std', linewidth = 1)
-    plt.plot(x_list, [fixed_sigma] * len(x_list), label = 'fixed std', linewidth = 1)
+    plt.plot(x_list, [fixed_scale] * len(x_list), label ='fixed std', linewidth = 1)

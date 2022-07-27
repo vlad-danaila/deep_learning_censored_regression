@@ -71,9 +71,9 @@ def eval_network_tobit_fixed_std(bound_min, bound_max, model, loader, loss_fn, b
         metrics /= total_weight
         return metrics
 
-def eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader, loss_fn, batch_size, is_eval_bounded = True):
+def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader, loss_fn, batch_size, is_eval_bounded = True, is_reparam = False):
     model.eval()
-    sigma_model.eval()
+    scale_model.eval()
     with t.no_grad():
         metrics = np.zeros(3)
         total_weight = 0
@@ -87,12 +87,14 @@ def eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader,
             y_pred_left_censored = y_pred[left_censored_indexes]
             y_pred_right_censored = y_pred[right_censored_indexes]
             y_pred_tuple = y_pred_single_valued, y_pred_left_censored, y_pred_right_censored
-            sigma = sigma_model(x)
-            sigma_single_valued = sigma[single_valued_indexes]
-            sigma_left_censored = sigma[left_censored_indexes]
-            sigma_right_censored = sigma[right_censored_indexes]
-            sigma_tuple = sigma_single_valued, sigma_left_censored, sigma_right_censored
-            loss = loss_fn(y_pred_tuple, y_tuple, sigma_tuple)
+            scale = scale_model(x)
+            scale_single_valued = scale[single_valued_indexes]
+            scale_left_censored = scale[left_censored_indexes]
+            scale_right_censored = scale[right_censored_indexes]
+            scale_tuple = scale_single_valued, scale_left_censored, scale_right_censored
+            loss = loss_fn(y_pred_tuple, y_tuple, scale_tuple)
+            if is_reparam:
+                y_pred = y_pred / t.abs(scale)
             if is_eval_bounded:
                 y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
             y_pred, y = to_numpy(y_pred), to_numpy(y)
@@ -218,7 +220,8 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
     except KeyboardInterrupt as e:
         print('Training interrupted at epoch', epoch)
 
-def train_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, grad_clip = GRADIENT_CLIP, log = True):
+def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+                                checkpoint_name, batch_size_train, batch_size_val, epochs, grad_clip = GRADIENT_CLIP, log = True, is_reparam = False):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -228,7 +231,7 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loss_f
         for epoch in range(epochs):
             try:
                 model.train()
-                sigma_model.train()
+                scale_model.train()
                 for x, y, single_valued_indexes, left_censored_indexes, right_censored_indexes in loader_train:
                     counter += 1
                     y_single_valued = y[single_valued_indexes]
@@ -240,17 +243,19 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loss_f
                     y_pred_left_censored = y_pred[left_censored_indexes]
                     y_pred_right_censored = y_pred[right_censored_indexes]
                     y_pred_tuple = y_pred_single_valued, y_pred_left_censored, y_pred_right_censored
-                    sigma = sigma_model(x)
-                    sigma_single_valued = sigma[single_valued_indexes]
-                    sigma_left_censored = sigma[left_censored_indexes]
-                    sigma_right_censored = sigma[right_censored_indexes]
-                    sigma_tuple = sigma_single_valued, sigma_left_censored, sigma_right_censored
-                    loss = loss_fn(y_pred_tuple, y_tuple, sigma_tuple)
+                    scale = scale_model(x)
+                    scale_single_valued = scale[single_valued_indexes]
+                    scale_left_censored = scale[left_censored_indexes]
+                    scale_right_censored = scale[right_censored_indexes]
+                    scale_tuple = scale_single_valued, scale_left_censored, scale_right_censored
+                    loss = loss_fn(y_pred_tuple, y_tuple, scale_tuple)
                     loss.backward()
                     t.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
-                    t.nn.utils.clip_grad_norm_(sigma_model.parameters(), grad_clip)
+                    t.nn.utils.clip_grad_norm_(scale_model.parameters(), grad_clip)
                     optimizer.step()
                     optimizer.zero_grad()
+                    if is_reparam:
+                        y_pred = y_pred / t.abs(scale)
                     y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
                     y_pred, y = to_numpy(y_pred), to_numpy(y)
                     weight = len(y) / batch_size_train
@@ -264,13 +269,17 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loss_f
                         metrics_train_per_epochs.append(train_metrics)
                         train_metrics = np.zeros(3)
                         total_weight = 0
-                        test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, sigma_model, loader_val, loss_fn, batch_size_val)
+                        test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max,
+                                model, scale_model, loader_val, loss_fn, batch_size_val, is_reparam=is_reparam)
                         metrics_test_per_epochs.append(test_metrics)
                         # if test_metrics[R_SQUARED] > best[R_SQUARED]:
                         if test_metrics[ABS_ERR] < best[ABS_ERR]:
                             best = test_metrics
                             checkpoint_dict = {'model': model.state_dict()}
-                            checkpoint_dict['sigma'] = sigma_model.state_dict()
+                            if is_reparam:
+                                checkpoint_dict['gamma'] = scale_model.state_dict()
+                            else:
+                                checkpoint_dict['sigma'] = scale_model.state_dict()
                             t.save(checkpoint_dict, '{}.tar'.format(checkpoint_name))
                         if log:
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))

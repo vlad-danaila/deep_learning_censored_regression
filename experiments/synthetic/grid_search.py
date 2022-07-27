@@ -7,7 +7,7 @@ from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_
     eval_network_tobit_fixed_std, eval_network_tobit_dyn_std, train_network_tobit_dyn_std
 from experiments.synthetic.plot import *
 from deep_tobit.util import distinguish_censored_versus_observed_data
-from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
+from deep_tobit.loss import Scaled_Tobit_Loss, Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss, Heteroscedastic_Reparametrized_Scaled_Tobit_Loss
 
 
 def get_grid_search_space():
@@ -187,20 +187,20 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
         return best
     return grid_callback
 
-def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device ='cpu', truncated_low = None, truncated_high = None, isReparam = False):
+def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu', truncated_low = None, truncated_high = None, is_reparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-        sigma_model = get_scale_network()
-        if isReparam:
-            pass
+        scale_model = get_scale_network()
+        if is_reparam:
+            loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(device, truncated_low = truncated_low, truncated_high = truncated_high)
         else:
             loss_fn = Heteroscedastic_Scaled_Tobit_Loss(device, truncated_low = truncated_low, truncated_high = truncated_high)
         params = [
             {'params': model.parameters()},
-            {'params': sigma_model.parameters()}
+            {'params': scale_model.parameters()}
         ]
         optimizer = t.optim.SGD(params, lr = conf['max_lr'] / conf['div_factor'], momentum = conf['max_momentum'], weight_decay = conf['weight_decay'])
         scheduler = t.optim.lr_scheduler.OneCycleLR(
@@ -216,7 +216,8 @@ def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot =
             final_div_factor = conf['final_div_factor']
         )
         train_metrics, val_metrics, best = train_network_tobit_dyn_std(bound_min, bound_max,
-              model, sigma_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log)
+              model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'],
+                    len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log, is_reparam=is_reparam)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best

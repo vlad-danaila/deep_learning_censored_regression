@@ -375,10 +375,10 @@ def grid_search(grid_config, train_callback, checkpoint_name, nb_iterations = 1,
     for i in range(nb_iterations):
       if nb_iterations != 1:
         print('Iteration', i + 1)
-      metrics = train_callback(conf)    
+      metrics = train_callback(conf)
 
       # if metrics[R_SQUARED] > best[R_SQUARED]:
-      if metrics[ABS_ERR] < best[ABS_ERR] and not (math.isnan(metrics[LOSS] or math.isnan(metrics[ABS_ERR]) or math.isnan(metrics[R_SQUARED]))):  
+      if metrics[ABS_ERR] < best[ABS_ERR] and not (math.isnan(metrics[LOSS] or math.isnan(metrics[ABS_ERR]) or math.isnan(metrics[R_SQUARED]))):
         best_from_iterations = metrics
         best = metrics
         results['best'] = conf
