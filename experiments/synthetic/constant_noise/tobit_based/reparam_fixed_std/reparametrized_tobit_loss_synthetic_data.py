@@ -53,7 +53,7 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 
 train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, plot = False, log = False, isReparam=True)
 
-def train_once_deep_tobit_NO_trunc():
+def train_once_deep_tobit_NO_trunc_reparam():
   conf = {
       'max_lr': 2e-4,
       'epochs': 10,
@@ -70,13 +70,13 @@ def train_once_deep_tobit_NO_trunc():
   plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                           ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, model_fn = DenseNetwork, isGrid = False)
 
-def grid_search_deep_tobit_NO_trunc():
+def grid_search_deep_tobit_NO_trunc_reparam():
   grid_config = get_grid_search_space()
   grid_best = grid_search(ROOT_DEEP_TOBIT_REPARAMETRIZED, dataset_train, dataset_val, bound_min, bound_max,
                           grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, conf_validation = config_validation)
   return grid_best
 
-def eval_deep_tobit_NO_trunc():
+def eval_deep_tobit_NO_trunc_reparam():
   plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                           ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, model_fn = DenseNetwork, isGrid = True)
   grid_results = t.load(ROOT_DEEP_TOBIT_REPARAMETRIZED + '/' + GRID_RESULTS_FILE)
@@ -95,7 +95,7 @@ def eval_deep_tobit_NO_trunc():
 train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
                                                             model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
-def train_once_deep_tobit_WITH_trunc():
+def train_once_deep_tobit_WITH_trunc_reparam():
     conf = {
         'max_lr': 2e-4,
         'epochs': 10,
@@ -112,13 +112,13 @@ def train_once_deep_tobit_WITH_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                             ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, model_fn = DenseNetwork, isGrid = False)
 
-def grid_search_deep_tobit_WITH_trunc():
+def grid_search_deep_tobit_WITH_trunc_reparam():
   grid_config = get_grid_search_space()
   grid_best = grid_search(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
                           grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, conf_validation = config_validation)
   return grid_best
 
-def eval_deep_tobit_WITH_trunc():
+def eval_deep_tobit_WITH_trunc_reparam():
   plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                           ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, model_fn = DenseNetwork, isGrid = True)
   grid_results = t.load(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + GRID_RESULTS_FILE)
@@ -135,7 +135,7 @@ def eval_deep_tobit_WITH_trunc():
 train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED,
                                                             model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, isReparam=True)
 
-def train_once_linear_tobit_NO_trunc():
+def train_once_linear_tobit_NO_trunc_reparam():
     conf = {
         'max_lr': 5e-3,
         'epochs': 10,
@@ -152,13 +152,13 @@ def train_once_linear_tobit_NO_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                             ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
 
-def grid_search_linear_tobit_NO_trunc():
+def grid_search_linear_tobit_NO_trunc_reparam():
   grid_config = get_grid_search_space()
   grid_best = grid_search(ROOT_LINEAR_TOBIT_REPARAMETRIZED, dataset_train, dataset_val, bound_min, bound_max,
                           grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, conf_validation = config_validation)
   return grid_best
 
-def eval_linear_tobit_NO_trunc():
+def eval_linear_tobit_NO_trunc_reparam():
   plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                           ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
   grid_results = t.load(ROOT_LINEAR_TOBIT_REPARAMETRIZED + '/' + GRID_RESULTS_FILE)
@@ -175,7 +175,7 @@ def eval_linear_tobit_NO_trunc():
 train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED,
                                                             model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
 
-def train_once_linear_tobit_WITH_trunc():
+def train_once_linear_tobit_WITH_trunc_reparam():
     conf = {
         'max_lr': 5e-3,
         'epochs': 10,
@@ -192,13 +192,13 @@ def train_once_linear_tobit_WITH_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                             ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = False)
 
-def grid_search_linear_tobit_WITH_trunc():
+def grid_search_linear_tobit_WITH_trunc_reparam():
   grid_config = get_grid_search_space()
   grid_best = grid_search(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, dataset_train, dataset_val, bound_min, bound_max,
                           grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, conf_validation = config_validation)
   return grid_best
 
-def eval_linear_tobit_WITH_trunc():
+def eval_linear_tobit_WITH_trunc_reparam():
   plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                           ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, model_fn = lambda: t.nn.Linear(1, 1), isGrid = True)
   grid_results = t.load(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED + '/' + GRID_RESULTS_FILE)
