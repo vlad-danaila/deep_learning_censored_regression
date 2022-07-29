@@ -6,9 +6,8 @@ from deep_tobit.util import distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
-from experiments.train import n, k
 
-def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False, n=n, k=k):
+def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, is_gamma = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = True, num_workers = 0)
@@ -29,14 +28,14 @@ def train_and_evaluate_mae_mse(checkpoint, criterion, model_fn = DenseNetwork, p
             final_div_factor = conf['final_div_factor']
         )
         train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
-                                                                     model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
+                model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
     return grid_callback
 
 
-def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True, n=n, k=k):
+def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = True, num_workers = 0)
@@ -61,14 +60,14 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
             final_div_factor = conf['final_div_factor']
         )
         train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
-              model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log, n=n, k=k)
+              model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
     return grid_callback
 
 
-def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device ='cpu', truncated_low = None, truncated_high = None, isReparam = False, n=n, k=k):
+def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device ='cpu', truncated_low = None, truncated_high = None, isReparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
@@ -97,7 +96,7 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
             final_div_factor = conf['final_div_factor']
         )
         train_metrics, val_metrics, best = train_network_tobit_fixed_std(bound_min, bound_max,
-            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log, n=n, k=k)
+            model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
@@ -105,7 +104,7 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
 
 
 def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu',
-                truncated_low = None, truncated_high = None, is_reparam = False, n=n, k=k):
+                truncated_low = None, truncated_high = None, is_reparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
@@ -135,7 +134,7 @@ def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot =
         )
         train_metrics, val_metrics, best = train_network_tobit_dyn_std(bound_min, bound_max,
               model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'],
-                    len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log, is_reparam=is_reparam, n=n, k=k)
+                    len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log, is_reparam=is_reparam)
         if plot:
             plot_epochs(train_metrics, val_metrics)
         return best
