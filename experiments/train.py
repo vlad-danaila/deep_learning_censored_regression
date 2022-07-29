@@ -1,6 +1,7 @@
 from experiments.synthetic.constants import CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND
 from experiments.synthetic.constant_noise.dataset import calculate_mean_std
-from experiments.synthetic.constants import DATASET_LEN, LOSS, ABS_ERR, R_SQUARED, CHECKPOINT_FREQUENCY
+from experiments.synthetic.constants import DATASET_LEN, CHECKPOINT_FREQUENCY
+from experiments.constants import LOSS, ABS_ERR, R_SQUARED
 import numpy as np
 import torch as t
 import sklearn as sk

@@ -4,7 +4,7 @@ import numpy as np
 import math
 from deep_tobit.util import normalize
 import sklearn as sk
-from experiments.util import CUDA
+from experiments.constants import CUDA
 import torch as t
 
 URL_BEIJING_PM_2_5_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00381/PRSA_data_2010.1.1-2014.12.31.csv'

@@ -5,29 +5,26 @@ from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss,
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
 
-from experiments.synthetic.constants import ABS_ERR, R_SQUARED
-from experiments.synthetic.models import DenseNetwork, get_scale_network
-from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net, plot_fixed_and_dynamic_std
+from experiments.constants import ABS_ERR, R_SQUARED
+from experiments.real.models import get_model, get_scale_network
+from experiments.real.pm25.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 
 
-def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
+                                    checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
-    plot_net(model, dataset_val)
+    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_net(model, testing_df)
     loss_fn = criterion()
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim((-6, 9))
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
@@ -45,14 +42,13 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     print('R2 - test', test_metrics[R_SQUARED])
 
 
-def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
+def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
+                                checkpoint_name, criterion, isGrid = True, model_fn = get_model, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_net(model, testing_df)
     if 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'])
         loss_fn = criterion(checkpoint['sigma'])
@@ -71,8 +67,6 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, size = .3, label = 'validation data')
     if 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
@@ -104,7 +98,8 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     print('R2 - test', test_metrics[R_SQUARED])
 
 
-def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder, checkpoint_name,
+                                            isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -112,8 +107,8 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_net(model, testing_df)
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma = checkpoint['gamma'])
     elif 'sigma' in checkpoint:
@@ -168,8 +163,8 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
         print('\nstd', checkpoint['sigma'])
 
 
-def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                          checkpoint_name, isGrid = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None, is_reparam=False):
+def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
+                                          checkpoint_name, isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -186,8 +181,8 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
         scale_model.load_state_dict(checkpoint['sigma'])
     scale_model.eval()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_net(model, testing_df)
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma_model = scale_model)
     elif 'sigma' in checkpoint:

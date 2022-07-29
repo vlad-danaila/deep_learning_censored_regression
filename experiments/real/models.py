@@ -1,5 +1,5 @@
 import torch as t
-from experiments.util import CUDA
+from experiments.constants import CUDA
 
 LAYER_SIZE = 10
 

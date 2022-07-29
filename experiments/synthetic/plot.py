@@ -2,7 +2,8 @@ import math
 import numpy as np
 from deep_tobit.util import to_numpy, normalize
 from scipy.stats import beta
-from experiments.synthetic.constants import ALPHA, BETA, ABS_ERR, LOSS
+from experiments.synthetic.constants import ALPHA, BETA
+from experiments.constants import LOSS, ABS_ERR
 import matplotlib.pyplot as plt
 import torch as t
 

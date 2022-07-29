@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from experiments.util import LOSS, ABS_ERR, R_SQUARED
+from experiments.constants import LOSS, ABS_ERR, R_SQUARED
 from experiments.real.pm25.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
     CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, PM_2_5_Dataset
 
