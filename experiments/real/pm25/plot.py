@@ -3,6 +3,7 @@ import pandas as pd
 from experiments.constants import LOSS, ABS_ERR, R_SQUARED
 from experiments.real.pm25.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
     CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, PM_2_5_Dataset
+import numpy as np
 
 
 def plot_full_dataset(df: pd.DataFrame, size = 0.01, label = None, censored = False):
@@ -42,7 +43,7 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
     plot_train_test(train_r2, test_r2, 'R squared', 'R squared')
 
-def plot_net(model, df: pd.DataFrame, label = 'model prediction', with_std = False):
+def plot_net(model, df: pd.DataFrame, sigma = None, label = 'model prediction', with_std = False):
     model.eval()
     x, y_real = extract_features(df)
     x_pca = pca(x)
@@ -52,4 +53,17 @@ def plot_net(model, df: pd.DataFrame, label = 'model prediction', with_std = Fal
         x, _ = dataset[i]
         y_pred = model.forward(x.reshape(1, -1))
         y_list.append(y_pred[0].item())
-    plt.scatter(x_pca, y_list, s = .1, label = label)
+
+    x_pca = np.squeeze(x_pca)
+    np_y = np.array(y_list)
+    indices_sorted = np.argsort(x_pca)
+
+    x_pca_sorted = x_pca[indices_sorted]
+    np_y_sorted = np_y[indices_sorted]
+
+    if with_std and sigma:
+      std = sigma.item()
+      print('Std is ', std)
+      plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
+
+    plt.scatter(x_pca_sorted, np_y_sorted, s = .1, label = label)
