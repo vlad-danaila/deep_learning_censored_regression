@@ -141,7 +141,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
                         metrics_train_per_epochs.append(train_metrics)
                         train_metrics = np.zeros(3)
                         total_weight = 0
-                        test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val)
+                        test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val, n=n, k=k)
                         metrics_test_per_epochs.append(test_metrics)
                         # if test_metrics[R_SQUARED] > best[R_SQUARED]:
                         if test_metrics[ABS_ERR] < best[ABS_ERR]:

@@ -13,6 +13,7 @@ URL_BEIJING_PM_2_5_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-d
 DATASET_FILE = 'experiments/real/pm25/Beijing PM2.5 dataset.csv'
 CENSOR_LOW_BOUND = 75
 CENSOR_HIGH_BOUND = 300
+
 LAYER_SIZE = 46
 
 r = requests.get(URL_BEIJING_PM_2_5_DATA_SET, allow_redirects=True)
@@ -135,3 +136,6 @@ dataset_train, dataset_val, dataset_test = parse_datasets()
 def pca(x, n_components = 1):
     pca_encoder = sk.decomposition.PCA(n_components = n_components)
     return pca_encoder.fit_transform(x)
+
+n = len(dataset_train)
+k = len(dataset_train[0][0])
