@@ -33,12 +33,6 @@ def get_model(input_size, cuda = IS_CUDA_AVILABLE, net = None):
     net = t.nn.DataParallel(net)
     return net
 
-def get_device(cuda = IS_CUDA_AVILABLE):
-    return 'cuda:0' if cuda else 'cpu'
-
-def get_scale():
-    scale = t.tensor(1., requires_grad = True, device = get_device())
-    return scale
 
 class ScaleNetwork(t.nn.Module):
 

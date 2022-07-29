@@ -298,7 +298,6 @@ def eval_network(model, loader, loss_fn, batch_size, is_eval_bounded = True):
     for x, y in loader:
       y_pred = model.forward(x)
       loss = loss_fn(y_pred, y)
-      # y_pred = y_pred * (loss_fn.sigma)
       if is_eval_bounded:
         y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
       y_pred, y = to_numpy(y_pred), to_numpy(y)
@@ -326,11 +325,8 @@ def train_network(model, loss_fn, optimizer, scheduler, loader_train, loader_val
           y_pred = model.forward(x)
           loss = loss_fn(y_pred, y)
           loss.backward()
-          # t.nn.utils.clip_grad_norm_(model.parameters(), GRADIENT_CLIP)
-          # t.nn.utils.clip_grad_norm_(loss_fn.sigma, GRADIENT_CLIP)
           optimizer.step()
           optimizer.zero_grad()
-          # y_pred = y_pred * (loss_fn.sigma)
           y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
           y_pred, y = to_numpy(y_pred), to_numpy(y)
           weight = len(y) / batch_size_train
