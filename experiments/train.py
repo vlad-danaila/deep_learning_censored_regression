@@ -109,7 +109,7 @@ def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader,
         return metrics
 
 def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
-                              checkpoint_name, batch_size_train, batch_size_val, epochs, log = True, k=k, n=n):
+                              checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -141,7 +141,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
                         metrics_train_per_epochs.append(train_metrics)
                         train_metrics = np.zeros(3)
                         total_weight = 0
-                        test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val, n=n, k=k)
+                        test_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, batch_size_val)
                         metrics_test_per_epochs.append(test_metrics)
                         # if test_metrics[R_SQUARED] > best[R_SQUARED]:
                         if test_metrics[ABS_ERR] < best[ABS_ERR]:
@@ -163,7 +163,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
         print('Training interrupted at epoch', epoch)
 
 def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
-                                  checkpoint_name, batch_size_train, batch_size_val, epochs, log = True, k=k, n=n):
+                                  checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -226,7 +226,7 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
 
 def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val,
                                 checkpoint_name, batch_size_train, batch_size_val, epochs,
-                                grad_clip = GRADIENT_CLIP, log = True, is_reparam = False, k=k, n=n):
+                                grad_clip = GRADIENT_CLIP, log = True, is_reparam = False):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:

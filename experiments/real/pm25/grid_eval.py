@@ -153,12 +153,12 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     elif 'sigma' in checkpoint:
         loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-    val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
+    val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val), n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
-    test_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False)
+    test_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False, n=n, k=k)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
@@ -240,11 +240,12 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     elif 'sigma' in checkpoint:
         loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-    val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam)
+    val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])
     print('R2 - validation', val_metrics[R_SQUARED])
 
     loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(dataset_test), shuffle = False, num_workers = 0, collate_fn = uncensored_collate_fn)
-    test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_test, loss_fn, len(dataset_test), is_eval_bounded = False, is_reparam = is_reparam)
+    test_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_test, loss_fn, len(dataset_test),
+                                              is_eval_bounded = False, is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
