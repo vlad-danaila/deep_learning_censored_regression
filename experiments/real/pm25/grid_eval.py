@@ -9,12 +9,17 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
 from experiments.real.pm25.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
+from experiments.constants import IS_CUDA_AVILABLE
 
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):
     model = model_fn(LAYER_SIZE)
-    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    chekpoint_path = root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar'
+    if IS_CUDA_AVILABLE:
+        checkpoint = t.load(chekpoint_path)
+    else:
+        checkpoint = t.load(chekpoint_path, map_location=t.device('cpu'))
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
     plot_net(model, testing_df)

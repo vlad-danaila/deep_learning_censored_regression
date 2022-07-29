@@ -1,5 +1,5 @@
 import torch as t
-from experiments.constants import CUDA
+from experiments.constants import IS_CUDA_AVILABLE
 
 LAYER_SIZE = 10
 
@@ -7,15 +7,15 @@ LAYER_SIZE = 10
 
 class DenseNetwork(t.nn.Module):
 
-    def __init__(self, layer_size):
+    def __init__(self, input_size):
         super().__init__()
-        self.layer_in = t.nn.Linear(46, layer_size)
-        self.norm_1 = t.nn.BatchNorm1d(layer_size, affine = False, momentum = None)
+        self.layer_in = t.nn.Linear(input_size, LAYER_SIZE)
+        self.norm_1 = t.nn.BatchNorm1d(LAYER_SIZE, affine = False, momentum = None)
         self.drop_1 = t.nn.Dropout(p = .2)
-        self.layer_hidden_1 = t.nn.Linear(layer_size, layer_size)
-        self.norm_2 = t.nn.BatchNorm1d(layer_size, affine = False, momentum = None)
+        self.layer_hidden_1 = t.nn.Linear(LAYER_SIZE, LAYER_SIZE)
+        self.norm_2 = t.nn.BatchNorm1d(LAYER_SIZE, affine = False, momentum = None)
         self.drop_2 = t.nn.Dropout(p = .2)
-        self.layer_out = t.nn.Linear(layer_size, 1)
+        self.layer_out = t.nn.Linear(LAYER_SIZE, 1)
 
     def forward(self, x):
         x = t.nn.functional.relu(self.norm_1(self.layer_in(x)))
@@ -25,28 +25,28 @@ class DenseNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-def get_model(layer_size, cuda = CUDA, net = None):
+def get_model(input_size, cuda = IS_CUDA_AVILABLE, net = None):
     if net == None:
-        net = DenseNetwork(layer_size)
+        net = DenseNetwork(input_size)
     if cuda:
         net = net.cuda()
     net = t.nn.DataParallel(net)
     return net
 
-def get_device(cuda = CUDA):
+def get_device(cuda = IS_CUDA_AVILABLE):
     return 'cuda:0' if cuda else 'cpu'
 
-def get_scale(cuda = CUDA):
+def get_scale():
     scale = t.tensor(1., requires_grad = True, device = get_device())
     return scale
 
 class ScaleNetwork(t.nn.Module):
 
-    def __init__(self, layer_size):
+    def __init__(self, input_size):
         super().__init__()
-        self.layer_in = t.nn.Linear(1, layer_size)
-        self.norm_1 = t.nn.BatchNorm1d(layer_size, affine = False)
-        self.layer_out = t.nn.Linear(layer_size, 1)
+        self.layer_in = t.nn.Linear(input_size, LAYER_SIZE)
+        self.norm_1 = t.nn.BatchNorm1d(LAYER_SIZE, affine = False)
+        self.layer_out = t.nn.Linear(LAYER_SIZE, 1)
 
     def forward(self, x):
         x = self.layer_in(x)
@@ -55,7 +55,7 @@ class ScaleNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-def get_scale_network(layer_size, cuda = CUDA):
+def get_scale_network(layer_size, cuda = IS_CUDA_AVILABLE):
     scale_net = ScaleNetwork(layer_size)
     if cuda:
         scale_net = scale_net.cuda()

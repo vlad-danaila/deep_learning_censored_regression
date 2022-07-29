@@ -4,7 +4,7 @@ import numpy as np
 import math
 from deep_tobit.util import normalize
 import sklearn as sk
-from experiments.constants import CUDA
+from experiments.constants import IS_CUDA_AVILABLE
 import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
@@ -102,7 +102,7 @@ def extract_features(df: pd.DataFrame, lower_bound = -math.inf, upper_bound = ma
 
 class PM_2_5_Dataset(t.utils.data.Dataset):
 
-    def __init__(self, x: np.array, y: np.array, cuda = CUDA):
+    def __init__(self, x: np.array, y: np.array, cuda = IS_CUDA_AVILABLE):
         super().__init__()
         self.x = t.tensor(x, requires_grad = True, dtype=t.float32)
         self.y = t.tensor(y, requires_grad = True, dtype=t.float32)
