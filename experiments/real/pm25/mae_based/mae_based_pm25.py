@@ -23,7 +23,7 @@ set_random_seed()
 """# MAE"""
 
 train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss,
-                                                    plot = False, log = True, model_fn = lambda: get_model(LAYER_SIZE))
+                                                    plot = False, log = False, model_fn = lambda: get_model(LAYER_SIZE))
 
 """Train once with default settings"""
 def train_once_mae_simple():
@@ -155,7 +155,3 @@ def eval_mae_cens_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
-
-eval_mae_simple()
-eval_mae_cens_NO_trunc()
-eval_mae_cens_WITH_trunc()
