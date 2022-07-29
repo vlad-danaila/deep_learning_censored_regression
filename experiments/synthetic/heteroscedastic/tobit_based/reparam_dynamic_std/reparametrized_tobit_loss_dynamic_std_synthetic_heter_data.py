@@ -1,7 +1,9 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_tobit_dyn_std, plot_and_evaluate_model_tobit_dyn_std, grid_search, config_validation
+from experiments.grid_search import grid_search, config_validation
+from experiments.grid_eval import plot_and_evaluate_model_tobit_dyn_std
+from experiments.grid_train import train_and_evaluate_tobit_dyn_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork
 

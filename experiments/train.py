@@ -14,11 +14,12 @@ k = 1 # univariate
 
 GRADIENT_CLIP = 1000
 
-def adjusted_R2(y, y_pred):
+# k, n are set to the synthetic univariate case by default
+def adjusted_R2(y, y_pred, k = k, n = n):
     r2 = sk.metrics.r2_score(y, y_pred)
     return 1 - ( ( (1 - r2) * (n - 1) ) / (n - k - 1) )
 
-def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True):
+def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True, k=k, n=n):
     model.eval()
     with t.no_grad():
         metrics = np.zeros(3)
@@ -37,12 +38,12 @@ def eval_network_mae_mse_gll(bound_min, bound_max, model, loader, loss_fn, batch
             weight = len(y) / batch_size
             metrics[LOSS] += (loss.item() * weight)
             metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-            metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+            metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
             total_weight += weight
         metrics /= total_weight
         return metrics
 
-def eval_network_tobit_fixed_std(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True):
+def eval_network_tobit_fixed_std(bound_min, bound_max, model, loader, loss_fn, batch_size, is_eval_bounded = True, k=k, n=n):
     model.eval()
     with t.no_grad():
         metrics = np.zeros(3)
@@ -66,12 +67,12 @@ def eval_network_tobit_fixed_std(bound_min, bound_max, model, loader, loss_fn, b
             weight = len(y) / batch_size
             metrics[LOSS] += (loss.item() * weight)
             metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-            metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+            metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
             total_weight += weight
         metrics /= total_weight
         return metrics
 
-def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader, loss_fn, batch_size, is_eval_bounded = True, is_reparam = False):
+def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader, loss_fn, batch_size, is_eval_bounded = True, is_reparam = False, k=k, n=n):
     model.eval()
     scale_model.eval()
     with t.no_grad():
@@ -101,12 +102,13 @@ def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader,
             weight = len(y) / batch_size
             metrics[LOSS] += (loss.item() * weight)
             metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-            metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+            metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
             total_weight += weight
         metrics /= total_weight
         return metrics
 
-def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
+def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+                              checkpoint_name, batch_size_train, batch_size_val, epochs, log = True, k=k, n=n):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -130,7 +132,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
                     weight = len(y) / batch_size_train
                     train_metrics[LOSS] += (loss.item() * weight)
                     train_metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
                     total_weight += weight
                     scheduler.step()
                     if counter % CHECKPOINT_FREQUENCY == 0:
@@ -159,7 +161,8 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
     except KeyboardInterrupt as e:
         print('Training interrupted at epoch', epoch)
 
-def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
+def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+                                  checkpoint_name, batch_size_train, batch_size_val, epochs, log = True, k=k, n=n):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -191,7 +194,7 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
                     weight = len(y) / batch_size_train
                     train_metrics[LOSS] += (loss.item() * weight)
                     train_metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
                     total_weight += weight
                     scheduler.step()
                     if counter % CHECKPOINT_FREQUENCY == 0:
@@ -221,7 +224,8 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
         print('Training interrupted at epoch', epoch)
 
 def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val,
-                                checkpoint_name, batch_size_train, batch_size_val, epochs, grad_clip = GRADIENT_CLIP, log = True, is_reparam = False):
+                                checkpoint_name, batch_size_train, batch_size_val, epochs,
+                                grad_clip = GRADIENT_CLIP, log = True, is_reparam = False, k=k, n=n):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
     try:
@@ -261,7 +265,7 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_f
                     weight = len(y) / batch_size_train
                     train_metrics[LOSS] += (loss.item() * weight)
                     train_metrics[ABS_ERR] += (sk.metrics.mean_absolute_error(y, y_pred) * weight)
-                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred) * weight)
+                    train_metrics[R_SQUARED] += (adjusted_R2(y, y_pred, k, n) * weight)
                     total_weight += weight
                     scheduler.step()
                     if counter % CHECKPOINT_FREQUENCY == 0:

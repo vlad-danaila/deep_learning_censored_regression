@@ -1,7 +1,9 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_gll, plot_and_evaluate_model_gll, grid_search, config_validation, get_grid_search_space
+from experiments.grid_search import grid_search, config_validation, get_grid_search_space
+from experiments.grid_eval import plot_and_evaluate_model_gll
+from experiments.grid_train import train_and_evaluate_gll
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/gll'

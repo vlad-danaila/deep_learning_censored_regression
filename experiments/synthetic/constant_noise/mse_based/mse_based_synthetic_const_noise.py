@@ -1,7 +1,9 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation
+from experiments.grid_search import grid_search, config_validation
+from experiments.grid_eval import plot_and_evaluate_model_mae_mse
+from experiments.grid_train import train_and_evaluate_mae_mse
 
 """Constants"""
 

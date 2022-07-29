@@ -1,7 +1,9 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.real.pm25.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation, get_grid_search_space
+from experiments.grid_search import grid_search, config_validation, get_grid_search_space
+from experiments.grid_eval import plot_and_evaluate_model_mae_mse
+from experiments.grid_train import train_and_evaluate_mae_mse
 
 """Constants"""
 ROOT_MAE = 'experiments/real/pm25/mae_based/mae_simple'
