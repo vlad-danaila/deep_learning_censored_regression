@@ -14,7 +14,7 @@ DATASET_FILE = 'experiments/real/pm25/Beijing PM2.5 dataset.csv'
 CENSOR_LOW_BOUND = 75
 CENSOR_HIGH_BOUND = 300
 
-LAYER_SIZE = 46
+INPUT_SIZE = 46
 
 r = requests.get(URL_BEIJING_PM_2_5_DATA_SET, allow_redirects=True)
 open(DATASET_FILE, 'wb').write(r.content)
