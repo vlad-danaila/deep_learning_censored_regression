@@ -1,4 +1,4 @@
-from experiments.synthetic.constants import *
+from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
@@ -73,7 +73,7 @@ def bounded_loss(y_pred, y):
 """### Grid Search"""
 
 train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE,
-                                                    lambda: bounded_loss, plot = False, log = True, model_fn = lambda: get_model(INPUT_SIZE))
+                                                    lambda: bounded_loss, plot = False, log = False, model_fn = lambda: get_model(INPUT_SIZE))
 
 def train_once_mae_cens_NO_trunc():
     conf = {

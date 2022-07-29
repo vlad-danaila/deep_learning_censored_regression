@@ -1,3 +1,4 @@
+from experiments.constants import GRID_RESULTS_FILE
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *

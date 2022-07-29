@@ -1,8 +1,7 @@
 from sklearn.model_selection import ParameterGrid
 import os
 
-from experiments.constants import R_SQUARED
-from experiments.synthetic.constants import *
+from experiments.constants import R_SQUARED, GRID_RESULTS_FILE
 from experiments.synthetic.plot import *
 
 
