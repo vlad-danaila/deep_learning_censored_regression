@@ -90,7 +90,7 @@ def train_once_mae_cens_NO_trunc():
         'weight_decay': 0
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+    plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                     ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, isGrid = False)
 
 def grid_search_mae_cens_NO_trunc():
@@ -100,7 +100,7 @@ def grid_search_mae_cens_NO_trunc():
     return grid_best
 
 def eval_mae_cens_NO_trunc():
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+    plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                     ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, isGrid = True)
     grid_results = t.load(ROOT_BOUNDED_MAE + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
