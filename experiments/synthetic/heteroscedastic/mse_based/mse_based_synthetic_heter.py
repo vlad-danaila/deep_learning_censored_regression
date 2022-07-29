@@ -4,15 +4,15 @@ from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.grid_search import train_and_evaluate_mae_mse, plot_and_evaluate_model_mae_mse, grid_search, config_validation, get_grid_search_space
 
 """Constants"""
-
-CHECKPOINT_MSE = 'mse model'
 ROOT_MSE = 'experiments/synthetic/heteroscedastic/mse_based/mse_simple'
+CHECKPOINT_MSE = 'mse model'
 
-CHECKPOINT_BOUNDED_MSE = 'mse bounded model'
 ROOT_BOUNDED_MSE = 'experiments/synthetic/heteroscedastic/mse_based/mse_cens_NO_trunc'
+CHECKPOINT_BOUNDED_MSE = 'mse bounded model'
 
-CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
 ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/synthetic/heteroscedastic/mse_based/mse_cens_WITH_trunc'
+CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
+
 
 """Reproducible experiments"""
 
@@ -34,8 +34,6 @@ bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
 """# MSE"""
-
-"""### Grid Search"""
 
 train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MSE + '/' + CHECKPOINT_MSE, t.nn.MSELoss, plot = False, log = False)
 
@@ -86,7 +84,7 @@ def bounded_loss(y_pred, y):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
 
 def train_once_mse_cens_NO_trunc():
     conf = {
@@ -133,7 +131,8 @@ def below_zero_mse_penalty(y_pred):
 def bounded_loss_with_penalty(y_pred, y):
   return bounded_loss(y_pred, y) + below_zero_mse_penalty(y_pred)
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY,
+                                                    lambda: bounded_loss_with_penalty, plot = False, log = False)
 
 def train_once_mse_cens_WITH_trunc():
     conf = {
