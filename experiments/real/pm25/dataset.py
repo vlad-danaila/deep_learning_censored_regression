@@ -6,11 +6,14 @@ from deep_tobit.util import normalize
 import sklearn as sk
 from experiments.constants import CUDA
 import torch as t
+import sklearn.preprocessing
+import sklearn.decomposition
 
 URL_BEIJING_PM_2_5_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00381/PRSA_data_2010.1.1-2014.12.31.csv'
 DATASET_FILE = 'experiments/real/pm25/Beijing PM2.5 dataset.csv'
 CENSOR_LOW_BOUND = 75
 CENSOR_HIGH_BOUND = 300
+LAYER_SIZE = 46
 
 r = requests.get(URL_BEIJING_PM_2_5_DATA_SET, allow_redirects=True)
 open(DATASET_FILE, 'wb').write(r.content)

@@ -22,7 +22,8 @@ set_random_seed()
 
 """# MAE"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss, plot = False, log = False, model_fn = get_model)
+train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss,
+                                                    plot = False, log = True, model_fn = lambda: get_model(LAYER_SIZE))
 
 """Train once with default settings"""
 def train_once_mae_simple():
@@ -50,7 +51,7 @@ def grid_search_mae_simple():
     return grid_best
 
 def eval_mae_simple():
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+    plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df),
                                     dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
     grid_results = t.load(ROOT_MAE + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
@@ -58,7 +59,7 @@ def eval_mae_simple():
     print(best_config)
     print(best_metrics)
 
-train_once_mae_simple()
+
 
 
 
@@ -72,7 +73,8 @@ def bounded_loss(y_pred, y):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE,
+                                                    lambda: bounded_loss, plot = False, log = False, model_fn = lambda: get_model(LAYER_SIZE))
 
 def train_once_mae_cens_NO_trunc():
     conf = {

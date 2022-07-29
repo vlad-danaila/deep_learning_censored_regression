@@ -25,9 +25,9 @@ class DenseNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-def get_model(cuda = CUDA, net = None):
+def get_model(layer_size, cuda = CUDA, net = None):
     if net == None:
-        net = DenseNetwork()
+        net = DenseNetwork(layer_size)
     if cuda:
         net = net.cuda()
     net = t.nn.DataParallel(net)
@@ -55,8 +55,8 @@ class ScaleNetwork(t.nn.Module):
         x = self.layer_out(x)
         return x
 
-def get_scale_network(cuda = CUDA):
-    scale_net = ScaleNetwork()
+def get_scale_network(layer_size, cuda = CUDA):
+    scale_net = ScaleNetwork(layer_size)
     if cuda:
         scale_net = scale_net.cuda()
     return scale_net

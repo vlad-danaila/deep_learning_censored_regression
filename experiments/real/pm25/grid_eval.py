@@ -4,7 +4,7 @@ import torch as t
 from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss, \
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
-
+from experiments.real.pm25.dataset import LAYER_SIZE
 from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
 from experiments.real.pm25.plot import plot_full_dataset, plot_net
@@ -13,7 +13,7 @@ from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):
-    model = model_fn()
+    model = model_fn(LAYER_SIZE)
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
@@ -44,7 +44,7 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, isGrid = True, model_fn = get_model, loader_val = None):
-    model = model_fn()
+    model = model_fn(LAYER_SIZE)
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
@@ -102,7 +102,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
                                             isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    model = model_fn()
+    model = model_fn(LAYER_SIZE)
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
@@ -167,7 +167,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
                                           checkpoint_name, isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    model = model_fn()
+    model = model_fn(LAYER_SIZE)
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
