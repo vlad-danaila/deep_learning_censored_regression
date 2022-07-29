@@ -59,8 +59,6 @@ def eval_mae_simple():
     print(best_config)
     print(best_metrics)
 
-train_once_mae_simple()
-
 
 
 
