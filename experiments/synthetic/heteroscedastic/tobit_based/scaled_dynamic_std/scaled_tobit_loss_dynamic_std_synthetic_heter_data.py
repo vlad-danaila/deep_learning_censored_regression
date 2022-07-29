@@ -1,9 +1,9 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.synthetic.grid_search import train_and_evaluate_tobit_dyn_std, plot_and_evaluate_model_tobit_dyn_std, grid_search, config_validation, get_grid_search_space
+from experiments.synthetic.grid_search import train_and_evaluate_tobit_dyn_std, plot_and_evaluate_model_tobit_dyn_std, grid_search, config_validation
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
-from experiments.models import DenseNetwork
+from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
 ROOT_DEEP_TOBIT_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'

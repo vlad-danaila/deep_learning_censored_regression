@@ -2,6 +2,8 @@ import torch as t
 import numpy as np
 import random
 
+CUDA = t.cuda.is_available()
+
 """Reproducible experiments"""
 def set_random_seed():
     SEED = 0

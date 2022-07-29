@@ -2,9 +2,8 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.grid_search import train_and_evaluate_tobit_fixed_std, plot_and_evaluate_model_tobit_fixed_std, grid_search, config_validation, get_grid_search_space
-from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize, distinguish_censored_versus_observed_data
-from deep_tobit.loss import Scaled_Tobit_Loss
-from experiments.models import DenseNetwork
+from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
+from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
 ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'

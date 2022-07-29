@@ -1,7 +1,7 @@
 from sklearn.model_selection import ParameterGrid
 import os
 from experiments.synthetic.constants import *
-from experiments.models import DenseNetwork, get_scale_network
+from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.train import train_network_mae_mse_gll, eval_network_mae_mse_gll, train_network_tobit_fixed_std, \
     eval_network_tobit_fixed_std, eval_network_tobit_dyn_std, train_network_tobit_dyn_std
