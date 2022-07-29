@@ -2,8 +2,9 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.synthetic.grid_eval import plot_and_evaluate_model_mae_mse
+from experiments.real.pm25.grid_eval import plot_and_evaluate_model_mae_mse
 from experiments.grid_train import train_and_evaluate_mae_mse
+from experiments.real.models import get_model
 
 """Constants"""
 ROOT_MAE = 'experiments/real/pm25/mae_based/mae_simple'
@@ -19,38 +20,26 @@ CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 set_random_seed()
 
-"""# Datasets"""
-
-dataset_train = TruncatedBetaDistributionDataset(x_mean, x_std, y_mean, y_std, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
-dataset_val = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND, nb_samples = 1000)
-dataset_test = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std)
-
-"""# Training"""
-
-bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
-bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
-zero_normalized = normalize(0, y_mean, y_std)
-
 """# MAE"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss, plot = False, log = False, model_fn = get_model)
 
 """Train once with default settings"""
 def train_once_mae_simple():
     conf = {
-        'max_lr': 3e-2,
+        'max_lr': 5e-2,
         'epochs': 10,
         'batch': 100,
         'pct_start': 0.3,
         'anneal_strategy': 'linear',
         'base_momentum': 0.85,
         'max_momentum': 0.95,
-        'div_factor': 3,
+        'div_factor': 5,
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
+    plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df),
                                     dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = False)
 
 """Grid search"""
@@ -69,7 +58,7 @@ def eval_mae_simple():
     print(best_config)
     print(best_metrics)
 
-
+train_once_mae_simple()
 
 
 
