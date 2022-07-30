@@ -2,8 +2,8 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.pm25.grid_eval import plot_and_evaluate_model_gll
-from experiments.grid_train import train_and_evaluate_gll
+from experiments.real.pm25.grid_eval import plot_and_evaluate_model_tobit_fixed_std
+from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from experiments.real.models import get_model
 from experiments.util import get_device
 
@@ -29,24 +29,25 @@ set_random_seed()
 
 """# Scaled Deep Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED,
+    plot = False, log = False, model_fn = lambda: get_model(INPUT_SIZE))
 
 def train_once_deep_tobit_NO_trunc():
-  conf = {
-      'max_lr': 2e-4,
-      'epochs': 10,
-      'batch': 100,
-      'pct_start': 0.3,
-      'anneal_strategy': 'linear',
-      'base_momentum': 0.85,
-      'max_momentum': 0.95,
-      'div_factor': 4,
-      'final_div_factor': 1e4,
-      'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                          ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, isGrid = False)
+    conf = {
+        'max_lr': 1e-4,
+        'epochs': 10,
+        'batch': 100,
+        'pct_start': 0.3,
+        'anneal_strategy': 'linear',
+        'base_momentum': 0.85,
+        'max_momentum': 0.95,
+        'div_factor': 5,
+        'final_div_factor': 1e4,
+        'weight_decay': 0
+    }
+    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
+                                          ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, isGrid = False)
 
 def grid_search_deep_tobit_NO_trunc():
     grid_config = get_grid_search_space()
@@ -55,8 +56,8 @@ def grid_search_deep_tobit_NO_trunc():
     return grid_best
 
 def eval_deep_tobit_NO_trunc():
-    plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                            ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, isGrid = True)
+    plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
+                                            ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, isGrid = True)
     grid_results = t.load(ROOT_DEEP_TOBIT_SCALED + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
     best_metrics = grid_results[str(best_config)]
@@ -64,6 +65,7 @@ def eval_deep_tobit_NO_trunc():
     print(best_metrics)
 
 
+eval_deep_tobit_NO_trunc()
 
 
 """# Scaled Deep Tobit With Truncation"""
