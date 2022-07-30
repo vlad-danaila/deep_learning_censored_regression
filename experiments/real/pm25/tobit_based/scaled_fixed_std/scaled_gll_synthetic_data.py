@@ -2,9 +2,10 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.pm25.grid_eval import plot_and_evaluate_model_mae_mse
-from experiments.grid_train import train_and_evaluate_mae_mse
+from experiments.real.pm25.grid_eval import plot_and_evaluate_model_gll
+from experiments.grid_train import train_and_evaluate_gll
 from experiments.real.models import get_model
+from experiments.util import get_device
 
 """Constants"""
 ROOT_GLL = 'experiments/real/pm25/tobit_based/scaled_fixed_std/gll'
@@ -14,22 +15,6 @@ CHECKPOINT_GLL = 'gausian log likelihood model'
 
 set_random_seed()
 
-"""# Datasets"""
-
-x_mean, x_std, y_mean, y_std = calculate_mean_std(lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
-print('x mean =', x_mean, 'x std =', x_std, 'y mean =', y_mean, 'y std =', y_std)
-
-dataset_train = TruncatedBetaDistributionDataset(x_mean, x_std, y_mean, y_std, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
-dataset_val = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND, nb_samples = 1000)
-dataset_test = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std)
-
-"""# Training"""
-
-bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
-bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
-zero_normalized = normalize(0, y_mean, y_std)
-
-
 """# PDF Log-Likelihood"""
 
 class GausianLogLikelihoodLoss(t.nn.Module):
@@ -37,7 +22,7 @@ class GausianLogLikelihoodLoss(t.nn.Module):
     def __init__(self, sigma):
         super(GausianLogLikelihoodLoss, self).__init__()
         self.sigma = sigma
-        self.epsilon = t.tensor(1e-40, dtype = t.float32, requires_grad = False)
+        self.epsilon = t.tensor(1e-40, dtype = t.float32, requires_grad = False, device = get_device())
 
     def forward(self, y_pred: t.Tensor, y_true: t.Tensor):
         sigma = t.abs(self.sigma)
@@ -45,12 +30,14 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss, plot = False, log = False)
+train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss,
+                                                plot = False, log = False, model_fn = lambda: get_model(INPUT_SIZE))
 
+"""Train once with default settings"""
 def train_once_gll():
     conf = {
-        'max_lr': 1e-4,
-        'epochs': 10,
+        'max_lr': 1e-5,
+        'epochs': 50,
         'batch': 100,
         'pct_start': 0.3,
         'anneal_strategy': 'linear',
@@ -61,7 +48,7 @@ def train_once_gll():
         'weight_decay': 0
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-    plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+    plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                     ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
 
 def grid_search_gll():
@@ -71,7 +58,7 @@ def grid_search_gll():
     return grid_best
 
 def eval_gll_scaled():
-    plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+    plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                     ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
     grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
