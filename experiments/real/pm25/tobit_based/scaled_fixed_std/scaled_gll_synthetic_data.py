@@ -66,4 +66,3 @@ def eval_gll_scaled():
     print(best_config)
     print(best_metrics)
 
-eval_gll_scaled()
