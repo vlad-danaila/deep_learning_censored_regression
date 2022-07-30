@@ -10,16 +10,13 @@ from experiments.real.models import get_model, get_scale_network
 from experiments.real.pm25.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.constants import IS_CUDA_AVILABLE
+from experiments.util import load_checkpoint
 
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):
     model = model_fn(INPUT_SIZE)
-    chekpoint_path = root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar'
-    if IS_CUDA_AVILABLE:
-        checkpoint = t.load(chekpoint_path)
-    else:
-        checkpoint = t.load(chekpoint_path, map_location=t.device('cpu'))
+    checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
     plot_net(model, testing_df)
@@ -50,7 +47,7 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
 def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, isGrid = True, model_fn = get_model, loader_val = None):
     model = model_fn(INPUT_SIZE)
-    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
     plot_net(model, testing_df)
@@ -108,7 +105,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn(INPUT_SIZE)
-    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
@@ -173,7 +170,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn(INPUT_SIZE)
-    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])

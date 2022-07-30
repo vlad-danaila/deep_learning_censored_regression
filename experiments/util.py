@@ -23,3 +23,6 @@ def get_device(cuda = IS_CUDA_AVILABLE):
 def get_scale():
     scale = t.tensor(1., requires_grad = True, device = get_device())
     return scale
+
+def load_checkpoint(checkpoint_path):
+    return t.load(checkpoint_path) if IS_CUDA_AVILABLE else t.load(checkpoint_path, map_location=t.device('cpu'))
