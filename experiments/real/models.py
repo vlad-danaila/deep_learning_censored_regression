@@ -54,3 +54,12 @@ def get_scale_network(layer_size, cuda = IS_CUDA_AVILABLE):
     if cuda:
         scale_net = scale_net.cuda()
     return scale_net
+
+
+
+
+def linear_model(input_size):
+    model = t.nn.Linear(input_size, 1)
+    if IS_CUDA_AVILABLE:
+        model = model.cuda()
+    return model
