@@ -6,7 +6,7 @@ from experiments.real.pm25.dataset import extract_features, pca, bound_min, boun
 import numpy as np
 
 
-def plot_full_dataset(df: pd.DataFrame, size = 0.01, label = None, censored = False):
+def plot_full_dataset(df: pd.DataFrame, size = 0.3, label = None, censored = False):
     if censored:
         x, y = extract_features(df, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
     else:
@@ -43,7 +43,7 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
     plot_train_test(train_r2, test_r2, 'R squared', 'R squared')
 
-def plot_net(model, df: pd.DataFrame, sigma = None, label = 'model prediction', with_std = False):
+def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, label = 'model prediction', with_std = False):
     model.eval()
     x, y_real = extract_features(df)
     x_pca = pca(x)
@@ -52,6 +52,8 @@ def plot_net(model, df: pd.DataFrame, sigma = None, label = 'model prediction', 
     for i in range(len(dataset)):
         x, _ = dataset[i]
         y_pred = model.forward(x.reshape(1, -1))
+        if gamma:
+            y_pred = y_pred / gamma
         y_list.append(y_pred[0].item())
 
     x_pca = np.squeeze(x_pca)
@@ -62,8 +64,13 @@ def plot_net(model, df: pd.DataFrame, sigma = None, label = 'model prediction', 
     np_y_sorted = np_y[indices_sorted]
 
     if with_std and sigma:
-      std = sigma.item()
-      print('Std is ', std)
-      plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
+       std = sigma.item()
+       print('Std is ', std)
+       plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
-    plt.scatter(x_pca_sorted, np_y_sorted, s = .1, label = label)
+    if with_std and gamma:
+        std = 1 / gamma.item()
+        print('Std is ', std)
+        plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
+
+    plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label)
