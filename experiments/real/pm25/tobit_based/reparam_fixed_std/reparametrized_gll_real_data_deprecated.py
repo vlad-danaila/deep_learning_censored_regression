@@ -316,8 +316,6 @@ def train_network(model, loss_fn, optimizer, scheduler, loader_train, loader_val
           y_pred = model.forward(x)
           loss = loss_fn(y_pred, y)
           loss.backward()
-          # t.nn.utils.clip_grad_norm_(model.parameters(), GRADIENT_CLIP)
-          # t.nn.utils.clip_grad_norm_(loss_fn.gamma, GRADIENT_CLIP)
           optimizer.step()
           optimizer.zero_grad()
           y_pred = y_pred / (loss_fn.gamma)
