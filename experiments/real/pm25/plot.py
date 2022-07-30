@@ -74,3 +74,4 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, label = 'model
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
     plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label)
+

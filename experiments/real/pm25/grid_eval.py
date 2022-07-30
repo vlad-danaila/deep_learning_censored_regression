@@ -10,7 +10,7 @@ from experiments.real.models import get_model, get_scale_network
 from experiments.real.pm25.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.constants import IS_CUDA_AVILABLE
-from experiments.util import load_checkpoint
+from experiments.util import load_checkpoint, get_device
 
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
@@ -108,33 +108,30 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
-    plot_net(model, testing_df)
     if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'])
+        plot_net(model, testing_df, gamma = checkpoint['gamma'])
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'])
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+        plot_net(model, testing_df, sigma = checkpoint['sigma'])
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, size = .3, label = 'ground truth')
     if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
+        plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+        plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
@@ -144,9 +141,9 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     plt.close()
 
     if 'gamma' in checkpoint:
-        loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
-        loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val), n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])

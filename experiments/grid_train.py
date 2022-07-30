@@ -4,7 +4,7 @@ from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss,
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork, get_scale_network
-from experiments.util import get_scale
+from experiments.util import get_scale, get_device
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
 
@@ -68,7 +68,7 @@ def train_and_evaluate_gll(checkpoint, criterion, model_fn = DenseNetwork, plot 
     return grid_callback
 
 
-def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device ='cpu', truncated_low = None, truncated_high = None, isReparam = False):
+def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, truncated_low = None, truncated_high = None, isReparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
@@ -76,9 +76,9 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
         scale = get_scale()
         if isReparam:
-            loss_fn = Reparametrized_Scaled_Tobit_Loss(scale, device, truncated_low = truncated_low, truncated_high = truncated_high)
+            loss_fn = Reparametrized_Scaled_Tobit_Loss(scale, get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         else:
-            loss_fn = Scaled_Tobit_Loss(scale, device, truncated_low = truncated_low, truncated_high = truncated_high)
+            loss_fn = Scaled_Tobit_Loss(scale, get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         params = [
             {'params': model.parameters()},
             {'params': scale}
