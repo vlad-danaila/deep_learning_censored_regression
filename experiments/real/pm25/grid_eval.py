@@ -50,36 +50,34 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
-    plot_net(model, testing_df)
     if 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'])
+        plot_net(model, testing_df, sigma = checkpoint['sigma'])
         loss_fn = criterion(checkpoint['sigma'])
     elif 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'])
+        plot_net(model, testing_df, gamma = checkpoint['gamma'])
         loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim((-6, 9))
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
     if 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
+        plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
         loss_fn = criterion(checkpoint['sigma'])
     elif 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
+        plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
         loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
