@@ -53,6 +53,7 @@ def get_scale_network(layer_size, cuda = IS_CUDA_AVILABLE):
     scale_net = ScaleNetwork(layer_size)
     if cuda:
         scale_net = scale_net.cuda()
+    scale_net = t.nn.DataParallel(scale_net)
     return scale_net
 
 
