@@ -180,58 +180,41 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     scale_model.eval()
 
     plot_full_dataset(testing_df, label = 'ground truth', size = .3)
-    plot_net(model, testing_df)
     if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma_model = scale_model)
+        plot_net(model, testing_df, gamma_model = scale_model)
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = scale_model)
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+        plot_net(model, testing_df, sigma_model = scale_model)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_full_dataset(testing_df, size = .3, label = 'ground truth')
     if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma_model = scale_model, with_std = True)
+        plot_net(model, testing_df, gamma_model = scale_model, with_std = True)
     elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = scale_model, with_std = True)
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
+        plot_net(model, testing_df, sigma_model = scale_model, with_std = True)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
-    lgnd.legendHandles[3]._sizes = [10]
     plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    # TODO put real fixed std as a parameter not hardcoded
-    plot_fixed_and_dynamic_std(dataset_val, model, scale_model, 0.5203 if is_reparam else 0.4017, is_reparam=is_reparam)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('standard deviation')
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}-two-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-two-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-two-std.png'.format(checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
-
     if 'gamma' in checkpoint:
-        loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
-        loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Heteroscedastic_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])

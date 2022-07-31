@@ -3,7 +3,9 @@ import pandas as pd
 from experiments.constants import LOSS, ABS_ERR, R_SQUARED
 from experiments.real.pm25.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
     CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, PM_2_5_Dataset
+from deep_tobit.util import to_numpy
 import numpy as np
+import torch as t
 
 
 def plot_full_dataset(df: pd.DataFrame, size = 0.3, label = None, censored = False):
@@ -43,7 +45,7 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
     plot_train_test(train_r2, test_r2, 'R squared', 'R squared')
 
-def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, label = 'model prediction', with_std = False):
+def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = None, label = 'model prediction', with_std = False):
     model.eval()
     x, y_real = extract_features(df)
     x_pca = pca(x)
@@ -71,6 +73,12 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, label = 'model
     if with_std and gamma:
         std = 1 / gamma.item()
         print('Std is ', std)
+        plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
+
+    if with_std and sigma_model:
+        sigma_model.eval()
+        std = to_numpy(t.abs(sigma_model(t.tensor(x_pca_sorted, dtype=t.float32))))
+        std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
     plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label)

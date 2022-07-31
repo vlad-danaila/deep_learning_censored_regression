@@ -104,8 +104,8 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
     return grid_callback
 
 
-def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True, device = 'cpu',
-                truncated_low = None, truncated_high = None, is_reparam = False):
+def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True,
+        truncated_low = None, truncated_high = None, is_reparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         model = model_fn()
@@ -113,9 +113,9 @@ def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot =
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
         scale_model = get_scale_network()
         if is_reparam:
-            loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(device, truncated_low = truncated_low, truncated_high = truncated_high)
+            loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         else:
-            loss_fn = Heteroscedastic_Scaled_Tobit_Loss(device, truncated_low = truncated_low, truncated_high = truncated_high)
+            loss_fn = Heteroscedastic_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         params = [
             {'params': model.parameters()},
             {'params': scale_model.parameters()}
