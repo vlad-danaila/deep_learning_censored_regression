@@ -4,10 +4,10 @@ import torch as t
 from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss, \
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
-from experiments.real.pm25.dataset import INPUT_SIZE, n, k
+from experiments.real.bike_sharing.dataset import INPUT_SIZE, n, k
 from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
-from experiments.real.pm25.plot import plot_full_dataset, plot_net
+from experiments.real.bike_sharing.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.constants import IS_CUDA_AVILABLE
 from experiments.util import load_checkpoint, get_device

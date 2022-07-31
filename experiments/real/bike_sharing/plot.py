@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from experiments.constants import LOSS, ABS_ERR, R_SQUARED
-from experiments.real.pm25.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
-    CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, PM_2_5_Dataset
+from experiments.real.bike_sharing.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
+    CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, Bike_Share_Dataset
 from deep_tobit.util import to_numpy
 import numpy as np
 import torch as t
@@ -49,7 +49,7 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
     model.eval()
     x, y_real = extract_features(df)
     x_pca = pca(x)
-    dataset = PM_2_5_Dataset(x, y_real)
+    dataset = Bike_Share_Dataset(x, y_real)
     y_list = []
     for i in range(len(dataset)):
         x, _ = dataset[i]
