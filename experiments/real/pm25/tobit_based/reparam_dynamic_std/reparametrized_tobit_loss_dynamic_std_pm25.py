@@ -8,7 +8,7 @@ from experiments.real.models import get_model, linear_model, get_scale_network
 from experiments.util import get_device
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/pm25/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/pm25/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'heteroscedastic scaled truncated deep tobit model'
 
 """Reproducible experiments"""
