@@ -22,9 +22,9 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
     plot_net(model, testing_df)
     loss_fn = criterion()
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim((-6, 9))
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
@@ -57,9 +57,9 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
         plot_net(model, testing_df, gamma = checkpoint['gamma'])
         loss_fn = criterion(checkpoint['gamma'])
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
+    plt.ylabel('rented bike count (standardized)')
     plt.ylim((-6, 9))
-    lgnd = plt.legend(loc='upper left')
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
@@ -75,9 +75,9 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
         plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
         loss_fn = criterion(checkpoint['gamma'])
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
@@ -113,9 +113,9 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     elif 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma = checkpoint['sigma'])
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
@@ -129,9 +129,9 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     elif 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
@@ -185,9 +185,9 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     elif 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma_model = scale_model)
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
@@ -201,9 +201,9 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     elif 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma_model = scale_model, with_std = True)
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
