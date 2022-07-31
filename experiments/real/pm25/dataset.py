@@ -1,3 +1,14 @@
+'''
+This software uses the Beijing PM2.5 Data Data Set downloaded from the UCI Machine Learning Repository:
+https://archive.ics.uci.edu/ml/datasets/Beijing+PM2.5+Data
+
+**Dataset citation:**
+Liang, X., Zou, T., Guo, B., Li, S., Zhang, H., Zhang, S., Huang, H. and Chen, S. X. (2015). Assessing Beijing's PM2.5 pollution: severity, weather impact, APEC and winter heating. Proceedings of the Royal Society A, 471, 20150257.
+
+**UCI Machine Learning Repository citation:**
+re3data.org: UCI Machine Learning Repository; editing status 2017-10-30; re3data.org - Registry of Research Data Repositories. http://doi.org/10.17616/R3T91Q last accessed: 2020-12-20
+'''
+
 import pandas as pd
 import requests
 import numpy as np

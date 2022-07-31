@@ -1,3 +1,16 @@
+'''
+This software uses the Seoul Bike Sharing Demand Data Set downloaded from the UCI Machine Learning Repository:
+https://archive.ics.uci.edu/ml/datasets/Seoul+Bike+Sharing+Demand
+
+Dataset citation:
+
+[1] Sathishkumar V E, Jangwoo Park, and Yongyun Cho. 'Using data mining techniques for bike sharing demand prediction in metropolitan city.' Computer Communications, Vol.153, pp.353-366, March, 2020
+
+[2] Sathishkumar V E and Yongyun Cho. 'A rule-based model for Seoul Bike sharing demand prediction using weather data' European Journal of Remote Sensing, pp. 1-18, Feb, 2020
+
+UCI Machine Learning Repository citation: re3data.org: UCI Machine Learning Repository; editing status 2017-10-30; re3data.org - Registry of Research Data Repositories. http://doi.org/10.17616/R3T91Q last accessed: 2020-12-20
+'''
+
 import pandas as pd
 import requests
 import numpy as np
@@ -9,19 +22,19 @@ import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
 
-URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv'
-DATASET_FILE = 'dataset.csv'
+# URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv'
+DATASET_FILE = 'experiments/real/bike_sharing/dataset_bike_sharing.csv'
 CENSOR_LOW_BOUND = 200
 CENSOR_HIGH_BOUND = 2000
 y_variable_label = 'Rented Bike Count'
 
 INPUT_SIZE = 40
 
-r = requests.get(URL_DATA_SET, allow_redirects=True)
-open(DATASET_FILE, 'wb').write(r.content)
+# r = requests.get(URL_DATA_SET, allow_redirects=True)
+# open(DATASET_FILE, 'wb').write(r.content)
 
 def load_dataframe(filter_null = True):
-    df = pd.read_csv(DATASET_FILE, encoding = "ISO-8859-1")
+    df = pd.read_csv(DATASET_FILE)
     return df
 
 df = load_dataframe()
@@ -71,7 +84,7 @@ bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
-numeric_features_column_names = ['Temperature(°C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(°C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
+numeric_features_column_names = ['Temperature(C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
 
 def x_numeric_fatures_train_mean_std():
     df = train_df(load_dataframe())
