@@ -9,7 +9,7 @@ from experiments.util import get_device
 
 """Constants"""
 ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/real/pm25/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'
-CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'scaled truncated deep tobit model'
+CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'heteroscedastic scaled truncated deep tobit model'
 
 """Reproducible experiments"""
 
@@ -67,6 +67,3 @@ def eval_deep_tobit_WITH_trunc_dyn_std():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
-
-# grid_search_deep_tobit_WITH_trunc()
-eval_deep_tobit_WITH_trunc_dyn_std()

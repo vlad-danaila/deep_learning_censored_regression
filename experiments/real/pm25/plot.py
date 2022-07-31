@@ -77,7 +77,6 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
 
     if with_std and sigma_model:
         sigma_model.eval()
-        print('t.unsqueeze(t.tensor(x, dtype=t.float32), 0)', t.unsqueeze(t.tensor(x, dtype=t.float32), 0).shape)
         std = to_numpy(t.abs(sigma_model(    t.unsqueeze(t.tensor(x, dtype=t.float32), 0)   )))
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
