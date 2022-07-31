@@ -190,4 +190,7 @@ def eval_linear_tobit_WITH_trunc():
     print(best_metrics)
 
 
-
+# eval_deep_tobit_WITH_trunc()
+# eval_deep_tobit_NO_trunc()
+# eval_linear_tobit_WITH_trunc()
+# eval_linear_tobit_NO_trunc()
