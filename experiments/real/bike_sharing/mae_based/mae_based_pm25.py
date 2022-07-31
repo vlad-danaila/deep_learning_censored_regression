@@ -7,13 +7,13 @@ from experiments.grid_train import train_and_evaluate_mae_mse
 from experiments.real.models import get_model
 
 """Constants"""
-ROOT_MAE = 'experiments/real/pm25/mae_based/mae_simple'
+ROOT_MAE = 'experiments/real/bike_sharing/mae_based/mae_simple'
 CHECKPOINT_MAE = 'mae model'
 
-ROOT_BOUNDED_MAE = 'experiments/real/pm25/mae_based/mae_cens_NO_trunc'
+ROOT_BOUNDED_MAE = 'experiments/real/bike_sharing/mae_based/mae_cens_NO_trunc'
 CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
-ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/real/pm25/mae_based/mae_cens_WITH_trunc'
+ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/real/bike_sharing/mae_based/mae_cens_WITH_trunc'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 """Reproducible experiments"""

@@ -8,16 +8,16 @@ from experiments.real.models import get_model, linear_model
 
 
 """Constants"""
-ROOT_DEEP_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
+ROOT_DEEP_TOBIT_SCALED = 'experiments/real/bike_sharing/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
 CHECKPOINT_DEEP_TOBIT_SCALED = 'scaled deep tobit model'
 
-ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/real/bike_sharing/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'scaled truncated deep tobit model'
 
-ROOT_LINEAR_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc'
+ROOT_LINEAR_TOBIT_SCALED = 'experiments/real/bike_sharing/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc'
 CHECKPOINT_LINEAR_TOBIT_SCALED = 'scaled linear tobit model'
 
-ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
+ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/real/bike_sharing/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED = 'scaled truncated linear tobit model'
 
 """Reproducible experiments"""

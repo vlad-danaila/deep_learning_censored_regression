@@ -8,7 +8,7 @@ from experiments.real.models import get_model
 from experiments.util import get_device
 
 """Constants"""
-ROOT_GLL = 'experiments/real/pm25/tobit_based/reparam_fixed_std/gll'
+ROOT_GLL = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/gll'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
 """Reproducible experiments"""

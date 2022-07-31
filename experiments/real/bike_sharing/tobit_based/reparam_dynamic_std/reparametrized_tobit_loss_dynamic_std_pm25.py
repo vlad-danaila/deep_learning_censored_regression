@@ -7,7 +7,7 @@ from experiments.grid_train import train_and_evaluate_tobit_dyn_std
 from experiments.real.models import get_model, linear_model, get_scale_network
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/pm25/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/bike_sharing/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
 """Reproducible experiments"""
