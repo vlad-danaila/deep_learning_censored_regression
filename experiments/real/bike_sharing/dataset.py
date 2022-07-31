@@ -21,7 +21,7 @@ r = requests.get(URL_DATA_SET, allow_redirects=True)
 open(DATASET_FILE, 'wb').write(r.content)
 
 def load_dataframe(filter_null = True):
-    df = pd.read_csv(DATASET_FILE)
+    df = pd.read_csv(DATASET_FILE, encoding = "ISO-8859-1")
     return df
 
 df = load_dataframe()
@@ -71,7 +71,7 @@ bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
-numeric_features_column_names = ['Temperature(C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
+numeric_features_column_names = ['Temperature(°C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(°C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
 
 def x_numeric_fatures_train_mean_std():
     df = train_df(load_dataframe())
