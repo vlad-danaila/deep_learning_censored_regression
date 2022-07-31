@@ -9,7 +9,7 @@ from experiments.util import get_device
 
 """Constants"""
 ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/pm25/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
-CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'heteroscedastic scaled truncated deep tobit model'
+CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
 """Reproducible experiments"""
 
@@ -55,6 +55,19 @@ def grid_search_deep_tobit_WITH_trunc():
         'weight_decay': [0],
         'grad_clip': [1, 10, 100, 1000, 10_000]
     }]
+    # grid_config = [{
+    #     'max_lr': [1e-5],
+    #     'epochs': [1],
+    #     'batch': [100],
+    #     'pct_start': [0.45],
+    #     'anneal_strategy': ['linear'],
+    #     'base_momentum': [0.85],
+    #     'max_momentum': [0.95],
+    #     'div_factor': [10],
+    #     'final_div_factor': [1e4],
+    #     'weight_decay': [0],
+    #     'grad_clip': [ 10]
+    # }]
     grid_best = grid_search(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
                             grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, conf_validation = config_validation)
     return grid_best
@@ -68,5 +81,4 @@ def eval_deep_tobit_WITH_trunc_dyn_std():
     print(best_config)
     print(best_metrics)
 
-grid_search_deep_tobit_WITH_trunc()
-eval_deep_tobit_WITH_trunc_dyn_std()
+
