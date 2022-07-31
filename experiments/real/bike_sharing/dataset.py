@@ -163,3 +163,5 @@ def pca(x, n_components = 1):
 
 n = len(dataset_train)
 k = len(dataset_train[0][0])
+
+
