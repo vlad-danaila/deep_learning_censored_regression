@@ -104,14 +104,14 @@ def train_and_evaluate_tobit_fixed_std(checkpoint, model_fn = DenseNetwork, plot
     return grid_callback
 
 
-def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, plot = False, log = True,
+def train_and_evaluate_tobit_dyn_std(checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = True,
         truncated_low = None, truncated_high = None, is_reparam = False):
     def grid_callback(dataset_train, dataset_val, bound_min, bound_max, conf):
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
-        model = model_fn()
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-        scale_model = get_scale_network()
+        model = model_fn()
+        scale_model = scale_model_fn()
         if is_reparam:
             loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         else:
