@@ -45,7 +45,7 @@ def plot_epochs(train_metrics_list, test_metrics_list):
     plot_train_test(train_err, test_err, 'Absolute error', 'Absolute error')
     plot_train_test(train_r2, test_r2, 'R squared', 'R squared')
 
-def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = None, label = 'model prediction', with_std = False):
+def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = None, gamma_model = None, label = 'model prediction', with_std = False):
     model.eval()
     x, y_real = extract_features(df)
     x_pca = pca(x)
@@ -56,6 +56,9 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
         y_pred = model.forward(x.reshape(1, -1))
         if gamma:
             y_pred = y_pred / gamma
+        elif gamma_model:
+            gamma_model.eval()
+            y_pred = y_pred / t.abs(gamma_model(x.reshape(1, -1)))
         y_list.append(y_pred[0].item())
 
     x_pca_squeezed = np.squeeze(x_pca)
@@ -78,6 +81,11 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
     if with_std and sigma_model:
         sigma_model.eval()
         std = to_numpy(t.abs(sigma_model(    t.unsqueeze(t.tensor(x, dtype=t.float32), 0)   )))
+        std = std.squeeze()
+        plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
+
+    if with_std and gamma_model:
+        std = to_numpy(1 / t.abs(gamma_model(    t.unsqueeze(t.tensor(x, dtype=t.float32), 0)   )))
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
