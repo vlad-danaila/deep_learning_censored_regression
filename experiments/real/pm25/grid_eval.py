@@ -172,7 +172,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     model.load_state_dict(checkpoint['model'])
     model.eval()
 
-    scale_model = get_scale_network()
+    scale_model = get_scale_network(INPUT_SIZE)
     if is_reparam:
         scale_model.load_state_dict(checkpoint['gamma'])
     else:

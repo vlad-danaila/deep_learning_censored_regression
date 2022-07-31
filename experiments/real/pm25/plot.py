@@ -58,11 +58,11 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
             y_pred = y_pred / gamma
         y_list.append(y_pred[0].item())
 
-    x_pca = np.squeeze(x_pca)
+    x_pca_squeezed = np.squeeze(x_pca)
     np_y = np.array(y_list)
-    indices_sorted = np.argsort(x_pca)
+    indices_sorted = np.argsort(x_pca_squeezed)
 
-    x_pca_sorted = x_pca[indices_sorted]
+    x_pca_sorted = x_pca_squeezed[indices_sorted]
     np_y_sorted = np_y[indices_sorted]
 
     if with_std and sigma:
@@ -77,7 +77,8 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
 
     if with_std and sigma_model:
         sigma_model.eval()
-        std = to_numpy(t.abs(sigma_model(t.tensor(x_pca_sorted, dtype=t.float32))))
+        print('t.unsqueeze(t.tensor(x, dtype=t.float32), 0)', t.unsqueeze(t.tensor(x, dtype=t.float32), 0).shape)
+        std = to_numpy(t.abs(sigma_model(    t.unsqueeze(t.tensor(x, dtype=t.float32), 0)   )))
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 

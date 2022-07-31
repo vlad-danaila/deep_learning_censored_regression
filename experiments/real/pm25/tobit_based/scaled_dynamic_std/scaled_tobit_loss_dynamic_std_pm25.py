@@ -67,3 +67,6 @@ def eval_deep_tobit_WITH_trunc_dyn_std():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+# grid_search_deep_tobit_WITH_trunc()
+eval_deep_tobit_WITH_trunc_dyn_std()
