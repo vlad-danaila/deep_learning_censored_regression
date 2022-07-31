@@ -1,5 +1,8 @@
 '''
-This software uses the Seoul Bike Sharing Demand Data Set downloaded from the UCI Machine Learning Repository:
+This software uses the Seoul Bike Sharing Demand Data Set.
+The dataset can be downloaded from the UCI Machine Learning Repository or from Mendeley Data.
+
+Seoul Bike Sharing Demand Data Set from UCI Machine Learning Repository:
 https://archive.ics.uci.edu/ml/datasets/Seoul+Bike+Sharing+Demand
 
 Dataset citation:
@@ -9,7 +12,7 @@ Dataset citation:
 UCI Machine Learning Repository citation:
 re3data.org: UCI Machine Learning Repository; editing status 2017-10-30; re3data.org - Registry of Research Data Repositories. http://doi.org/10.17616/R3T91Q last accessed: 2020-12-20
 
-The dataset can be acquired from Mendeley Data as well:
+Seoul Bike Sharing Demand Prediction from Mendeley Data:
 https://data.mendeley.com/datasets/zbdtzxcxvg/2
 V E, Sathishkumar (2020), “Seoul Bike Sharing Demand Prediction”, Mendeley Data, V2, doi: 10.17632/zbdtzxcxvg.2
 License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode)
