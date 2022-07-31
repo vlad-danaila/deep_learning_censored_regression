@@ -9,37 +9,41 @@ import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
 
-URL_BEIJING_PM_2_5_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00381/PRSA_data_2010.1.1-2014.12.31.csv'
-DATASET_FILE = 'experiments/real/pm25/Beijing PM2.5 dataset.csv'
-CENSOR_LOW_BOUND = 75
-CENSOR_HIGH_BOUND = 300
+URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00381/PRSA_data_2010.1.1-2014.12.31.csv'
+DATASET_FILE = 'dataset.csv'
+CENSOR_LOW_BOUND = 200
+CENSOR_HIGH_BOUND = 2000
+y_variable_label = 'Rented Bike Count'
 
-INPUT_SIZE = 46
+INPUT_SIZE = 40
 
-r = requests.get(URL_BEIJING_PM_2_5_DATA_SET, allow_redirects=True)
+r = requests.get(URL_DATA_SET, allow_redirects=True)
 open(DATASET_FILE, 'wb').write(r.content)
 
 def load_dataframe(filter_null = True):
     df = pd.read_csv(DATASET_FILE)
-    # exclude records without a measured pm2.5
-    if filter_null:
-        df = df[df['pm2.5'].notnull()]
     return df
 
 df = load_dataframe()
 
+train_samples = set(range(len(df)))
+val_samples = set(range(2, len(df), 5))
+test_samples = set(range(5, len(df), 5))
+train_samples = train_samples - val_samples
+train_samples = train_samples - test_samples
+
 def train_df(df: pd.DataFrame):
-    return df[ df.year.isin([2010, 2011, 2012]) ]
+    return df[ df.index.isin(train_samples) ]
 
 def val_df(df: pd.DataFrame):
-    return df[ df.year.isin([2013]) ]
+    return df[ df.index.isin(val_samples) ]
 
 def test_df(df: pd.DataFrame):
-    return df[ df.year.isin([2014]) ]
+    return df[ df.index.isin(test_samples) ]
 
 def y_train_mean_std(max_iterations = 10_000, early_stop_patience = 5, lr = 1e-6, epsilon = 1e-6):
     df = train_df(load_dataframe())
-    ys = df['pm2.5'].values
+    ys = df[y_variable_label].values
 
     real_mean, real_std = ys.mean(), ys.std()
 
@@ -67,7 +71,7 @@ bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
-numeric_features_column_names = ['DEWP', 'TEMP', 'PRES', 'Iws', 'Is', 'Ir']
+numeric_features_column_names = ['Temperature(C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
 
 def x_numeric_fatures_train_mean_std():
     df = train_df(load_dataframe())
@@ -81,27 +85,27 @@ def extract_features(df: pd.DataFrame, lower_bound = -math.inf, upper_bound = ma
     assert lower_bound <= upper_bound
     # handle categorical features (one hot encoding)
     one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
-    month_one_hot = one_hot.fit_transform(np.expand_dims(df['month'].values, 1))
-    # day_one_hot = one_hot.fit_transform(np.expand_dims(df['day'].values, 1))
-    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['hour'].values, 1))
-    combined_wind_direction_one_hot = one_hot.fit_transform(np.expand_dims(df['cbwd'].values, 1))
+    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['Hour'].values, 1))
+    seansons_one_hot = one_hot.fit_transform(np.expand_dims(df['Seasons'].values, 1))
+    holiday_one_hot = one_hot.fit_transform(np.expand_dims(df['Holiday'].values, 1))
+    functioning_day_one_hot = one_hot.fit_transform(np.expand_dims(df['Functioning Day'].values, 1))
 
     # extract the numeric variables
     numeric_fetures = df[numeric_features_column_names].values
     numeric_fetures = normalize(numeric_fetures, x_numeric_fetures_mean, x_numeric_fetures_std)
 
     # unite all features
-    x = np.hstack((month_one_hot, hour_one_hot, combined_wind_direction_one_hot, numeric_fetures))
+    x = np.hstack((hour_one_hot, seansons_one_hot, holiday_one_hot, functioning_day_one_hot, numeric_fetures))
 
     # extract the results
-    y = df['pm2.5'].values
+    y = df[y_variable_label].values
     y = np.clip(y, lower_bound, upper_bound)
     y = normalize(y, y_mean, y_std)
     y = np.expand_dims(y, 1)
 
     return x, y
 
-class PM_2_5_Dataset(t.utils.data.Dataset):
+class Bike_Share_Dataset(t.utils.data.Dataset):
 
     def __init__(self, x: np.array, y: np.array, cuda = IS_CUDA_AVILABLE):
         super().__init__()
@@ -125,9 +129,9 @@ def parse_datasets():
     df_val = val_df(df)
     df_test = test_df(df)
 
-    dataset_train = PM_2_5_Dataset(*extract_features(df_train, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND))
-    dataset_val = PM_2_5_Dataset(*extract_features(df_val, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND))
-    dataset_test = PM_2_5_Dataset(*extract_features(df_test))
+    dataset_train = Bike_Share_Dataset(*extract_features(df_train, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND))
+    dataset_val = Bike_Share_Dataset(*extract_features(df_val, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND))
+    dataset_test = Bike_Share_Dataset(*extract_features(df_test))
 
     return dataset_train, dataset_val, dataset_test
 
