@@ -9,7 +9,7 @@ import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
 
-URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00381/PRSA_data_2010.1.1-2014.12.31.csv'
+URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv'
 DATASET_FILE = 'dataset.csv'
 CENSOR_LOW_BOUND = 200
 CENSOR_HIGH_BOUND = 2000
