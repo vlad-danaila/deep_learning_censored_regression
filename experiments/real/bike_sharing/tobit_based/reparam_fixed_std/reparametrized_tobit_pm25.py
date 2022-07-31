@@ -190,4 +190,7 @@ def eval_linear_tobit_WITH_trunc_reparam():
 
 
 
-
+# eval_deep_tobit_WITH_trunc_reparam()
+# eval_deep_tobit_NO_trunc_reparam()
+# eval_linear_tobit_WITH_trunc_reparam()
+# eval_linear_tobit_NO_trunc_reparam()
