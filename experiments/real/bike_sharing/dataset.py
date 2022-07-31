@@ -10,7 +10,7 @@ Dataset citation:
 
 UCI Machine Learning Repository citation: re3data.org: UCI Machine Learning Repository; editing status 2017-10-30; re3data.org - Registry of Research Data Repositories. http://doi.org/10.17616/R3T91Q last accessed: 2020-12-20
 
-The same dataset can be aquired from Kaggle:
+The dataset can be aquired from Kaggle as well:
 URL: https://www.kaggle.com/datasets/saurabhshahane/seoul-bike-sharing-demand-prediction
 Acknowledgements: V E, Sathishkumar (2020), “Seoul Bike Sharing Demand Prediction”, Mendeley Data, V2, doi: 10.17632/zbdtzxcxvg.2
 License: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode)
