@@ -18,7 +18,7 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_full_dataset(testing_df, label = 'ground truth')
     plot_net(model, testing_df)
     loss_fn = criterion()
     plt.xlabel('unidimensional PCA')
@@ -49,7 +49,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma = checkpoint['sigma'])
         loss_fn = criterion(checkpoint['sigma'])
@@ -67,7 +67,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'sigma' in checkpoint:
         plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
         loss_fn = criterion(checkpoint['sigma'])
@@ -107,7 +107,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'gamma' in checkpoint:
         plot_net(model, testing_df, gamma = checkpoint['gamma'])
     elif 'sigma' in checkpoint:
@@ -123,7 +123,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_full_dataset(testing_df, size = .3, label = 'ground truth')
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'gamma' in checkpoint:
         plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
     elif 'sigma' in checkpoint:
@@ -179,7 +179,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
         scale_model.load_state_dict(checkpoint['sigma'])
     scale_model.eval()
 
-    plot_full_dataset(testing_df, label = 'ground truth', size = .3)
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'gamma' in checkpoint:
         plot_net(model, testing_df, gamma_model = scale_model)
     elif 'sigma' in checkpoint:
@@ -195,7 +195,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_full_dataset(testing_df, size = .3, label = 'ground truth')
+    plot_full_dataset(testing_df, label = 'ground truth')
     if 'gamma' in checkpoint:
         plot_net(model, testing_df, gamma_model = scale_model, with_std = True)
     elif 'sigma' in checkpoint:

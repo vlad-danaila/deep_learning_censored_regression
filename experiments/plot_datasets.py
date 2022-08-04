@@ -7,23 +7,23 @@ fig, axs = plt.subplots(2, 2)
 
 plt.axes(axs[0, 0])
 plt.title('Title 1')
-plot_pm25(train_df(df), size = .3, label = 'training data', censored = True)
+plot_pm25(train_df(df), label = 'training data', censored = True)
 plt.ylim(-2, 7)
 
 plt.axes(axs[0, 1])
 plt.title('Title 2')
-plot_pm25(test_df(df), size = .3, label = 'testing data', show_bounds = False)
+plot_pm25(test_df(df), label = 'testing data', show_bounds = False)
 plt.ylim(-2, 7)
 
 plt.axes(axs[1, 0])
 plt.title('Title 3')
-plot_pm25(train_df(df), size = .3, label = 'training data', censored = True)
+plot_pm25(train_df(df), label = 'training data', censored = True)
 plt.ylim(-2, 7)
 
 
 plt.axes(axs[1, 1])
 plt.title('Title 4')
-plot_pm25(test_df(df), size = .3, label = 'testing data', show_bounds = False)
+plot_pm25(test_df(df), label = 'testing data', show_bounds = False)
 plt.ylim(-2, 7)
 
 plt.tight_layout()
