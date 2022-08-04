@@ -1,7 +1,7 @@
 import torch as t
 import numpy as np
 import random
-
+import matplotlib.pyplot as plt
 from experiments.constants import IS_CUDA_AVILABLE
 
 """Reproducible experiments"""
@@ -26,3 +26,7 @@ def get_scale():
 
 def load_checkpoint(checkpoint_path):
     return t.load(checkpoint_path) if IS_CUDA_AVILABLE else t.load(checkpoint_path, map_location=t.device('cpu'))
+
+def save_figures(file_path: str):
+    plt.savefig('{}.pdf'.format(file_path), dpi = 300, format = 'pdf')
+    plt.savefig('{}.eps'.format(file_path), dpi = 300, format = 'eps')
