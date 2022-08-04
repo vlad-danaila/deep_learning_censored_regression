@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from experiments.constants import LOSS, ABS_ERR, R_SQUARED
+from experiments.constants import LOSS, ABS_ERR, R_SQUARED, DOT_SIZE
 from experiments.real.bike_sharing.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
     CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, Bike_Share_Dataset
 from deep_tobit.util import to_numpy
@@ -8,7 +8,7 @@ import numpy as np
 import torch as t
 
 
-def plot_full_dataset(df: pd.DataFrame, size = 0.3, label = None, censored = False):
+def plot_full_dataset(df: pd.DataFrame, size = DOT_SIZE, label = None, censored = False):
     if censored:
         x, y = extract_features(df, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
     else:
@@ -89,5 +89,5 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
-    plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label, rasterized=True)
+    plt.scatter(x_pca_sorted, np_y_sorted, s = DOT_SIZE, label = label, rasterized=True)
 

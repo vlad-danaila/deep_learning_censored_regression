@@ -3,7 +3,7 @@ import numpy as np
 from deep_tobit.util import to_numpy, normalize
 from scipy.stats import beta
 from experiments.synthetic.constants import ALPHA, BETA
-from experiments.constants import LOSS, ABS_ERR
+from experiments.constants import LOSS, ABS_ERR, DOT_SIZE
 import matplotlib.pyplot as plt
 import torch as t
 
@@ -15,11 +15,11 @@ def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf,
     y = np.clip(y, lower, upper)
     x = normalize(x, x_mean, x_std)
     y = normalize(y, y_mean, y_std)
-    plt.scatter(x, y, s = .1, color = color, label = label, rasterized=True)
+    plt.scatter(x, y, s = DOT_SIZE, color = color, label = label, rasterized=True)
     if std:
         plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 
-def plot_dataset(dataset, size = .01, label = None):
+def plot_dataset(dataset, size = DOT_SIZE, label = None):
     x_list, y_list = [], []
     for i in range(len(dataset)):
         x, y = dataset[i]
@@ -81,7 +81,7 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None,
         std = to_numpy(1 / t.abs(gamma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
         std = std.squeeze()
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
-    plt.scatter(x_list, y_list, s = .1, label = label, rasterized=True)
+    plt.scatter(x_list, y_list, s = DOT_SIZE, label = label, rasterized=True)
 
 def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, is_reparam = False):
     scale_model.eval()
