@@ -19,7 +19,7 @@ def plot_full_dataset(df: pd.DataFrame, size = 0.3, label = None, censored = Fal
         plt.plot(min_max, [bound_min] * 2, color = 'red')
         plt.plot(min_max, [bound_max] * 2, color = 'red')
         plt.plot(min_max, [zero_normalized] * 2, color = 'red')
-    plt.scatter(x, y, s = size, label = label)
+    plt.scatter(x, y, s = size, label = label, rasterized=True)
     plt.xlabel('unidimensional PCA')
     plt.ylabel('PM2.5 (standardized)')
     # plot.savefig(label + '.pdf', dpi = 300, format = 'pdf')
@@ -89,5 +89,5 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
-    plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label)
+    plt.scatter(x_pca_sorted, np_y_sorted, s = .3, label = label, rasterized=True)
 

@@ -15,7 +15,7 @@ def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf,
     y = np.clip(y, lower, upper)
     x = normalize(x, x_mean, x_std)
     y = normalize(y, y_mean, y_std)
-    plt.scatter(x, y, s = .1, color = color, label = label)
+    plt.scatter(x, y, s = .1, color = color, label = label, rasterized=True)
     if std:
         plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 
@@ -25,7 +25,7 @@ def plot_dataset(dataset, size = .01, label = None):
         x, y = dataset[i]
         x_list.append(x[0].item())
         y_list.append(y[0].item())
-    plt.scatter(x_list, y_list, s = size, label = label)
+    plt.scatter(x_list, y_list, s = size, label = label, rasterized=True)
 
 def plot_train_test(train, test, title, y_title):
     plt.plot(range(len(train)), train, label = 'Train')
@@ -81,7 +81,7 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None,
         std = to_numpy(1 / t.abs(gamma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
         std = std.squeeze()
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
-    plt.scatter(x_list, y_list, s = .1, label = label)
+    plt.scatter(x_list, y_list, s = .1, label = label, rasterized=True)
 
 def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, is_reparam = False):
     scale_model.eval()
