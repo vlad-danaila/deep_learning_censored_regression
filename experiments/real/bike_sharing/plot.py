@@ -8,17 +8,18 @@ import numpy as np
 import torch as t
 
 
-def plot_full_dataset(df: pd.DataFrame, size = DOT_SIZE, label = None, censored = False):
+def plot_full_dataset(df: pd.DataFrame, size = DOT_SIZE, label = None, censored = False, show_bounds = True):
     if censored:
         x, y = extract_features(df, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
     else:
         x, y = extract_features(df)
     x = pca(x)
-    if not censored:
+    if not censored and show_bounds:
         min_max = [min(x), max(x)]
         plt.plot(min_max, [bound_min] * 2, color = 'red')
         plt.plot(min_max, [bound_max] * 2, color = 'red')
         plt.plot(min_max, [zero_normalized] * 2, color = 'red')
+
     plt.scatter(x, y, s = size, label = label, rasterized=True)
     plt.xlabel('unidimensional PCA')
     plt.ylabel('PM2.5 (standardized)')

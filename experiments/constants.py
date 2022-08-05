@@ -7,4 +7,4 @@ R_SQUARED = 2
 IS_CUDA_AVILABLE = t.cuda.is_available()
 GRID_RESULTS_FILE = 'grid_results.tar'
 
-DOT_SIZE = .1
+DOT_SIZE = .2
