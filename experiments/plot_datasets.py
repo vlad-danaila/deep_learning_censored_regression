@@ -6,7 +6,7 @@ from experiments.real.bike_sharing.dataset import df as df_bike, test_df as test
 from experiments.util import save_figures
 
 
-plt.rcParams.update({'font.size': 6})
+plt.rcParams.update({'font.size': 5})
 
 fig, axs = plt.subplots(2, 2)
 
