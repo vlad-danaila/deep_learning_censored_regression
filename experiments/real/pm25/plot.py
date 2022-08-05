@@ -6,7 +6,7 @@ from experiments.real.pm25.dataset import extract_features, pca, bound_min, boun
 from deep_tobit.util import to_numpy
 import numpy as np
 import torch as t
-
+from experiments.util import scatterplot
 
 def plot_full_dataset(df: pd.DataFrame, size = DOT_SIZE, label = None, censored = False, show_bounds = True):
     if censored:
@@ -19,7 +19,7 @@ def plot_full_dataset(df: pd.DataFrame, size = DOT_SIZE, label = None, censored 
         plt.plot(min_max, [bound_min] * 2, color = 'red')
         plt.plot(min_max, [bound_max] * 2, color = 'red')
         plt.plot(min_max, [zero_normalized] * 2, color = 'red')
-    plt.scatter(x, y, s = size, label = label, rasterized=True)
+    scatterplot(x, y, label = label)
     plt.xlabel('unidimensional PCA')
     plt.ylabel('PM2.5 (standardized)')
     # plot.savefig(label + '.pdf', dpi = 300, format = 'pdf')
@@ -89,5 +89,5 @@ def plot_net(model, df: pd.DataFrame, sigma = None, gamma = None, sigma_model = 
         std = std.squeeze()
         plt.fill_between(x_pca_sorted, np_y_sorted + std, np_y_sorted - std, facecolor='gray', alpha=.6, label = 'Tobit std')
 
-    plt.scatter(x_pca_sorted, np_y_sorted, s = DOT_SIZE, label = label, rasterized=True)
+    scatterplot(x_pca_sorted, np_y_sorted, label = label)
 

@@ -16,6 +16,7 @@ from torch_lr_finder import LRFinder, TrainDataLoaderIter, ValDataLoaderIter
 import os
 import numpy.random
 import collections
+from
 
 """Constants"""
 
@@ -130,7 +131,7 @@ def plot_beta(lower = -math.inf, upper = math.inf, color = None, label = None, s
   y = np.clip(y, lower, upper)
   x = normalize(x, x_mean, x_std)
   y = normalize(y, y_mean, y_std)
-  plt.scatter(x, y, s = .1, color = color, label = label)
+  plt.scatter(x, y, label = label)
   if std:
     plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 

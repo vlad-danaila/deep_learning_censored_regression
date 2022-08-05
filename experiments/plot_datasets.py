@@ -5,6 +5,7 @@ from experiments.real.bike_sharing.plot import plot_full_dataset as plot_bike
 from experiments.real.bike_sharing.dataset import df as df_bike, test_df as test_df_bike, train_df as train_df_bike
 from experiments.util import save_figures
 
+
 plt.rcParams.update({'font.size': 6})
 
 fig, axs = plt.subplots(2, 2)

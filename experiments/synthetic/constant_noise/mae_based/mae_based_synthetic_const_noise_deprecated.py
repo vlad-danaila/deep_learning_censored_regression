@@ -16,6 +16,7 @@ from torch_lr_finder import LRFinder, TrainDataLoaderIter, ValDataLoaderIter
 import os
 import numpy.random
 import collections
+from experiments.util import scatterplot
 
 """Constants"""
 
@@ -130,7 +131,7 @@ def plot_beta(lower = -math.inf, upper = math.inf, color = None, label = None, s
   y = np.clip(y, lower, upper)
   x = normalize(x, x_mean, x_std)
   y = normalize(y, y_mean, y_std)
-  plt.scatter(x, y, s = .1, color = color, label = label)
+  scatterplot(x, y, label = label)
   if std:
     plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 
@@ -140,7 +141,7 @@ def plot_dataset(dataset, size = .01, label = None):
     x, y = dataset[i]
     x_list.append(x[0].item())
     y_list.append(y[0].item())
-  plt.scatter(x_list, y_list, s = size, label = label)
+  scatterplot(x_list, y_list, label = label)
 
 LOSS = 0
 ABS_ERR = 1
@@ -174,7 +175,7 @@ def plot_net(model, start = 0, end = 1, gamma = None, label = 'model prediction'
       y = y / gamma
     x_list.append(x[0].item())
     y_list.append(y[0].item())
-  plt.scatter(x_list, y_list, s = .1, label = label)
+  scatterplot(x_list, y_list, label = label)
   if with_std and gamma:
     std = 1 / gamma.item()
     np_y = np.array(y_list)

@@ -6,16 +6,16 @@ from experiments.synthetic.constants import ALPHA, BETA
 from experiments.constants import LOSS, ABS_ERR, DOT_SIZE
 import matplotlib.pyplot as plt
 import torch as t
+from experiments.util import scatterplot
 
-
-def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf, color = None, label = None, std = None):
+def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf, label = None, std = None):
     x = np.linspace(0, 1, 1000)
     beta_distribution = beta(a = ALPHA, b = BETA)
     y = beta_distribution.pdf(x)
     y = np.clip(y, lower, upper)
     x = normalize(x, x_mean, x_std)
     y = normalize(y, y_mean, y_std)
-    plt.scatter(x, y, s = DOT_SIZE, color = color, label = label, rasterized=True)
+    scatterplot(x, y, label = label)
     if std:
         plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 
@@ -25,7 +25,7 @@ def plot_dataset(dataset, size = DOT_SIZE, label = None):
         x, y = dataset[i]
         x_list.append(x[0].item())
         y_list.append(y[0].item())
-    plt.scatter(x_list, y_list, s = size, label = label, rasterized=True)
+    scatterplot(x_list, y_list, label = label)
 
 def plot_train_test(train, test, title, y_title):
     plt.plot(range(len(train)), train, label = 'Train')
@@ -81,7 +81,7 @@ def plot_net(model, dataset_val, sigma = None, gamma = None, sigma_model = None,
         std = to_numpy(1 / t.abs(gamma_model(t.tensor(x_list.reshape(-1, 1), dtype=t.float32))))
         std = std.squeeze()
         plt.fill_between(x_list, np_y + std, np_y - std, facecolor='gray', alpha=0.1, label = 'Tobit std')
-    plt.scatter(x_list, y_list, s = DOT_SIZE, label = label, rasterized=True)
+    scatterplot(x_list, y_list, label = label)
 
 def plot_fixed_and_dynamic_std(dataset_val, model, scale_model, fixed_scale, is_reparam = False):
     scale_model.eval()
