@@ -10,10 +10,13 @@ from experiments.real.bike_sharing.plot import plot_full_dataset as plot_bike
 from experiments.real.bike_sharing.dataset import df as df_bike, test_df as test_df_bike, train_df as train_df_bike
 
 from experiments.synthetic.plot import plot_beta, plot_dataset as plot_dataset_synthetic
+from experiments.synthetic.constants import CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND
 from experiments.synthetic.constant_noise.dataset import calculate_mean_std as calculate_mean_std_const_noise, \
     TruncatedBetaDistributionDataset as TruncatedBetaDistributionDataset_ConstNoise, \
     TruncatedBetaDistributionValidationDataset as TruncatedBetaDistributionValidationDataset_ConstNoise
-from experiments.synthetic.constants import CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND
+from experiments.synthetic.heteroscedastic.dataset import calculate_mean_std as calculate_mean_std_heter, \
+    TruncatedBetaDistributionDataset as TruncatedBetaDistributionDataset_Heter, \
+    TruncatedBetaDistributionValidationDataset as TruncatedBetaDistributionValidationDataset_Heter
 
 
 def plot_real_datasets():
@@ -68,6 +71,8 @@ def plot_synthetic_datasets():
     lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
 
     plt.axes(axs[0, 1])
     plt.title('(b) Constant Noise Testing Data Set')
@@ -77,26 +82,44 @@ def plot_synthetic_datasets():
     lgnd = plt.legend()
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
+
+    # h in the names below signify heteroscedastic
+    x_mean_h, x_std_h, y_mean_h, y_std_h = calculate_mean_std_heter(lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
+    dataset_train_h = TruncatedBetaDistributionDataset_Heter(x_mean_cn, x_std_cn, y_mean_cn, y_std_cn, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
+    dataset_test_h = TruncatedBetaDistributionValidationDataset_Heter(x_mean_cn, x_std_cn, y_mean_cn, y_std_cn)
 
     plt.axes(axs[1, 0])
     plt.title('(c) Heteroscedastic Training Data Set')
-    plot_bike(train_df_bike(df_bike), label ='training data', censored = True)
-    plt.ylim(-2, 7)
-    plt.xlim(-5, 5)
-
+    plot_dataset_synthetic(dataset_train_h, label ='training data')
+    plot_beta(x_mean_h, x_std_h, y_mean_h, y_std_h, label = 'true distribution')
+    plt.ylim(-2, 5)
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
 
     plt.axes(axs[1, 1])
     plt.title('(d) Heteroscedastic Testing Data Set')
-    plot_bike(test_df_bike(df_bike), label ='testing data', show_bounds = False)
-    plt.ylim(-2, 7)
-    plt.xlim(-5, 5)
+    plot_dataset_synthetic(dataset_test_h, label ='testing data')
+    plot_beta(x_mean_h, x_std_h, y_mean_h, y_std_h, label = 'true distribution')
+    plt.ylim(-2, 5)
+    lgnd = plt.legend()
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    plt.xlabel('input (standardized)')
+    plt.ylabel('outcome (standardized)')
 
     plt.tight_layout()
 
     save_figures('experiments/all_img/datasets_synthetic')
     plt.close()
 
-plot_synthetic_datasets()
+if __name__ == '__main__':
+    plot_synthetic_datasets()
+    plot_real_datasets()
 
 # EXAMPLE FOR MERGING PLOTS ON THE SAME ROW
 # import matplotlib.gridspec as gridspec
