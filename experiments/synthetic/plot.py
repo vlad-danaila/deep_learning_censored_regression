@@ -19,7 +19,7 @@ def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf,
     if std:
         plt.fill_between(x, y + std, y - std, facecolor='blue', alpha=0.1, label = 'real std')
 
-def plot_dataset(dataset, size = DOT_SIZE, label = None):
+def plot_dataset(dataset, label = None):
     x_list, y_list = [], []
     for i in range(len(dataset)):
         x, y = dataset[i]
