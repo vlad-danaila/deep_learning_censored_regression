@@ -18,7 +18,7 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     plot_net(model, dataset_val)
     loss_fn = criterion()
     plt.xlabel('input (standardized)')
@@ -52,7 +52,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'])
         loss_fn = criterion(checkpoint['sigma'])
@@ -73,7 +73,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'sigma' in checkpoint:
         plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
         loss_fn = criterion(checkpoint['sigma'])
@@ -113,7 +113,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma = checkpoint['gamma'])
     elif 'sigma' in checkpoint:
@@ -131,7 +131,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     plt.close()
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
     elif 'sigma' in checkpoint:
@@ -187,7 +187,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     scale_model.eval()
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma_model = scale_model)
     elif 'sigma' in checkpoint:
@@ -205,7 +205,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     plt.close()
 
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, size = .3, label = 'validation data')
+    plot_dataset(dataset_val, label = 'validation data')
     if 'gamma' in checkpoint:
         plot_net(model, dataset_val, gamma_model = scale_model, with_std = True)
     elif 'sigma' in checkpoint:
