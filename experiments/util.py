@@ -28,7 +28,7 @@ def load_checkpoint(checkpoint_path):
     return t.load(checkpoint_path) if IS_CUDA_AVILABLE else t.load(checkpoint_path, map_location=t.device('cpu'))
 
 def save_figures(file_path: str):
-    plt.savefig('{}.pdf'.format(file_path), dpi = 1000, format = 'pdf')
+    plt.savefig('{}.pdf'.format(file_path), dpi = 300, format = 'pdf')
     plt.savefig('{}.eps'.format(file_path), dpi = 300, format = 'eps')
 
 def scatterplot(x, y, label = None, s = DOT_SIZE):

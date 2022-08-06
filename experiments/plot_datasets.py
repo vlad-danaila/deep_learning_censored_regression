@@ -4,9 +4,9 @@ from experiments.real.pm25.dataset import df as df_pm25, test_df as test_df_pm25
 from experiments.real.bike_sharing.plot import plot_full_dataset as plot_bike
 from experiments.real.bike_sharing.dataset import df as df_bike, test_df as test_df_bike, train_df as train_df_bike
 from experiments.util import save_figures
+from experiments.constants import PLOT_FONT_SIZE
 
-
-plt.rcParams.update({'font.size': 5})
+plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
 
 fig, axs = plt.subplots(2, 2)
 
@@ -36,7 +36,7 @@ plt.xlim(-5, 5)
 
 plt.tight_layout()
 
-save_figures('experiments/real/real_datasets_img/real_datasets')
+save_figures('experiments/all_img/datasets_real')
 # plt.close()
 
 # EXAMPLE FOR MERGING PLOTS ON THE SAME ROW
