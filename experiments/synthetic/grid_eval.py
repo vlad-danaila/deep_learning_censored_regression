@@ -10,17 +10,14 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net, plot_fixed_and_dynamic_std
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 
-
-def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
-    model = model_fn()
+def plot_dataset_and_net(root_folder, checkpoint_name, isGrid, model, x_mean, x_std, y_mean, y_std, dataset_val):
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, label = 'validation data')
     plot_net(model, dataset_val)
-    loss_fn = criterion()
+
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -28,6 +25,12 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
+
+def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
+                                    checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+    model = model_fn()
+    loss_fn = criterion()
+    plot_dataset_and_net(root_folder, checkpoint_name, isGrid, model, x_mean, x_std, y_mean, y_std, dataset_val)
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
