@@ -74,7 +74,7 @@ def eval_mae_simple():
     print(best_metrics)
 
 
-eval_mae_simple()
+
 
 
 """# Bounded MAE"""
