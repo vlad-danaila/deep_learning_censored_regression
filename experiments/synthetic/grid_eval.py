@@ -10,14 +10,17 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net, plot_fixed_and_dynamic_std
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 
-def plot_dataset_and_net(root_folder, checkpoint_name, isGrid, model, x_mean, x_std, y_mean, y_std, dataset_val):
-    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std = False):
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     # plot_dataset(dataset_test, size = .3, label = 'test data')
     plot_dataset(dataset_val, label = 'validation data')
-    plot_net(model, dataset_val)
-
+    if 'sigma' in checkpoint:
+        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = with_std)
+    elif 'gamma' in checkpoint:
+        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = with_std)
+    else:
+        plot_net(model, dataset_val)
     plt.xlabel('input (standardized)')
     plt.ylabel('outcome (standardized)')
     plt.ylim((-2.5, 2.5))
@@ -25,12 +28,15 @@ def plot_dataset_and_net(root_folder, checkpoint_name, isGrid, model, x_mean, x_
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
     lgnd.legendHandles[2]._sizes = [10]
+    if with_std:
+        lgnd.legendHandles[3]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
     loss_fn = criterion()
-    plot_dataset_and_net(root_folder, checkpoint_name, isGrid, model, x_mean, x_std, y_mean, y_std, dataset_val)
+    checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
@@ -47,53 +53,26 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
-    model.load_state_dict(checkpoint['model'])
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, label = 'validation data')
-    if 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'])
-        loss_fn = criterion(checkpoint['sigma'])
-    elif 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'])
-        loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    # plot_dataset(dataset_test, size = .3, label = 'test data')
-    plot_dataset(dataset_val, label = 'validation data')
-    if 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = True)
-        loss_fn = criterion(checkpoint['sigma'])
-    elif 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = True)
-        loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
     plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
+
+    if 'sigma' in checkpoint:
+        loss_fn = criterion(checkpoint['sigma'])
+    elif 'gamma' in checkpoint:
+        loss_fn = criterion(checkpoint['gamma'])
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
