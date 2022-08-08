@@ -10,14 +10,20 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net, plot_fixed_and_dynamic_std
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 
-def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std = False):
+def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, label = 'validation data')
     if 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = with_std)
+        if scale_model:
+            plot_net(model, dataset_val, sigma_model = scale_model, with_std = with_std)
+        else:
+            plot_net(model, dataset_val, sigma = checkpoint['sigma'], with_std = with_std)
     elif 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = with_std)
+        if scale_model:
+            plot_net(model, dataset_val, gamma_model = scale_model, with_std = with_std)
+        else:
+            plot_net(model, dataset_val, gamma = checkpoint['gamma'], with_std = with_std)
     else:
         plot_net(model, dataset_val)
     plt.xlabel('input (standardized)')
@@ -136,44 +142,16 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     model.eval()
 
     scale_model = get_scale_network()
-    if is_reparam:
-        scale_model.load_state_dict(checkpoint['gamma'])
-    else:
-        scale_model.load_state_dict(checkpoint['sigma'])
+    scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
     scale_model.eval()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, label = 'validation data')
-    if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma_model = scale_model)
-    elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = scale_model)
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
-    plot_dataset(dataset_val, label = 'validation data')
-    if 'gamma' in checkpoint:
-        plot_net(model, dataset_val, gamma_model = scale_model, with_std = True)
-    elif 'sigma' in checkpoint:
-        plot_net(model, dataset_val, sigma_model = scale_model, with_std = True)
-    plt.xlabel('input (standardized)')
-    plt.ylabel('outcome (standardized)')
-    plt.ylim((-2.5, 2.5))
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
-    lgnd.legendHandles[3]._sizes = [10]
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model, with_std=True)
     plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')

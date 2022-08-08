@@ -2,7 +2,7 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.grid_search import grid_search, config_validation
+from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.grid_eval import plot_and_evaluate_model_mae_mse
 from experiments.grid_train import train_and_evaluate_mae_mse
 
@@ -172,6 +172,3 @@ def eval_mse_cens_WITH_trunc():
 
 
 
-eval_mse_simple()
-eval_mse_cens_NO_trunc()
-eval_mse_cens_WITH_trunc()
