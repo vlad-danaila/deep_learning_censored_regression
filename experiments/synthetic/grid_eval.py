@@ -36,16 +36,21 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
     if with_std:
         lgnd.legendHandles[3]._sizes = [10]
 
+def save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix = ''):
+    file_path = root_folder + '/' + checkpoint_name
+    plt.savefig(f'{file_path}{suffix}.pdf', dpi = 300, format = 'pdf')
+    # plt.savefig(f'{file_path}{suffix}.svg', dpi = 300, format = 'svg')
+    # plt.savefig(f'{file_path}{suffix}.png', dpi = 200, format = 'png')
+    plt.close()
+
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
     model = model_fn()
     loss_fn = criterion()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
@@ -62,17 +67,12 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
                                 checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
     checkpoint = t.load(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'sigma' in checkpoint:
         loss_fn = criterion(checkpoint['sigma'])
@@ -98,17 +98,12 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     model = model_fn()
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
+
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
@@ -146,28 +141,10 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     scale_model.eval()
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model, with_std=True)
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
-
-    # TODO put real fixed std as a parameter not hardcoded
-    plot_fixed_and_dynamic_std(dataset_val, model, scale_model, 0.5203 if is_reparam else 0.4017, is_reparam=is_reparam)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('standard deviation')
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}-two-std.pdf'.format(checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-two-std.svg'.format(checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-two-std.png'.format(checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
