@@ -25,6 +25,12 @@ def plot_composed_synthetic_cn_tobit_fixed_std():
     # plt.ylim(-2, 7)
     # plt.xlim(-4, 5)
 
+    plt.axes(ax2)
+    plot_deep_tobit_NO_trunc()
+
+    plt.axes(ax3)
+    plot_gll_scaled()
+
     plt.show()
     save_figures('experiments/all_img/synt_cn_tobit_fixed_std')
 
