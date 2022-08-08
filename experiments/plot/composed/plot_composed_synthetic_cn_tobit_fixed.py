@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from experiments.util import save_figures
+from experiments.constants import PLOT_FONT_SIZE
 
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_tobit_loss_synthetic_data import \
     plot_deep_tobit_WITH_trunc, plot_deep_tobit_NO_trunc, plot_linear_tobit_WITH_trunc, plot_linear_tobit_NO_trunc
@@ -8,9 +9,11 @@ from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_gl
 
 
 def plot_composed_synthetic_cn_tobit_fixed_std():
+    plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
+
     gs = gridspec.GridSpec(2, 4)
-    plt.show()
-    # gs.update(wspace=0.5)
+    gs.update(wspace=.5)
+    gs.update(hspace=.3)
     ax1 = plt.subplot(gs[0, 1:3])
     ax2 = plt.subplot(gs[1, :2], )
     ax3 = plt.subplot(gs[1, 2:])
@@ -22,6 +25,7 @@ def plot_composed_synthetic_cn_tobit_fixed_std():
     # plt.ylim(-2, 7)
     # plt.xlim(-4, 5)
 
+    plt.show()
     save_figures('experiments/all_img/synt_cn_tobit_fixed_std')
 
 plot_composed_synthetic_cn_tobit_fixed_std()
