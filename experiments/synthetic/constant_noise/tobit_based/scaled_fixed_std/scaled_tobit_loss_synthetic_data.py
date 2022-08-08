@@ -7,6 +7,7 @@ from experiments.synthetic.grid_eval import plot_and_evaluate_model_tobit_fixed_
 from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork
+from experiments.synthetic.grid_eval import plot_dataset_and_net
 
 """Constants"""
 ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
@@ -88,6 +89,11 @@ def eval_deep_tobit_NO_trunc():
     print(best_config)
     print(best_metrics)
 
+def plot_deep_tobit_NO_trunc():
+    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+
+
 
 
 
@@ -127,6 +133,12 @@ def eval_deep_tobit_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+def plot_deep_tobit_WITH_trunc():
+    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+
+
 
 
 
@@ -168,6 +180,12 @@ def eval_linear_tobit_NO_trunc():
     print(best_config)
     print(best_metrics)
 
+def plot_linear_tobit_NO_trunc():
+    checkpoint = t.load(f'{ROOT_LINEAR_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TOBIT_SCALED}.tar')
+    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+
+
+
 
 
 
@@ -207,3 +225,7 @@ def eval_linear_tobit_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+def plot_linear_tobit_WITH_trunc():
+    checkpoint = t.load(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}.tar')
+    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)

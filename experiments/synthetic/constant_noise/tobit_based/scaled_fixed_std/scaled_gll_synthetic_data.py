@@ -5,6 +5,8 @@ from experiments.synthetic.constant_noise.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.grid_eval import plot_and_evaluate_model_gll
 from experiments.grid_train import train_and_evaluate_gll
+from experiments.synthetic.grid_eval import plot_dataset_and_net
+from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/constant_noise/tobit_based/scaled_fixed_std/gll'
@@ -79,3 +81,6 @@ def eval_gll_scaled():
     print(best_config)
     print(best_metrics)
 
+def plot_gll_scaled():
+    checkpoint = t.load(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
