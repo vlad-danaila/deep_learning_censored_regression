@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from experiments.util import save_figures
+from experiments.util import save_figures, setup_composed_5_items_plot
 from experiments.constants import PLOT_FONT_SIZE
 
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_tobit_loss_synthetic_data import \
@@ -9,19 +9,7 @@ from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_gl
 
 
 def plot_composed_synthetic_cn_tobit_fixed_std():
-    plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
-    fig = plt.figure()
-    fig.set_size_inches(6, 6)
-
-    gs = gridspec.GridSpec(3, 4, figure=fig)
-    gs.update(wspace=.5)
-    gs.update(hspace=.5)
-
-    ax1 = plt.subplot(gs[0, 1:3])
-    ax2 = plt.subplot(gs[1, :2])
-    ax3 = plt.subplot(gs[1, 2:])
-    ax4 = plt.subplot(gs[2, :2])
-    ax5 = plt.subplot(gs[2, 2:])
+    ax1, ax2, ax3, ax4, ax5 = setup_composed_5_items_plot()
 
     plt.axes(ax1)
     plot_deep_tobit_WITH_trunc()

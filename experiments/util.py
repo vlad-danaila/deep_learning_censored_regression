@@ -3,9 +3,11 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 
 from experiments.constants import IS_CUDA_AVILABLE
 from experiments.constants import DOT_SIZE
+from experiments.constants import PLOT_FONT_SIZE
 
 """Reproducible experiments"""
 def set_random_seed():
@@ -17,7 +19,6 @@ def set_random_seed():
     t.backends.cudnn.benchmark = False
     np.random.seed(SEED)
     random.seed(SEED)
-
 
 def get_device(cuda = IS_CUDA_AVILABLE):
     return 'cuda:0' if cuda else 'cpu'
@@ -36,10 +37,26 @@ def save_figures(file_path: str):
 def scatterplot(x, y, label = None, s = DOT_SIZE):
     plt.scatter(x, y, s = s, label = label, rasterized=True, marker='.', linewidths=0)
 
-
 def save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix = ''):
     file_path = root_folder + '/' + checkpoint_name
     plt.savefig(f'{file_path}{suffix}.pdf', dpi = 300, format = 'pdf')
     # plt.savefig(f'{file_path}{suffix}.svg', dpi = 300, format = 'svg')
     # plt.savefig(f'{file_path}{suffix}.png', dpi = 200, format = 'png')
     plt.close()
+
+def setup_composed_5_items_plot():
+    plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
+    fig = plt.figure()
+    fig.set_size_inches(6, 6)
+
+    gs = gridspec.GridSpec(3, 4, figure=fig)
+    gs.update(wspace=.5)
+    gs.update(hspace=.5)
+
+    ax1 = plt.subplot(gs[0, 1:3])
+    ax2 = plt.subplot(gs[1, :2])
+    ax3 = plt.subplot(gs[1, 2:])
+    ax4 = plt.subplot(gs[2, :2])
+    ax5 = plt.subplot(gs[2, 2:])
+
+    return ax1, ax2, ax3, ax4, ax5
