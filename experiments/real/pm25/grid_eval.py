@@ -10,7 +10,7 @@ from experiments.real.models import get_model, get_scale_network
 from experiments.real.pm25.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.constants import IS_CUDA_AVILABLE
-from experiments.util import load_checkpoint, get_device
+from experiments.util import load_checkpoint, get_device, save_fig_in_checkpoint_folder
 
 def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -41,11 +41,9 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
+    loss_fn = criterion()
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
     val_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val), n=n, k=k)
@@ -62,17 +60,12 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
                                 checkpoint_name, criterion, isGrid = True, model_fn = get_model, loader_val = None):
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
+
     plot_dataset_and_net(checkpoint, model, testing_df)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, testing_df, with_std=True)
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'sigma' in checkpoint:
         loss_fn = criterion(checkpoint['sigma'])
@@ -102,18 +95,10 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
         raise 'Sigma or gamma must be found in checkpoint'
 
     plot_dataset_and_net(checkpoint, model, testing_df)
-
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, testing_df, with_std=True)
-
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
@@ -154,22 +139,16 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     scale_model.eval()
 
     plot_dataset_and_net(checkpoint, model, testing_df, scale_model=scale_model)
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     plot_dataset_and_net(checkpoint, model, testing_df, scale_model=scale_model, with_std=True)
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Heteroscedastic_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
-        
+
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])

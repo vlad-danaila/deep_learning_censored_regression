@@ -7,8 +7,10 @@ from deep_tobit.util import distinguish_censored_versus_observed_data
 
 from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.synthetic.models import DenseNetwork, get_scale_network
-from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net, plot_fixed_and_dynamic_std
+from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
+from experiments.util import save_fig_in_checkpoint_folder
+
 
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -35,13 +37,6 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
     lgnd.legendHandles[2]._sizes = [10]
     if with_std:
         lgnd.legendHandles[3]._sizes = [10]
-
-def save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix = ''):
-    file_path = root_folder + '/' + checkpoint_name
-    plt.savefig(f'{file_path}{suffix}.pdf', dpi = 300, format = 'pdf')
-    # plt.savefig(f'{file_path}{suffix}.svg', dpi = 300, format = 'svg')
-    # plt.savefig(f'{file_path}{suffix}.png', dpi = 200, format = 'png')
-    plt.close()
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):

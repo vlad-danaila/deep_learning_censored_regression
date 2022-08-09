@@ -2,6 +2,8 @@ import torch as t
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+
 from experiments.constants import IS_CUDA_AVILABLE
 from experiments.constants import DOT_SIZE
 
@@ -33,3 +35,11 @@ def save_figures(file_path: str):
 
 def scatterplot(x, y, label = None, s = DOT_SIZE):
     plt.scatter(x, y, s = s, label = label, rasterized=True, marker='.', linewidths=0)
+
+
+def save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix = ''):
+    file_path = root_folder + '/' + checkpoint_name
+    plt.savefig(f'{file_path}{suffix}.pdf', dpi = 300, format = 'pdf')
+    # plt.savefig(f'{file_path}{suffix}.svg', dpi = 300, format = 'svg')
+    # plt.savefig(f'{file_path}{suffix}.png', dpi = 200, format = 'png')
+    plt.close()
