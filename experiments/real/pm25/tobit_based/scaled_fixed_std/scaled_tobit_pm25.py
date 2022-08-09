@@ -1,5 +1,5 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.real.pm25.grid_eval import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
@@ -65,7 +65,7 @@ def eval_deep_tobit_NO_trunc():
     print(best_metrics)
 
 def plot_deep_tobit_NO_trunc():
-    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED}.tar')
     plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
 
 
@@ -110,7 +110,7 @@ def eval_deep_tobit_WITH_trunc():
     print(best_metrics)
 
 def plot_deep_tobit_WITH_trunc():
-    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}.tar')
     plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
 
 
@@ -157,7 +157,7 @@ def eval_linear_tobit_NO_trunc():
     print(best_metrics)
 
 def plot_linear_tobit_NO_trunc():
-    checkpoint = t.load(f'{ROOT_LINEAR_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TOBIT_SCALED}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TOBIT_SCALED}.tar')
     plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 
 
@@ -203,6 +203,6 @@ def eval_linear_tobit_WITH_trunc():
     print(best_metrics)
 
 def plot_linear_tobit_WITH_trunc():
-    checkpoint = t.load(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}.tar')
     plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 

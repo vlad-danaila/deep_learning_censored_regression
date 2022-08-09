@@ -1,5 +1,5 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.real.pm25.grid_eval import plot_and_evaluate_model_gll, plot_dataset_and_net
@@ -67,5 +67,5 @@ def eval_gll_scaled():
     print(best_metrics)
 
 def plot_gll_scaled():
-    checkpoint = t.load(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
     plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
