@@ -97,6 +97,29 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
+def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None):
+    model.load_state_dict(checkpoint['model'])
+    plot_full_dataset(testing_df, label = 'ground truth')
+    if 'gamma' in checkpoint:
+        if scale_model:
+            plot_net(model, testing_df, gamma_model = scale_model, with_std=with_std)
+        else:
+            plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std=with_std)
+    elif 'sigma' in checkpoint:
+        if scale_model:
+            plot_net(model, testing_df, sigma_model = scale_model, with_std=with_std)
+        else:
+            plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std=with_std)
+    else:
+        plot_net(model, testing_df)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    if with_std:
+        lgnd.legendHandles[2]._sizes = [10]
 
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder, checkpoint_name,
                                             isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None):
@@ -106,35 +129,16 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
-    model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'])
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'])
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
+
+    plot_dataset_and_net(checkpoint, model, testing_df)
+
     plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
     plt.close()
 
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
-    lgnd = plt.legend(loc='upper left')
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
+    plot_dataset_and_net(checkpoint, model, testing_df, with_std=True)
+
     plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
     plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
     plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
@@ -173,10 +177,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     model.eval()
 
     scale_model = get_scale_network(INPUT_SIZE)
-    if is_reparam:
-        scale_model.load_state_dict(checkpoint['gamma'])
-    else:
-        scale_model.load_state_dict(checkpoint['sigma'])
+    scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
     scale_model.eval()
 
     plot_full_dataset(testing_df, label = 'ground truth')
@@ -225,3 +226,5 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
                                               is_eval_bounded = False, is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
+
+
