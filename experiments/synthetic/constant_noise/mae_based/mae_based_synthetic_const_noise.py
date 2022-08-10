@@ -5,6 +5,8 @@ from experiments.synthetic.constant_noise.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.grid_eval import plot_and_evaluate_model_mae_mse
 from experiments.grid_train import train_and_evaluate_mae_mse
+from experiments.synthetic.grid_eval import plot_dataset_and_net
+from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
 ROOT_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_simple'
@@ -73,6 +75,13 @@ def eval_mae_simple():
     print(best_config)
     print(best_metrics)
 
+def plot_mae_simple():
+    checkpoint = t.load(f'{ROOT_MAE}/grid {CHECKPOINT_MAE}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+
+
+
+
 
 
 
@@ -121,6 +130,10 @@ def eval_mae_cens_NO_trunc():
     print(best_config)
     print(best_metrics)
 
+def plot_mae_cens_NO_trunc():
+    checkpoint = t.load(f'{ROOT_BOUNDED_MAE}/grid {CHECKPOINT_BOUNDED_MAE}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+
 
 
 
@@ -168,3 +181,7 @@ def eval_mae_cens_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+def plot_mae_cens_WITH_trunc():
+    checkpoint = t.load(f'{ROOT_BOUNDED_MAE_WITH_PENALTY}/grid {CHECKPOINT_BOUNDED_MAE_WITH_PENALTY}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)

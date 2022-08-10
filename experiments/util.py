@@ -60,3 +60,21 @@ def setup_composed_5_items_plot():
     ax5 = plt.subplot(gs[2, 2:])
 
     return ax1, ax2, ax3, ax4, ax5
+
+def setup_composed_6_items_plot():
+    plt.rcParams.update({'font.size': PLOT_FONT_SIZE})
+    fig = plt.figure()
+    fig.set_size_inches(6, 6)
+
+    gs = gridspec.GridSpec(3, 4, figure=fig)
+    gs.update(wspace=.5)
+    gs.update(hspace=.5)
+
+    ax1 = plt.subplot(gs[0, :2])
+    ax2 = plt.subplot(gs[0, 2:])
+    ax3 = plt.subplot(gs[1, :2])
+    ax4 = plt.subplot(gs[1, 2:])
+    ax5 = plt.subplot(gs[2, :2])
+    ax6 = plt.subplot(gs[2, 2:])
+
+    return ax1, ax2, ax3, ax4, ax5, ax6

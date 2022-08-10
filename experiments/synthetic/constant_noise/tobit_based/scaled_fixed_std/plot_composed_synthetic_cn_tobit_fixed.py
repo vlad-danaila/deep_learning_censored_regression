@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 from experiments.util import save_figures, setup_composed_5_items_plot
-from experiments.constants import PLOT_FONT_SIZE
 
 from experiments.synthetic.constant_noise.tobit_based.scaled_fixed_std.scaled_tobit_loss_synthetic_data import \
     plot_deep_tobit_WITH_trunc, plot_deep_tobit_NO_trunc, plot_linear_tobit_WITH_trunc, plot_linear_tobit_NO_trunc
