@@ -1,8 +1,8 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.pm25.grid_eval import plot_and_evaluate_model_mae_mse
+from experiments.real.pm25.grid_eval import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_mae_mse
 from experiments.real.models import get_model
 
@@ -64,6 +64,10 @@ def eval_mse_simple():
   print(best_config)
   print(best_metrics)
 
+def plot_mse_simple():
+    checkpoint = load_checkpoint(f'{ROOT_MSE}/grid {CHECKPOINT_MSE}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+
 
 
 
@@ -113,6 +117,10 @@ def eval_mse_cens_NO_trunc():
     print(best_config)
     print(best_metrics)
 
+def plot_mse_cens_NO_trunc():
+    checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MSE}/grid {CHECKPOINT_BOUNDED_MSE}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+
 
 
 
@@ -160,3 +168,7 @@ def eval_mse_cens_WITH_trunc():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+def plot_mse_cens_WITH_trunc():
+    checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MSE_WITH_PENALTY}/grid {CHECKPOINT_BOUNDED_MSE_WITH_PENALTY}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
