@@ -5,6 +5,8 @@ from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.grid_eval import plot_and_evaluate_model_gll
 from experiments.grid_train import train_and_evaluate_gll
+from experiments.synthetic.grid_eval import plot_dataset_and_net
+from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/gll'
@@ -78,3 +80,7 @@ def eval_gll_reparam():
   best_metrics = grid_results[str(best_config)]
   print(best_config)
   print(best_metrics)
+
+def plot_gll_reparam():
+    checkpoint = t.load(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
