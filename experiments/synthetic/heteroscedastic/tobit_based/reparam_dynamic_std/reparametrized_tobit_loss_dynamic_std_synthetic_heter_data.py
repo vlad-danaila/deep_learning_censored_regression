@@ -3,10 +3,10 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.grid_search import grid_search, config_validation
-from experiments.synthetic.grid_eval import plot_and_evaluate_model_tobit_dyn_std
+from experiments.synthetic.grid_eval import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_tobit_dyn_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
-from experiments.synthetic.models import DenseNetwork
+from experiments.synthetic.models import DenseNetwork, get_scale_network
 
 """Constants"""
 ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
@@ -94,3 +94,9 @@ def eval_deep_tobit_WITH_trunc_reparam_dyn_std():
   print(best_config)
   print(best_metrics)
 
+def plot_deep_tobit_WITH_trunc_reparam_dyn_std():
+    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}.tar')
+    scale_model = get_scale_network()
+    scale_model.load_state_dict(checkpoint['gamma'])
+    scale_model.eval()
+    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
