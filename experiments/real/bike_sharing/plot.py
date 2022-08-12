@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from experiments.constants import LOSS, ABS_ERR, R_SQUARED, DOT_SIZE
+from experiments.constants import LOSS, ABS_ERR, R_SQUARED, DOT_SIZE, LINE_WIDTH
 from experiments.real.bike_sharing.dataset import extract_features, pca, bound_min, bound_max, zero_normalized, \
     CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND, Bike_Share_Dataset
 from deep_tobit.util import to_numpy
@@ -16,9 +16,9 @@ def plot_full_dataset(df: pd.DataFrame, label = None, censored = False, show_bou
     x = pca(x)
     if not censored and show_bounds:
         min_max = [min(x), max(x)]
-        plt.plot(min_max, [bound_min] * 2, color = 'red')
-        plt.plot(min_max, [bound_max] * 2, color = 'red')
-        plt.plot(min_max, [zero_normalized] * 2, color = 'red')
+        plt.plot(min_max, [bound_min] * 2, color = 'red', linewidth=LINE_WIDTH)
+        plt.plot(min_max, [bound_max] * 2, color = 'red', linewidth=LINE_WIDTH)
+        plt.plot(min_max, [zero_normalized] * 2, color = 'red', linewidth=LINE_WIDTH)
 
     scatterplot(x, y, label = label)
     plt.xlabel('unidimensional PCA')

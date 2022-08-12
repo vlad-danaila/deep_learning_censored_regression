@@ -28,8 +28,9 @@ def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_mo
     else:
         plot_net(model, testing_df)
     plt.xlabel('unidimensional PCA')
-    plt.ylabel('PM2.5 (standardized)')
-    plt.ylim([-6, 9])
+    plt.ylabel('rented bike count (standardized)')
+    plt.ylim([-3, 4])
+    plt.xlim([-5, 4])
     lgnd = plt.legend(loc='upper left')
     lgnd.legendHandles[0]._sizes = [10]
     lgnd.legendHandles[1]._sizes = [10]
