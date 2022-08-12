@@ -1,8 +1,8 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_gll
+from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_gll, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_gll
 from experiments.real.models import get_model
 from experiments.util import get_device
@@ -66,4 +66,6 @@ def eval_gll_reparam():
     print(best_config)
     print(best_metrics)
 
-
+def plot_gll_reparam():
+    checkpoint = load_checkpoint(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))

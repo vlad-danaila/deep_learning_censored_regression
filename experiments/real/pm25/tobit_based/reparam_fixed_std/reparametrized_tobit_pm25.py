@@ -202,3 +202,8 @@ def plot_linear_tobit_WITH_trunc_reparam():
     checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}.tar')
     plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 
+
+# eval_deep_tobit_WITH_trunc_reparam()
+# eval_deep_tobit_NO_trunc_reparam()
+# eval_linear_tobit_WITH_trunc_reparam()
+# eval_linear_tobit_NO_trunc_reparam()

@@ -1,8 +1,8 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_tobit_fixed_std
+from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from experiments.real.models import get_model, linear_model
 
@@ -63,6 +63,9 @@ def eval_deep_tobit_NO_trunc_reparam():
     print(best_config)
     print(best_metrics)
 
+def plot_deep_tobit_NO_trunc_reparam():
+    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/grid {CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
 
 
 
@@ -103,6 +106,10 @@ def eval_deep_tobit_WITH_trunc_reparam():
     best_metrics = grid_results[str(best_config)]
     print(best_config)
     print(best_metrics)
+
+def plot_deep_tobit_WITH_trunc_reparam():
+    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}.tar')
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
 
 
 
@@ -145,6 +152,9 @@ def eval_linear_tobit_NO_trunc_reparam():
     print(best_config)
     print(best_metrics)
 
+def plot_linear_tobit_NO_trunc_reparam():
+    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/grid {CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED}.tar')
+    plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 
 
 
@@ -188,6 +198,9 @@ def eval_linear_tobit_WITH_trunc_reparam():
     print(best_config)
     print(best_metrics)
 
+def plot_linear_tobit_WITH_trunc_reparam():
+    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}.tar')
+    plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 
 
 # eval_deep_tobit_WITH_trunc_reparam()
