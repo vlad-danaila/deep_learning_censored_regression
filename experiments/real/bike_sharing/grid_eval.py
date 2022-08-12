@@ -1,6 +1,7 @@
 import math
-import matplotlib.pyplot as plt
 import torch as t
+import matplotlib.pyplot as plt
+
 from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss, \
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
@@ -9,9 +10,31 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
 from experiments.real.bike_sharing.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.constants import IS_CUDA_AVILABLE
 from experiments.util import load_checkpoint, get_device
 
+def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None):
+    model.load_state_dict(checkpoint['model'])
+    plot_full_dataset(testing_df, label = 'ground truth')
+    if 'gamma' in checkpoint:
+        if scale_model:
+            plot_net(model, testing_df, gamma_model = scale_model, with_std=with_std)
+        else:
+            plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std=with_std)
+    elif 'sigma' in checkpoint:
+        if scale_model:
+            plot_net(model, testing_df, sigma_model = scale_model, with_std=with_std)
+        else:
+            plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std=with_std)
+    else:
+        plot_net(model, testing_df)
+    plt.xlabel('unidimensional PCA')
+    plt.ylabel('PM2.5 (standardized)')
+    plt.ylim([-6, 9])
+    lgnd = plt.legend(loc='upper left')
+    lgnd.legendHandles[0]._sizes = [10]
+    lgnd.legendHandles[1]._sizes = [10]
+    if with_std:
+        lgnd.legendHandles[2]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):

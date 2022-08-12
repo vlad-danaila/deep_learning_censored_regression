@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 from experiments.util import save_figures, setup_composed_6_items_plot
 
-from experiments.real.pm25.mae_based.mae_based_pm25 import plot_mae_simple, plot_mae_cens_NO_trunc, plot_mae_cens_WITH_trunc
-from experiments.real.pm25.mse_based.mse_based_pm25 import plot_mse_simple, plot_mse_cens_NO_trunc, plot_mse_cens_WITH_trunc
+from experiments.real.bike_sharing.mae_based.mae_based_bike import plot_mae_simple, plot_mae_cens_NO_trunc, plot_mae_cens_WITH_trunc
+from experiments.real.bike_sharing.mse_based.mse_based_bike import plot_mse_simple, plot_mse_cens_NO_trunc, plot_mse_cens_WITH_trunc
 
+# TODO correct scale on bike plotting
+# Refactor rest of methods in grid eval
 
 def plot_composed_synthetic_cn_mae_mse():
     ax1, ax2, ax3, ax4, ax5, ax6 = setup_composed_6_items_plot()
@@ -33,7 +35,7 @@ def plot_composed_synthetic_cn_mae_mse():
     plt.title('(f) Mean Squared Error (No Truncation, No Censoring)')
 
     plt.show()
-    save_figures('experiments/all_img/pm25_mae_mse')
+    save_figures('experiments/all_img/bike_mae_mse')
 
 
 plot_composed_synthetic_cn_mae_mse()
