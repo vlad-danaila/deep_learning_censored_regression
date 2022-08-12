@@ -2,10 +2,10 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.pm25.grid_eval import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
+from experiments.real.pm25.grid_eval import plot_and_evaluate_model_tobit_fixed_std
+from experiments.real.grid_eval_plot import plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from experiments.real.models import get_model, linear_model
-from experiments.util import get_device
 
 """Constants"""
 ROOT_DEEP_TOBIT_REPARAMETRIZED = 'experiments/real/pm25/tobit_based/reparam_fixed_std/deep_tobit_cens_NO_trunc'

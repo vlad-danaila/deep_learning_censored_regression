@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from experiments.util import save_figures, setup_composed_6_items_plot
 
 from experiments.real.pm25.mae_based.mae_based_pm25 import plot_mae_simple, plot_mae_cens_NO_trunc, plot_mae_cens_WITH_trunc
-from experiments.real.pm25.mse_based.mse_based_pm25_noise import plot_mse_simple, plot_mse_cens_NO_trunc, plot_mse_cens_WITH_trunc
+from experiments.real.pm25.mse_based.mse_based_pm25_mse import plot_mse_simple, plot_mse_cens_NO_trunc, plot_mse_cens_WITH_trunc
 
 
 def plot_composed_synthetic_cn_mae_mse():
