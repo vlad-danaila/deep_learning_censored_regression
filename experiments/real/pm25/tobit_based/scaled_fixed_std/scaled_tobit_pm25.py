@@ -206,3 +206,7 @@ def plot_linear_tobit_WITH_trunc():
     checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/grid {CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}.tar')
     plot_dataset_and_net(checkpoint, linear_model(INPUT_SIZE), test_df(df))
 
+# eval_deep_tobit_WITH_trunc()
+# eval_deep_tobit_NO_trunc()
+# eval_linear_tobit_WITH_trunc()
+# eval_linear_tobit_NO_trunc()
