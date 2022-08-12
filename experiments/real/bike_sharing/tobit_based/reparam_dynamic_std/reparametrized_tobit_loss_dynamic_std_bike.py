@@ -71,7 +71,7 @@ def grid_search_deep_tobit_WITH_trunc():
                             grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, conf_validation = config_validation)
     return grid_best
 
-def eval_deep_tobit_WITH_trunc_dyn_std():
+def eval_deep_reparam_tobit_WITH_trunc_dyn_std():
     plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                           ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, isGrid = True, is_reparam = True)
     grid_results = t.load(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + GRID_RESULTS_FILE)

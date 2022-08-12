@@ -57,7 +57,7 @@ def grid_search_gll():
                             grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
     return grid_best
 
-def eval_gll_scaled():
+def eval_gll_reparam():
     plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                     ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
     grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)

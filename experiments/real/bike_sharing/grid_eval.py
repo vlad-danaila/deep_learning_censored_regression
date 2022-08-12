@@ -10,7 +10,7 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
 from experiments.real.bike_sharing.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.util import load_checkpoint, get_device
+from experiments.util import load_checkpoint, get_device, save_fig_in_checkpoint_folder
 
 def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -41,21 +41,10 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
                                     checkpoint_name, criterion, isGrid = True, model_fn = get_model, is_gamma = False, loader_val = None):
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
-    model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth')
-    plot_net(model, testing_df)
-    loss_fn = criterion()
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
+    loss_fn = criterion()
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
     val_metrics = eval_network_mae_mse_gll(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val), n=n, k=k)
@@ -72,43 +61,19 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
                                 checkpoint_name, criterion, isGrid = True, model_fn = get_model, loader_val = None):
     model = model_fn(INPUT_SIZE)
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
-    model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'])
-        loss_fn = criterion(checkpoint['sigma'])
-    elif 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'])
-        loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim((-6, 9))
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
 
-    plot_full_dataset(testing_df, label = 'ground truth')
+    plot_dataset_and_net(checkpoint, model, testing_df)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
+
+    plot_dataset_and_net(checkpoint, model, testing_df, with_std=True)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
+
     if 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
         loss_fn = criterion(checkpoint['sigma'])
     elif 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
         loss_fn = criterion(checkpoint['gamma'])
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    else:
+        raise 'sigma or gamma must be provided in checkpoint'
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
@@ -121,7 +86,6 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder, checkpoint_name,
                                             isGrid = True, model_fn = get_model, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
@@ -130,44 +94,19 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     checkpoint = load_checkpoint(root_folder + '/' + ('grid ' if isGrid else '') + checkpoint_name + '.tar')
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
-    model.load_state_dict(checkpoint['model'])
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'])
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'])
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
 
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma = checkpoint['gamma'], with_std = True)
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma = checkpoint['sigma'], with_std = True)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    lgnd.legendHandles[2]._sizes = [10]
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    plot_dataset_and_net(checkpoint, model, testing_df)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
+
+    plot_dataset_and_net(checkpoint, model, testing_df, with_std=True)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
+    else:
+        raise 'sigma or gamma must be provided in checkpoint'
 
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val), n=n, k=k)
@@ -197,48 +136,20 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
     model.eval()
 
     scale_model = get_scale_network(INPUT_SIZE)
-    if is_reparam:
-        scale_model.load_state_dict(checkpoint['gamma'])
-    else:
-        scale_model.load_state_dict(checkpoint['sigma'])
+    scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
     scale_model.eval()
 
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma_model = scale_model)
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma_model = scale_model)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    plot_dataset_and_net(checkpoint, model, testing_df, scale_model=scale_model)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
-    plot_full_dataset(testing_df, label = 'ground truth')
-    if 'gamma' in checkpoint:
-        plot_net(model, testing_df, gamma_model = scale_model, with_std = True)
-    elif 'sigma' in checkpoint:
-        plot_net(model, testing_df, sigma_model = scale_model, with_std = True)
-    plt.xlabel('unidimensional PCA')
-    plt.ylabel('rented bike count (standardized)')
-    plt.ylim([-3, 4])
-    lgnd = plt.legend()
-    lgnd.legendHandles[0]._sizes = [10]
-    lgnd.legendHandles[1]._sizes = [10]
-    plt.savefig('{}-with-std.pdf'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'pdf')
-    plt.savefig('{}-with-std.svg'.format(root_folder + '/' + checkpoint_name), dpi = 300, format = 'svg')
-    plt.savefig('{}-with-std.png'.format(root_folder + '/' + checkpoint_name), dpi = 200, format = 'png')
-    plt.close()
+    plot_dataset_and_net(checkpoint, model, testing_df, scale_model=scale_model, with_std=True)
+    save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
         loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Heteroscedastic_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
+
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - validation', val_metrics[ABS_ERR])
@@ -249,3 +160,5 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
                                               is_eval_bounded = False, is_reparam = is_reparam, n=n, k=k)
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
+
+
