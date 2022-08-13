@@ -1,8 +1,8 @@
 from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_tobit_dyn_std
+from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_tobit_dyn_std
 from experiments.real.models import get_model, linear_model, get_scale_network
 
@@ -68,5 +68,9 @@ def eval_deep_tobit_WITH_trunc_dyn_std():
     print(best_config)
     print(best_metrics)
 
-
-
+def plot_deep_tobit_WITH_trunc_dyn_std():
+    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}.tar')
+    scale_model = get_scale_network(INPUT_SIZE)
+    scale_model.load_state_dict(checkpoint['sigma'])
+    scale_model.eval()
+    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df), scale_model=scale_model)
