@@ -3,9 +3,9 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.synthetic.grid_eval import plot_and_evaluate_model_gll
+from experiments.synthetic.eval_optimized import plot_and_evaluate_model_gll
 from experiments.grid_train import train_and_evaluate_gll
-from experiments.synthetic.grid_eval import plot_dataset_and_net
+from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.synthetic.models import DenseNetwork
 
 """Constants"""
