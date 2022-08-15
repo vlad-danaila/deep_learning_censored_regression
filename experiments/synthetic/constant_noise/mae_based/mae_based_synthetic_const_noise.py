@@ -46,34 +46,8 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 """# MAE"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss, plot = False, log = False)
 objective_mae_mse = get_objective_fn_mae_mse(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MAE}/{CHECKPOINT_MAE}', t.nn.L1Loss, plot = False, log = False)
-
-"""Train once with default settings"""
-def train_once_mae_simple():
-    conf = {
-        'max_lr': 3e-2,
-        'epochs': 10,
-        'batch': 100,
-        'pct_start': 0.3,
-        'anneal_strategy': 'linear',
-        'base_momentum': 0.85,
-        'max_momentum': 0.95,
-        'div_factor': 3,
-        'final_div_factor': 1e4,
-        'weight_decay': 0
-    }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
-                                    dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, is_optimized= False)
-
-"""Grid search"""
-def grid_search_mae_simple():
-    grid_config = get_grid_search_space()
-    grid_best = grid_search(ROOT_MAE, dataset_train, dataset_val, bound_min, bound_max, grid_config,
-                            train_and_evaluate_net, CHECKPOINT_MAE, conf_validation = config_validation)
-    return grid_best
 
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mae_simple():
@@ -85,12 +59,12 @@ def eval_mae_simple():
                                     dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, is_optimized= True)
 
 def plot_mae_simple():
-    checkpoint = t.load(f'{ROOT_MAE}/grid {CHECKPOINT_MAE}.tar')
+    checkpoint = t.load(f'{ROOT_MAE}/{CHECKPOINT_MAE} best.tar')
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
 
 # tpe_opt_mae_simple()
 # eval_mae_simple()
-
+# plot_mae_simple()
 
 
 
