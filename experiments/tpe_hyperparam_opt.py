@@ -1,6 +1,7 @@
 import optuna
 import torch as t
 import logging
+from experiments.constants import ABS_ERR
 from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss, \
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
@@ -14,20 +15,20 @@ from os.path import join
 def propose_conf(trial: optuna.trial.Trial):
     return {
         'max_lr': trial.suggest_uniform('max_lr', 1e-5, 1e-2),
-        'epochs': trial.suggest_int(5, 20),
-        'batch': trial.suggest_int(32, 512),
+        'epochs': trial.suggest_int('epochs', 5, 20),
+        'batch': trial.suggest_int('batch', 32, 512),
         'pct_start': 0.45,
         'anneal_strategy': 'linear',
         'base_momentum': 0.85,
         'max_momentum': 0.95,
-        'div_factor': trial.suggest_int(2, 10),
+        'div_factor': trial.suggest_int('div_factor', 2, 10),
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
 
-def tpe_opt_hyperparam(root_folder, train_callback, checkpoint_name):
+def tpe_opt_hyperparam(root_folder, checkpoint_name, train_callback):
     # TODO add prunner, don't forget to include in optuna.create_study(..., pruner = pruner) or just raise optuna.TrialPruned()
-    study_name = f'study_{checkpoint_name}'
+    study_name = f'study {checkpoint_name}'
     sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS)
     study = optuna.create_study(study_name = study_name, direction = 'minimize',
                                 storage = f'sqlite:///{root_folder}/{checkpoint_name}.db', load_if_exists = True)
@@ -60,6 +61,6 @@ def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, c
                                                                      model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
-        return best
+        return best[ABS_ERR]
     return objective_fn
 

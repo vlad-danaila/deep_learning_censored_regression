@@ -7,6 +7,7 @@ from experiments.synthetic.grid_eval import plot_and_evaluate_model_mae_mse
 from experiments.grid_train import train_and_evaluate_mae_mse
 from experiments.synthetic.grid_eval import plot_dataset_and_net
 from experiments.synthetic.models import DenseNetwork
+from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 
 """Constants"""
 ROOT_MAE = 'experiments/synthetic/constant_noise/mae_based/mae_simple'
@@ -37,9 +38,17 @@ bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
 zero_normalized = normalize(0, y_mean, y_std)
 
+
+
+
+
+
+
 """# MAE"""
 
 train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MAE + '/' + CHECKPOINT_MAE, t.nn.L1Loss, plot = False, log = False)
+objective_mae_mse = get_objective_fn_mae_mse(
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MAE}/{CHECKPOINT_MAE}', t.nn.L1Loss, plot = False, log = False)
 
 """Train once with default settings"""
 def train_once_mae_simple():
@@ -66,6 +75,11 @@ def grid_search_mae_simple():
                             train_and_evaluate_net, CHECKPOINT_MAE, conf_validation = config_validation)
     return grid_best
 
+"""TPE Hyperparameter Optimisation"""
+def tpe_opt_mae_simple():
+    best = tpe_opt_hyperparam(ROOT_MAE, CHECKPOINT_MAE, objective_mae_mse)
+    return best
+
 def eval_mae_simple():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
                                     dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, isGrid = True)
@@ -79,7 +93,7 @@ def plot_mae_simple():
     checkpoint = t.load(f'{ROOT_MAE}/grid {CHECKPOINT_MAE}.tar')
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
 
-
+# tpe_opt_mae_simple()
 
 
 
