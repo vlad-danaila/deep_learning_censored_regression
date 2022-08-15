@@ -1,3 +1,4 @@
+import json
 import torch as t
 import numpy as np
 import random
@@ -8,6 +9,14 @@ import matplotlib.gridspec as gridspec
 from experiments.constants import IS_CUDA_AVILABLE
 from experiments.constants import DOT_SIZE
 from experiments.constants import PLOT_FONT_SIZE
+
+def dump_json(obj, path):
+    with open(path, mode='w') as file:
+        json.dump(obj, file)
+
+def read_json_file(path):
+    with open(path) as file:
+        return json.loads(file.read())
 
 """Reproducible experiments"""
 def set_random_seed():

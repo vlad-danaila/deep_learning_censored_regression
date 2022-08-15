@@ -6,30 +6,30 @@ from experiments.synthetic.plot import *
 
 
 def get_grid_search_space():
-    return [{
-        'max_lr': [1e-5],
-        'epochs': [1],
-        'batch': [ 200],
-        'pct_start': [0.45],
-        'anneal_strategy': ['linear'],
-        'base_momentum': [0.85],
-        'max_momentum': [0.95],
-        'div_factor': [10, 5],
-        'final_div_factor': [1e4],
-        'weight_decay': [0]
-    }]
     # return [{
-    #     'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-    #     'epochs': [10, 20],
-    #     'batch': [100, 200],
+    #     'max_lr': [1e-5],
+    #     'epochs': [1],
+    #     'batch': [ 200],
     #     'pct_start': [0.45],
     #     'anneal_strategy': ['linear'],
     #     'base_momentum': [0.85],
     #     'max_momentum': [0.95],
-    #     'div_factor': [10, 5, 2],
+    #     'div_factor': [10, 5],
     #     'final_div_factor': [1e4],
     #     'weight_decay': [0]
     # }]
+    return [{
+        'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
+        'epochs': [10, 20],
+        'batch': [100, 200],
+        'pct_start': [0.45],
+        'anneal_strategy': ['linear'],
+        'base_momentum': [0.85],
+        'max_momentum': [0.95],
+        'div_factor': [10, 5, 2],
+        'final_div_factor': [1e4],
+        'weight_decay': [0]
+    }]
 
 """# Grid Search Setup"""
 
