@@ -5,6 +5,7 @@ import random
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from experiments.constants import IS_CUDA_AVILABLE, DOT_SIZE,PLOT_FONT_SIZE, SEED
+import optuna
 
 def dump_json(obj, path):
     with open(path, mode='w') as file:
@@ -98,3 +99,11 @@ def setup_composed_4_items_plot():
     ax4 = plt.subplot(gs[1, 2:])
 
     return ax1, ax2, ax3, ax4
+
+def get_best_metrics_and_hyperparams_from_optuna_study(root_folder, checkpoint):
+    study_name = f'study {checkpoint}'
+    study = optuna.create_study(study_name = study_name, direction = 'minimize',
+        storage = f'sqlite:///{root_folder}/{checkpoint}.db', load_if_exists = True)
+    trials = [t for t in study.get_trials() if t.state == optuna.trial.TrialState.COMPLETE]
+    best_trial = min(trials, key = lambda t: t.value)
+    return best_trial.value, best_trial.params

@@ -58,7 +58,7 @@ def train_once_mse_simple():
   }
   train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
   plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
-                                  dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, isGrid = False)
+                                  dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, is_optimized= False)
 
 """Grid search"""
 def grid_search_mse_simple():
@@ -69,7 +69,7 @@ def grid_search_mse_simple():
 
 def eval_mse_simple():
   plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_MSE,
-                                  CHECKPOINT_MSE, t.nn.MSELoss, isGrid = True)
+                                  CHECKPOINT_MSE, t.nn.MSELoss, is_optimized= True)
   grid_results = t.load(ROOT_MSE + '/' + GRID_RESULTS_FILE)
   best_config = grid_results['best']
   best_metrics = grid_results[str(best_config)]
@@ -113,7 +113,7 @@ def train_once_mse_cens_NO_trunc():
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE,
-                                    CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = False)
+                                    CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, is_optimized= False)
 
 def grid_search_mse_cens_NO_trunc():
     grid_config = get_grid_search_space()
@@ -123,7 +123,7 @@ def grid_search_mse_cens_NO_trunc():
 
 def eval_mse_cens_NO_trunc():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE,
-                                    CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = True)
+                                    CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, is_optimized= True)
     grid_results = t.load(ROOT_BOUNDED_MSE + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
     best_metrics = grid_results[str(best_config)]
@@ -166,7 +166,7 @@ def train_once_mse_cens_WITH_trunc():
     }
     train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
-                                    CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
+                                    CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= False)
 
 def grid_search_mse_cens_WITH_trunc():
     grid_config = get_grid_search_space()
@@ -176,7 +176,7 @@ def grid_search_mse_cens_WITH_trunc():
 
 def eval_mse_cens_WITH_trunc():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
-                                    CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = True)
+                                    CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= True)
     grid_results = t.load(ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + GRID_RESULTS_FILE)
     best_config = grid_results['best']
     best_metrics = grid_results[str(best_config)]

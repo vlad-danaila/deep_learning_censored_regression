@@ -32,18 +32,6 @@ def propose_conf(trial: optuna.trial.Trial):
         'weight_decay': 0
     }
 
-def logging_callback(study, frozen_trial):
-    previous_best_value = study.user_attrs.get("previous_best_value", None)
-    if previous_best_value != study.best_value:
-        study.set_user_attr("previous_best_value", study.best_value)
-        print(
-            "Trial {} finished with best value: {} and parameters: {}. ".format(
-                frozen_trial.number,
-                frozen_trial.value,
-                frozen_trial.params,
-            )
-        )
-
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
     prev_best = study.user_attrs.get(PREVIOUS_BEST)
     checkpoint = study.user_attrs.get(CHECKPOINT)
