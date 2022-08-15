@@ -9,7 +9,7 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.util import get_scale, get_device, dump_json
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
-from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS
+from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED
 from os.path import join
 
 def propose_conf(trial: optuna.trial.Trial):
@@ -29,8 +29,8 @@ def propose_conf(trial: optuna.trial.Trial):
 def tpe_opt_hyperparam(root_folder, checkpoint_name, train_callback):
     # TODO add prunner, don't forget to include in optuna.create_study(..., pruner = pruner) or just raise optuna.TrialPruned()
     study_name = f'study {checkpoint_name}'
-    sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS)
-    study = optuna.create_study(study_name = study_name, direction = 'minimize',
+    sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS, seed=SEED)
+    study = optuna.create_study(sampler=sampler, study_name = study_name, direction = 'minimize',
                                 storage = f'sqlite:///{root_folder}/{checkpoint_name}.db', load_if_exists = True)
     study.optimize(train_callback, n_trials = NB_TRIALS)
     logging.info(study.best_params)

@@ -93,7 +93,7 @@ def plot_mae_simple():
     checkpoint = t.load(f'{ROOT_MAE}/grid {CHECKPOINT_MAE}.tar')
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
 
-# tpe_opt_mae_simple()
+tpe_opt_mae_simple()
 
 
 

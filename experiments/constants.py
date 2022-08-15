@@ -1,5 +1,7 @@
 import torch as t
 
+SEED = 0
+
 LOSS = 0
 ABS_ERR = 1
 R_SQUARED = 2
