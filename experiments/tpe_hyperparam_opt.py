@@ -29,7 +29,10 @@ def propose_conf(trial: optuna.trial.Trial):
         'max_momentum': 0.95,
         'div_factor': trial.suggest_int('div_factor', 2, 10),
         'final_div_factor': 1e4,
-        'weight_decay': 0
+        'weight_decay': 0,
+        'nb_layers': trial.suggest_int('nb_layers', 1, 10),
+        'layer_size': trial.suggest_int('layer_size', 5, 32),
+        'dropout_rate': trial.suggest_uniform('dropout_rate', 0, 1)
     }
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
@@ -44,7 +47,6 @@ def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.Froz
         os.rename(checkpoint_file, best_checkpoint_file)
 
 def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
-    # TODO add prunner, don't forget to include in optuna.create_study(..., pruner = pruner) or just raise optuna.TrialPruned()
     study_name = f'study {checkpoint}'
     sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS, seed=SEED)
     pruner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = PRUNNER_WARMUP_TRIALS)
