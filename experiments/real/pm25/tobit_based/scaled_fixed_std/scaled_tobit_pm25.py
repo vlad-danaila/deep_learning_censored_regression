@@ -29,7 +29,7 @@ set_random_seed()
 
 """# Scaled Deep Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED,
+train_and_evaluate_net_deep_NO_trunc = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED,
     plot = False, log = False, model_fn = lambda: get_model(INPUT_SIZE))
 
 def train_once_deep_tobit_NO_trunc():
@@ -45,14 +45,14 @@ def train_once_deep_tobit_NO_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_deep_NO_trunc(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                             ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, isGrid = False)
 
 def grid_search_deep_tobit_NO_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_DEEP_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED, conf_validation = config_validation)
+                          grid_config, train_and_evaluate_net_deep_NO_trunc, CHECKPOINT_DEEP_TOBIT_SCALED, conf_validation = config_validation)
     return grid_best
 
 def eval_deep_tobit_NO_trunc():
@@ -74,7 +74,7 @@ def plot_deep_tobit_NO_trunc():
 
 """# Scaled Deep Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED,
+train_and_evaluate_net_deep_WITH_trunc = train_and_evaluate_tobit_fixed_std(ROOT_DEEP_TOBIT_SCALED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED,
                                                             model_fn = lambda: get_model(INPUT_SIZE), plot = False, log = False, truncated_low = zero_normalized)
 
 def train_once_deep_tobit_WITH_trunc():
@@ -90,14 +90,14 @@ def train_once_deep_tobit_WITH_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_deep_WITH_trunc(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                             ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, isGrid = False)
 
 def grid_search_deep_tobit_WITH_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
-                            grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, conf_validation = config_validation)
+                            grid_config, train_and_evaluate_net_deep_WITH_trunc, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, conf_validation = config_validation)
     return grid_best
 
 def eval_deep_tobit_WITH_trunc():
@@ -121,7 +121,7 @@ def plot_deep_tobit_WITH_trunc():
 
 """# Scaled Linear Tobit"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TOBIT_SCALED,
+train_and_evaluate_net_lin_NO_trunc = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TOBIT_SCALED,
                                                             model_fn = lambda: linear_model(INPUT_SIZE), plot = False, log = False)
 
 def train_once_linear_tobit_NO_trunc():
@@ -137,14 +137,14 @@ def train_once_linear_tobit_NO_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_lin_NO_trunc(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                             ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, model_fn = linear_model, isGrid = False)
 
 def grid_search_linear_tobit_NO_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_LINEAR_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
-                            grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TOBIT_SCALED, conf_validation = config_validation)
+                            grid_config, train_and_evaluate_net_lin_NO_trunc, CHECKPOINT_LINEAR_TOBIT_SCALED, conf_validation = config_validation)
     return grid_best
 
 def eval_linear_tobit_NO_trunc():
@@ -167,7 +167,7 @@ def plot_linear_tobit_NO_trunc():
 
 """# Scaled Linear Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED,
+train_and_evaluate_net_lin_WITH_trunc = train_and_evaluate_tobit_fixed_std(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED + '/' + CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED,
                                                             model_fn = lambda: linear_model(INPUT_SIZE), plot = False, log = False, truncated_low = zero_normalized)
 
 def train_once_linear_tobit_WITH_trunc():
@@ -183,14 +183,14 @@ def train_once_linear_tobit_WITH_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_lin_WITH_trunc(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                             ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, model_fn = linear_model, isGrid = False)
 
 def grid_search_linear_tobit_WITH_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, dataset_train, dataset_val, bound_min, bound_max,
-        grid_config, train_and_evaluate_net, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, conf_validation = config_validation)
+        grid_config, train_and_evaluate_net_lin_WITH_trunc, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, conf_validation = config_validation)
     return grid_best
 
 def eval_linear_tobit_WITH_trunc():
