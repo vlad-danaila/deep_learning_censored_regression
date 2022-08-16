@@ -47,8 +47,8 @@ def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
     # TODO add prunner, don't forget to include in optuna.create_study(..., pruner = pruner) or just raise optuna.TrialPruned()
     study_name = f'study {checkpoint}'
     sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS, seed=SEED)
-    prunner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = PRUNNER_WARMUP_TRIALS)
-    study = optuna.create_study(sampler=sampler, prunner = prunner, study_name = study_name, direction = 'minimize',
+    pruner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = PRUNNER_WARMUP_TRIALS)
+    study = optuna.create_study(sampler=sampler, pruner = pruner, study_name = study_name, direction = 'minimize',
                                 storage = f'sqlite:///{root_folder}/{checkpoint}.db', load_if_exists = True)
     study.set_user_attr(PREVIOUS_BEST, math.inf)
     study.set_user_attr(CHECKPOINT, f'{root_folder}/{checkpoint}')

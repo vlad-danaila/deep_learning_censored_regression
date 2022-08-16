@@ -117,7 +117,7 @@ def train_network_mae_mse_gll(trial: optuna.trial.Trial, bound_min, bound_max, m
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
-        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
+        prune_check_indexes = epochs // 4, epochs // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -158,9 +158,11 @@ def train_network_mae_mse_gll(trial: optuna.trial.Trial, bound_min, bound_max, m
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
                 if epoch in prune_check_indexes:
                     check_step = 0 if epoch == prune_check_indexes[0] else 1
-                    trial.report(best, step = check_step)
+                    trial.report(best[ABS_ERR], step = check_step)
                     if trial.should_prune():
                         raise optuna.TrialPruned()
+            except optuna.TrialPruned as pruneError:
+                raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
                 break
@@ -177,7 +179,7 @@ def train_network_tobit_fixed_std(trial: optuna.trial.Trial, bound_min, bound_ma
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
-        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
+        prune_check_indexes = epochs // 4, epochs // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -226,9 +228,11 @@ def train_network_tobit_fixed_std(trial: optuna.trial.Trial, bound_min, bound_ma
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
                 if epoch in prune_check_indexes:
                     check_step = 0 if epoch == prune_check_indexes[0] else 1
-                    trial.report(best, step = check_step)
+                    trial.report(best[ABS_ERR], step = check_step)
                     if trial.should_prune():
                         raise optuna.TrialPruned()
+            except optuna.TrialPruned as pruneError:
+                raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
                 break
@@ -246,7 +250,7 @@ def train_network_tobit_dyn_std(trial: optuna.trial.Trial, bound_min, bound_max,
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
-        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
+        prune_check_indexes = epochs // 4, epochs // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -304,9 +308,11 @@ def train_network_tobit_dyn_std(trial: optuna.trial.Trial, bound_min, bound_max,
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
                 if epoch in prune_check_indexes:
                     check_step = 0 if epoch == prune_check_indexes[0] else 1
-                    trial.report(best, step = check_step)
+                    trial.report(best[ABS_ERR], step = check_step)
                     if trial.should_prune():
                         raise optuna.TrialPruned()
+            except optuna.TrialPruned as pruneError:
+                raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
                 break
