@@ -42,7 +42,7 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(ROOT_MSE + '/' + CHECKPOINT_MSE, t.nn.MSELoss, plot = False, log = False)
+train_and_evaluate_net_mse = train_and_evaluate_mae_mse(ROOT_MSE + '/' + CHECKPOINT_MSE, t.nn.MSELoss, plot = False, log = False)
 
 """Train once with default settings"""
 def train_once_mse_simple():
@@ -58,7 +58,7 @@ def train_once_mse_simple():
       'final_div_factor': 1e4,
       'weight_decay': 0
   }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+  train_and_evaluate_net_mse(dataset_train, dataset_val, bound_min, bound_max, conf)
   plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
                                   dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, isGrid = False)
 
@@ -66,7 +66,7 @@ def train_once_mse_simple():
 def grid_search_mse_simple():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_MSE, dataset_train, dataset_val, bound_min, bound_max,
-            grid_config, train_and_evaluate_net, CHECKPOINT_MSE, conf_validation = config_validation)
+            grid_config, train_and_evaluate_net_mse, CHECKPOINT_MSE, conf_validation = config_validation)
     return grid_best
 
 def eval_mse_simple():
@@ -98,7 +98,7 @@ def bounded_loss(y_pred, y):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
+train_and_evaluate_net_mse_cens = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
 
 def train_once_mse_cens_NO_trunc():
     conf = {
@@ -113,14 +113,14 @@ def train_once_mse_cens_NO_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_mse_cens(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE,
                                     CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, isGrid = False)
 
 def grid_search_mse_cens_NO_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MSE, dataset_train, dataset_val, bound_min, bound_max,
-        grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE, conf_validation = config_validation)
+        grid_config, train_and_evaluate_net_mse_cens, CHECKPOINT_BOUNDED_MSE, conf_validation = config_validation)
     return grid_best
 
 def eval_mse_cens_NO_trunc():
@@ -150,7 +150,7 @@ def below_zero_mse_penalty(y_pred):
 def bounded_loss_with_penalty(y_pred, y):
   return bounded_loss(y_pred, y) + below_zero_mse_penalty(y_pred)
 
-train_and_evaluate_net = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, plot = False, log = False)
+train_and_evaluate_net_mse_cens_trunc = train_and_evaluate_mae_mse(CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, plot = False, log = False)
 
 def train_once_mse_cens_WITH_trunc():
     conf = {
@@ -165,14 +165,14 @@ def train_once_mse_cens_WITH_trunc():
         'final_div_factor': 1e4,
         'weight_decay': 0
     }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
+    train_and_evaluate_net_mse_cens_trunc(dataset_train, dataset_val, bound_min, bound_max, conf)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
                                     CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, isGrid = False)
 
 def grid_search_mse_cens_WITH_trunc():
     grid_config = get_grid_search_space()
     grid_best = grid_search(ROOT_BOUNDED_MSE_WITH_PENALTY, dataset_train, dataset_val, bound_min, bound_max,
-        grid_config, train_and_evaluate_net, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, conf_validation = config_validation)
+        grid_config, train_and_evaluate_net_mse_cens_trunc, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, conf_validation = config_validation)
     return grid_best
 
 def eval_mse_cens_WITH_trunc():
