@@ -8,6 +8,7 @@ import sklearn as sk
 from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize
 import math
 import traceback
+import optuna
 
 # n is the nb of samples, k is the nb of regressors (features)
 n = DATASET_LEN
@@ -108,7 +109,7 @@ def eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader,
         metrics /= total_weight
         return metrics
 
-def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+def train_network_mae_mse_gll(trial: optuna.trial.Trial, bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
                               checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
@@ -116,6 +117,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
+        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -154,6 +156,11 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
                             t.save(checkpoint_dict, '{}.tar'.format(checkpoint_name))
                         if log:
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
+                if epoch in prune_check_indexes:
+                    check_step = 0 if epoch == prune_check_indexes[0] else 1
+                    trial.report(best, step = check_step)
+                    if trial.should_prune():
+                        raise optuna.TrialPruned()
             except Exception as e:
                 print(traceback.format_exc())
                 break
@@ -162,7 +169,7 @@ def train_network_mae_mse_gll(bound_min, bound_max, model, loss_fn, optimizer, s
     except KeyboardInterrupt as e:
         print('Training interrupted at epoch', epoch)
 
-def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+def train_network_tobit_fixed_std(trial: optuna.trial.Trial, bound_min, bound_max, model, loss_fn, optimizer, scheduler, loader_train, loader_val,
                                   checkpoint_name, batch_size_train, batch_size_val, epochs, log = True):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
     best = [math.inf, math.inf, -math.inf]
@@ -170,6 +177,7 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
+        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -216,6 +224,11 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
                             t.save(checkpoint_dict, '{}.tar'.format(checkpoint_name))
                         if log:
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
+                if epoch in prune_check_indexes:
+                    check_step = 0 if epoch == prune_check_indexes[0] else 1
+                    trial.report(best, step = check_step)
+                    if trial.should_prune():
+                        raise optuna.TrialPruned()
             except Exception as e:
                 print(traceback.format_exc())
                 break
@@ -224,7 +237,7 @@ def train_network_tobit_fixed_std(bound_min, bound_max, model, loss_fn, optimize
     except KeyboardInterrupt as e:
         print('Training interrupted at epoch', epoch)
 
-def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val,
+def train_network_tobit_dyn_std(trial: optuna.trial.Trial, bound_min, bound_max, model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val,
                                 checkpoint_name, batch_size_train, batch_size_val, epochs,
                                 grad_clip = GRADIENT_CLIP, log = True, is_reparam = False):
     metrics_train_per_epochs, metrics_test_per_epochs = [], []
@@ -233,6 +246,7 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_f
         counter = 0
         total_weight = 0
         train_metrics = np.zeros(3)
+        prune_check_indexes = len(epochs) // 4, len(epochs) // 2
         for epoch in range(epochs):
             try:
                 model.train()
@@ -288,6 +302,11 @@ def train_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loss_f
                             t.save(checkpoint_dict, '{}.tar'.format(checkpoint_name))
                         if log:
                             print('Iteration {} abs err {} R2 {}'.format(counter, test_metrics[ABS_ERR], test_metrics[R_SQUARED]))
+                if epoch in prune_check_indexes:
+                    check_step = 0 if epoch == prune_check_indexes[0] else 1
+                    trial.report(best, step = check_step)
+                    if trial.should_prune():
+                        raise optuna.TrialPruned()
             except Exception as e:
                 print(traceback.format_exc())
                 break

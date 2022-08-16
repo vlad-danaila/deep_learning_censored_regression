@@ -11,7 +11,7 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.util import get_scale, get_device, dump_json
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
-from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED
+from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED, PRUNNER_WARMUP_TRIALS, PRUNNER_PERCENTILE
 from os.path import join
 import os
 
@@ -47,7 +47,8 @@ def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
     # TODO add prunner, don't forget to include in optuna.create_study(..., pruner = pruner) or just raise optuna.TrialPruned()
     study_name = f'study {checkpoint}'
     sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS, seed=SEED)
-    study = optuna.create_study(sampler=sampler, study_name = study_name, direction = 'minimize',
+    prunner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = PRUNNER_WARMUP_TRIALS)
+    study = optuna.create_study(sampler=sampler, prunner = prunner, study_name = study_name, direction = 'minimize',
                                 storage = f'sqlite:///{root_folder}/{checkpoint}.db', load_if_exists = True)
     study.set_user_attr(PREVIOUS_BEST, math.inf)
     study.set_user_attr(CHECKPOINT, f'{root_folder}/{checkpoint}')
@@ -76,7 +77,7 @@ def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, c
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, bound_min, bound_max,
                 model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -108,7 +109,7 @@ def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, check
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_mae_mse_gll(bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, bound_min, bound_max,
                 model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -144,7 +145,7 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit_fixed_std(bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_tobit_fixed_std(trial, bound_min, bound_max,
                                                                          model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -181,7 +182,7 @@ def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit_dyn_std(bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_tobit_dyn_std(trial, bound_min, bound_max,
                                                                        model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'],
                                                                        len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log, is_reparam=is_reparam)
         if plot:
