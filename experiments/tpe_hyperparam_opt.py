@@ -20,7 +20,7 @@ CHECKPOINT = 'CHECKPOINT'
 
 def propose_conf(trial: optuna.trial.Trial):
     return {
-        'max_lr': trial.suggest_uniform('max_lr', 1e-5, 1e-2),
+        'max_lr': trial.suggest_float('max_lr', 1e-5, 1e-2),
         'epochs': trial.suggest_int('epochs', 5, 20),
         'batch': trial.suggest_int('batch', 32, 512),
         'pct_start': 0.45,
@@ -32,7 +32,7 @@ def propose_conf(trial: optuna.trial.Trial):
         'weight_decay': 0,
         'nb_layers': trial.suggest_int('nb_layers', 1, 10),
         'layer_size': trial.suggest_int('layer_size', 5, 32),
-        'dropout_rate': trial.suggest_uniform('dropout_rate', 0, 1)
+        'dropout_rate': trial.suggest_float('dropout_rate', 0, 1)
     }
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
