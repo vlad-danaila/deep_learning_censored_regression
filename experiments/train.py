@@ -5,6 +5,7 @@ from experiments.constants import LOSS, ABS_ERR, R_SQUARED
 import numpy as np
 import torch as t
 import sklearn as sk
+import sklearn.metrics
 from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize
 import math
 import traceback
