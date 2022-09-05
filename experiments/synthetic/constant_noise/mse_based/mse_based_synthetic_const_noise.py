@@ -114,7 +114,7 @@ def plot_mse_cens_WITH_trunc():
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
 
 
-tpe_opt_mse_simple()
+# tpe_opt_mse_simple()
 # eval_mse_simple()
 #
 # tpe_opt_mse_cens_NO_trunc()
