@@ -118,7 +118,7 @@ def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, check
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, plot = False, log = True, truncated_low = None, truncated_high = None, isReparam = False):
+def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, plot = False, log = False, truncated_low = None, truncated_high = None, isReparam = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)

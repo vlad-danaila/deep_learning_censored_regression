@@ -62,7 +62,6 @@ objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
 def tpe_opt_deep_NO_trunc():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, objective_deep_NO_trunc)
 
-
 def eval_deep_NO_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                             ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, is_optimized= True)
