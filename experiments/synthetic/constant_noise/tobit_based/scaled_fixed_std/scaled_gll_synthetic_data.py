@@ -51,8 +51,8 @@ def tpe_opt_mae_simple():
 
 
 def eval_gll_scaled():
-    plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= True)
+  plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                              ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= True)
 
 def plot_gll_scaled():
     checkpoint = t.load(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
