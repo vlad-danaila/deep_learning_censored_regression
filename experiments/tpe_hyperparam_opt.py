@@ -12,7 +12,6 @@ from experiments.util import get_scale, get_device, dump_json
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
 from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED, PRUNNER_WARMUP_TRIALS, PRUNNER_PERCENTILE
-from os.path import join
 import os
 
 PREVIOUS_BEST = 'PREVIOUS_BEST'
@@ -58,7 +57,7 @@ def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
     logging.info(study.best_params)
     dump_json(study.best_params, f'{root_folder}/{checkpoint} hyperparam.json')
 
-def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True):
+def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
         model = model_fn()
@@ -86,7 +85,7 @@ def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, c
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = True):
+def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
         model = model_fn()
@@ -154,7 +153,7 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = True,
+def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = False,
                                      truncated_low = None, truncated_high = None, is_reparam = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
