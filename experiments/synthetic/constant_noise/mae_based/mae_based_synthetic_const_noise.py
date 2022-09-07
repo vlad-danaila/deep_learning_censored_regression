@@ -1,8 +1,7 @@
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
-from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse
-from experiments.synthetic.eval_optimized import plot_dataset_and_net
+from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.synthetic.models import DenseNetwork
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 
@@ -41,7 +40,7 @@ zero_normalized = normalize(0, y_mean, y_std)
 """# MAE"""
 
 objective_mae_simple = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MAE}/{CHECKPOINT_MAE}', t.nn.L1Loss, plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MAE}/{CHECKPOINT_MAE}', t.nn.L1Loss)
 
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mae_simple():
@@ -71,7 +70,7 @@ def bounded_loss(y_pred, y):
   return mae(y_pred, y)
 
 objective_mae_bounded = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss)
 
 def tpe_opt_mae_cens_NO_trunc():
     best = tpe_opt_hyperparam(ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, objective_mae_bounded)
@@ -98,10 +97,8 @@ def below_zero_mae_penalty(y_pred):
 def bounded_loss_with_penalty(y_pred, y):
   return bounded_loss(y_pred, y) + below_zero_mae_penalty(y_pred)
 
-objective_mae_bounded_pen = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max,
-    ROOT_BOUNDED_MAE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MAE_WITH_PENALTY,
-    lambda: bounded_loss_with_penalty, plot = False, log = False)
+objective_mae_bounded_pen = get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max,
+    ROOT_BOUNDED_MAE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty)
 
 def tpe_opt_mae_cens_WITH_trunc():
     return tpe_opt_hyperparam(ROOT_BOUNDED_MAE_WITH_PENALTY, CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, objective_mae_bounded_pen)
