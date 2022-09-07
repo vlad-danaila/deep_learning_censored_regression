@@ -7,6 +7,7 @@ from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_d
 from experiments.grid_train import train_and_evaluate_tobit_dyn_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork, get_scale_network
+from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""
 ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/constant_noise/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
@@ -44,58 +45,19 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 
 """# Scaled Deep Tobit With Truncation"""
 
-train_and_evaluate_net = train_and_evaluate_tobit_dyn_std(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
-                                                          model_fn = DenseNetwork, plot = False, log = False, truncated_low = zero_normalized, is_reparam=True)
+objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max,
+    f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}', truncated_low = zero_normalized, is_reparam=True)
 
-def train_once_deep_tobit_WITH_trunc():
-  conf = {
-      'anneal_strategy': 'linear',
-      'base_momentum': 0.85,
-      'batch': 100,
-      'div_factor': 5,
-      'epochs': 20,
-      'final_div_factor': 10000.0,
-      'grad_clip': 1e-1,
-      'max_lr': 0.0005,
-      'max_momentum': 0.95,
-      'pct_start': 0.45,
-      'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                        ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
-                                        model_fn = DenseNetwork, is_optimized= False, is_reparam = True)
-
-def grid_search_deep_tobit_WITH_trunc():
-  grid_config = [{
-    'max_lr': [1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3],
-    'epochs': [10, 20],
-    'batch': [100, 200],
-    'pct_start': [0.45],
-    'anneal_strategy': ['linear'],
-    'base_momentum': [0.85],
-    'max_momentum': [0.95],
-    'div_factor': [10, 5, 2],
-    'final_div_factor': [1e4],
-    'weight_decay': [0],
-    'grad_clip': [1, 10, 100]
-  }]
-  grid_best = grid_search(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, conf_validation = config_validation)
-  return grid_best
+def tpe_opt_deep_WITH_trunc():
+    return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, objective_deep_WITH_trunc)
 
 def eval_deep_tobit_WITH_trunc_reparam_dyn_std():
   plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                                         ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
                                         model_fn = DenseNetwork, is_optimized= True, is_reparam = True)
-  grid_results = t.load(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED + '/' + GRID_RESULTS_FILE)
-  best_config = grid_results['best']
-  best_metrics = grid_results[str(best_config)]
-  print(best_config)
-  print(best_metrics)
 
 def plot_deep_tobit_WITH_trunc_reparam_dyn_std():
-    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/grid {CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}.tar')
+    checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
     scale_model = get_scale_network()
     scale_model.load_state_dict(checkpoint['gamma'])
     scale_model.eval()
