@@ -22,21 +22,33 @@ from experiments.synthetic.constant_noise.tobit_based.reparam_dynamic_std.repara
 # Tobit
 
 # Scaled, Fixed Std
+print('-' * 20, 'tpe_opt_gll_scaled', '-' * 20)
 tpe_opt_gll_scaled()
+print('-' * 20, 'tpe_opt_deep_NO_trunc', '-' * 20)
 tpe_opt_deep_NO_trunc()
+print('-' * 20, 'tpe_opt_deep_WITH_trunc', '-' * 20)
 tpe_opt_deep_WITH_trunc()
+print('-' * 20, 'tpe_opt_lin_NO_trunc', '-' * 20)
 tpe_opt_lin_NO_trunc()
+print('-' * 20, 'tpe_opt_lin_WITH_trunc', '-' * 20)
 tpe_opt_lin_WITH_trunc()
 
 # Reparametrized
+print('-' * 20, 'tpe_opt_gll_reparam', '-' * 20)
 tpe_opt_gll_reparam()
+print('-' * 20, 'tpe_opt_deep_NO_trunc_reparam', '-' * 20)
 tpe_opt_deep_NO_trunc_reparam()
+print('-' * 20, 'tpe_opt_deep_WITH_trunc_reparam', '-' * 20)
 tpe_opt_deep_WITH_trunc_reparam()
+print('-' * 20, 'tpe_opt_lin_NO_trunc_reparam', '-' * 20)
 tpe_opt_lin_NO_trunc_reparam()
+print('-' * 20, 'tpe_opt_lin_WITH_trunc_reparam', '-' * 20)
 tpe_opt_lin_WITH_trunc_reparam()
 
 # Dynamic Std Scaled
+print('-' * 20, 'tpe_opt_deep_WITH_trunc_dyn_std', '-' * 20)
 tpe_opt_deep_WITH_trunc_dyn_std()
 
 # Dynamic Std Reparametrized
+print('-' * 20, 'tpe_opt_deep_WITH_trunc_reparam_dyn_std', '-' * 20)
 tpe_opt_deep_WITH_trunc_reparam_dyn_std()
