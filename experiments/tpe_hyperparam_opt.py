@@ -17,8 +17,8 @@ import os
 PREVIOUS_BEST = 'PREVIOUS_BEST'
 CHECKPOINT = 'CHECKPOINT'
 
-def propose_conf(trial: optuna.trial.Trial):
-    return {
+def propose_conf(trial: optuna.trial.Trial, include_grad_clip = False):
+    config = {
         'max_lr': trial.suggest_float('max_lr', 1e-5, 1e-2),
         'epochs': trial.suggest_int('epochs', 5, 20),
         'batch': trial.suggest_int('batch', 32, 512),
@@ -33,6 +33,9 @@ def propose_conf(trial: optuna.trial.Trial):
         'layer_size': trial.suggest_int('layer_size', 5, 32),
         'dropout_rate': trial.suggest_float('dropout_rate', 0, .5)
     }
+    if include_grad_clip:
+        config['grad_clip'] = trial.suggest_float(1e-2, 1e2)
+    return config
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
     prev_best = study.user_attrs.get(PREVIOUS_BEST)
