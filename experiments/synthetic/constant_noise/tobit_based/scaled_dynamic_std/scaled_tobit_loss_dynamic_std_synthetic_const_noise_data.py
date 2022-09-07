@@ -45,7 +45,7 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max,
                                                            f'{ROOT_DEEP_TOBIT_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_TRUNCATED}', truncated_low = zero_normalized)
 
-def tpe_opt_deep_WITH_trunc():
+def tpe_opt_deep_WITH_trunc_dyn_std():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_TRUNCATED, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc)
 
 def eval_deep_WITH_trunc_dyn_std():

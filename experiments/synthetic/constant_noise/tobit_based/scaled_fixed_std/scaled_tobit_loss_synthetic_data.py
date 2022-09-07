@@ -123,7 +123,7 @@ objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
     model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized)
 
 
-def grid_search_linear_tobit_WITH_trunc():
+def tpe_opt_lin_WITH_trunc():
     return tpe_opt_hyperparam(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, objective_lin_WITH_trunc)
 
 def eval_linear_tobit_WITH_trunc():

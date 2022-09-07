@@ -46,9 +46,8 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 objective_gll = get_objective_fn_gll(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_GLL}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss, plot = False, log = False)
 
-def tpe_opt_mae_simple():
+def tpe_opt_gll_scaled():
     return tpe_opt_hyperparam(ROOT_GLL, CHECKPOINT_GLL, objective_gll)
-
 
 def eval_gll_scaled():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
