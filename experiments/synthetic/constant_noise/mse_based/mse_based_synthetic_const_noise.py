@@ -41,7 +41,7 @@ zero_normalized = normalize(0, y_mean, y_std)
 """# MSE"""
 
 objective_mse_simple = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss, plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss)
 
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mse_simple():
@@ -70,7 +70,7 @@ def bounded_loss(y_pred, y):
   return mse(y_pred, y)
 
 objective_mse_bounded = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss)
 
 def tpe_opt_mse_cens_NO_trunc():
     best = tpe_opt_hyperparam(ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, objective_mse_bounded)
