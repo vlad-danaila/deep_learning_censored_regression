@@ -159,7 +159,7 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
 def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = False,
                                      truncated_low = None, truncated_high = None, is_reparam = False):
     def objective_fn(trial: optuna.trial.Trial):
-        conf = propose_conf(trial)
+        conf = propose_conf(trial, include_grad_clip=True)
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
