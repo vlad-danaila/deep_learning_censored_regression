@@ -34,7 +34,7 @@ def propose_conf(trial: optuna.trial.Trial, include_grad_clip = False):
         'dropout_rate': trial.suggest_float('dropout_rate', 0, .5)
     }
     if include_grad_clip:
-        config['grad_clip'] = trial.suggest_float(1e-2, 1e2)
+        config['grad_clip'] = trial.suggest_float('grad_clip', 1e-2, 1e2)
     return config
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
