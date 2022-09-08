@@ -10,14 +10,14 @@ from experiments.synthetic.constant_noise.tobit_based.scaled_dynamic_std.scaled_
 from experiments.synthetic.constant_noise.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_synthetic_const_noise_data import tpe_opt_deep_WITH_trunc_reparam_dyn_std
 
 # MAE Based
-# eval_mae_simple()
-# eval_mae_cens_NO_trunc()
-# eval_mae_cens_WITH_trunc()
+eval_mae_simple()
+eval_mae_cens_NO_trunc()
+eval_mae_cens_WITH_trunc()
 
 # MSE Based
-# eval_mse_simple()
-# eval_mse_cens_NO_trunc()
-# eval_mse_cens_WITH_trunc()
+eval_mse_simple()
+eval_mse_cens_NO_trunc()
+eval_mse_cens_WITH_trunc()
 
 # Tobit
 
