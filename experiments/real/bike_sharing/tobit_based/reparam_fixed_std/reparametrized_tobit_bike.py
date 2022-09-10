@@ -90,7 +90,6 @@ objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}',
     model_fn = lambda: linear_model(INPUT_SIZE), truncated_low = zero_normalized, isReparam=True)
 
-
 def tpe_opt_lin_WITH_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, objective_lin_WITH_trunc)
 
