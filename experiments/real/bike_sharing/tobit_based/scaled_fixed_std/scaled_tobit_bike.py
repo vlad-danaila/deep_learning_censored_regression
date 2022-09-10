@@ -2,7 +2,7 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.bike_sharing.grid_eval import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
+from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from experiments.real.models import get_model, linear_model
 

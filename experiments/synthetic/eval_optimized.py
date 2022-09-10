@@ -11,7 +11,6 @@ from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.util import save_fig_in_checkpoint_folder
 
-
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
@@ -39,12 +38,10 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
         lgnd.legendHandles[3]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, is_optimized = True, model_fn = DenseNetwork, is_gamma = False, loader_val = None):
+                                    checkpoint_name, criterion, is_optimized = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
     loss_fn = criterion()
-    # checkpoint = t.load(root_folder + '/' + ('grid ' if is_optimized else '') + checkpoint_name + '.tar')
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -62,7 +59,6 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, is_optimized = True, model_fn = DenseNetwork, loader_val = None):
     model = model_fn()
-    # checkpoint = t.load(root_folder + '/' + ('grid ' if is_optimized else '') + checkpoint_name + '.tar')
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
@@ -75,6 +71,8 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
         loss_fn = criterion(checkpoint['sigma'])
     elif 'gamma' in checkpoint:
         loss_fn = criterion(checkpoint['gamma'])
+    else:
+        raise 'sigma or gamma must be provided in checkpoint'
 
     if not loader_val:
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
@@ -87,14 +85,12 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-
-def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name, is_optimized = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name,
+                                            is_optimized = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    # checkpoint = t.load(root_folder + '/' + ('grid ' if is_optimized else '') + checkpoint_name + '.tar')
-    checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-
     model = model_fn()
+    checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
@@ -108,6 +104,9 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
         loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+    else:
+        raise 'sigma or gamma must be provided in checkpoint'
+
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_fixed_std(bound_min, bound_max, model, loader_val, loss_fn, len(dataset_val))
     print('Absolute error - validation', val_metrics[ABS_ERR])
@@ -129,9 +128,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
-    # checkpoint = t.load(root_folder + '/' + ('grid ' if is_optimized else '') + checkpoint_name + '.tar')
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
@@ -151,6 +148,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
         loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
         loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam)
     print('Absolute error - validation', val_metrics[ABS_ERR])
