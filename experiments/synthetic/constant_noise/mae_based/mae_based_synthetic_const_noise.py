@@ -44,8 +44,7 @@ objective_mae_simple = get_objective_fn_mae_mse(
 
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mae_simple():
-    best = tpe_opt_hyperparam(ROOT_MAE, CHECKPOINT_MAE, objective_mae_simple)
-    return best
+    return tpe_opt_hyperparam(ROOT_MAE, CHECKPOINT_MAE, objective_mae_simple)
 
 def eval_mae_simple():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
@@ -73,12 +72,11 @@ objective_mae_bounded = get_objective_fn_mae_mse(
     dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MAE + '/' + CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss)
 
 def tpe_opt_mae_cens_NO_trunc():
-    best = tpe_opt_hyperparam(ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, objective_mae_bounded)
-    return best
+    return tpe_opt_hyperparam(ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, objective_mae_bounded)
 
 def eval_mae_cens_NO_trunc():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                    ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, is_optimized= True)
+                                    ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, is_optimized = True)
 
 def plot_mae_cens_NO_trunc():
     checkpoint = t.load(f'{ROOT_BOUNDED_MAE}/{CHECKPOINT_BOUNDED_MAE} best.tar')
@@ -110,7 +108,6 @@ def eval_mae_cens_WITH_trunc():
 def plot_mae_cens_WITH_trunc():
     checkpoint = t.load(f'{ROOT_BOUNDED_MAE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MAE_WITH_PENALTY} best.tar')
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
-
 
 # tpe_opt_mae_simple()
 # eval_mae_simple()

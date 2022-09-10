@@ -2,7 +2,7 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.grid_search import grid_search, config_validation, get_grid_search_space
-from experiments.real.pm25.grid_eval import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
+from experiments.real.pm25.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.grid_train import train_and_evaluate_mae_mse
 from experiments.real.models import get_model
 
