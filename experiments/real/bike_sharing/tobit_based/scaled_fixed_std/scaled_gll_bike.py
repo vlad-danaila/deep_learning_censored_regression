@@ -1,11 +1,8 @@
-from experiments.constants import GRID_RESULTS_FILE
-from experiments.util import set_random_seed, load_checkpoint
+from experiments.util import set_random_seed, load_checkpoint, get_device
 from experiments.real.bike_sharing.dataset import *
-from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_gll, plot_dataset_and_net
-from experiments.grid_train import train_and_evaluate_gll
 from experiments.real.models import get_model
-from experiments.util import get_device
+from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""
 ROOT_GLL = 'experiments/real/bike_sharing/tobit_based/scaled_fixed_std/gll'
@@ -28,44 +25,16 @@ class GausianLogLikelihoodLoss(t.nn.Module):
         sigma = t.abs(self.sigma)
         return t.sum(t.log(sigma + self.epsilon) + (((y_true - y_pred)/sigma) ** 2) / 2)
 
-"""### Grid Search"""
+objective_gll = get_objective_fn_gll(
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_GLL}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss, model_fn = lambda: get_model(INPUT_SIZE))
 
-train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss,
-                                                plot = False, log = False, model_fn = lambda: get_model(INPUT_SIZE))
-
-"""Train once with default settings"""
-def train_once_gll():
-    conf = {
-        'max_lr': 1e-5,
-        'epochs': 50,
-        'batch': 100,
-        'pct_start': 0.3,
-        'anneal_strategy': 'linear',
-        'base_momentum': 0.85,
-        'max_momentum': 0.95,
-        'div_factor': 5,
-        'final_div_factor': 1e4,
-        'weight_decay': 0
-    }
-    train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-    plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
-                                    ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = False)
-
-def grid_search_gll():
-    grid_config = get_grid_search_space()
-    grid_best = grid_search(ROOT_GLL, dataset_train, dataset_val, bound_min, bound_max,
-                            grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
-    return grid_best
+def tpe_opt_gll_scaled():
+    return tpe_opt_hyperparam(ROOT_GLL, CHECKPOINT_GLL, objective_gll)
 
 def eval_gll_scaled():
-    plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
-                                    ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, isGrid = True)
-    grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
-    best_config = grid_results['best']
-    best_metrics = grid_results[str(best_config)]
-    print(best_config)
-    print(best_metrics)
+  plot_and_evaluate_model_gll(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
+                              ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= True)
 
 def plot_gll_scaled():
-    checkpoint = load_checkpoint(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    checkpoint = load_checkpoint(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
     plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
