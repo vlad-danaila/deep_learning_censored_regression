@@ -1,12 +1,10 @@
-from experiments.constants import GRID_RESULTS_FILE
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_gll
-from experiments.grid_train import train_and_evaluate_gll
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.synthetic.models import DenseNetwork
+from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/gll'
@@ -47,40 +45,18 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 
 """### Grid Search"""
 
-train_and_evaluate_net = train_and_evaluate_gll(ROOT_GLL + '/' + CHECKPOINT_GLL, GausianLogLikelihoodLoss, plot = False, log = False)
+objective_gll = get_objective_fn_gll(
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_GLL}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss, plot = False, log = False)
 
-def train_once_gll_reparam():
-  conf = {
-      'max_lr': 1e-3,
-      'epochs': 10,
-      'batch': 100,
-      'pct_start': 0.3,
-      'anneal_strategy': 'linear',
-      'base_momentum': 0.85,
-      'max_momentum': 0.95,
-      'div_factor': 10,
-      'final_div_factor': 1e4,
-      'weight_decay': 0
-  }
-  train_and_evaluate_net(dataset_train, dataset_val, bound_min, bound_max, conf)
-  plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                              ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= False)
 
-def grid_search_gll_reparam():
-  grid_config = get_grid_search_space()
-  grid_best = grid_search(ROOT_GLL, dataset_train, dataset_val, bound_min, bound_max,
-                          grid_config, train_and_evaluate_net, CHECKPOINT_GLL, conf_validation = config_validation)
-  return grid_best
+def tpe_opt_gll_reparam():
+    return tpe_opt_hyperparam(ROOT_GLL, CHECKPOINT_GLL, objective_gll)
+
 
 def eval_gll_reparam():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
                               ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= True)
-  grid_results = t.load(ROOT_GLL + '/' + GRID_RESULTS_FILE)
-  best_config = grid_results['best']
-  best_metrics = grid_results[str(best_config)]
-  print(best_config)
-  print(best_metrics)
 
 def plot_gll_reparam():
-    checkpoint = t.load(f'{ROOT_GLL}/grid {CHECKPOINT_GLL}.tar')
+    checkpoint = t.load(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
     plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
