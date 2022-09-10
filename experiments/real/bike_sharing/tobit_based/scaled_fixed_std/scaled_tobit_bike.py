@@ -43,7 +43,6 @@ def plot_deep_NO_trunc():
 
 
 
-
 """# Scaled Deep Tobit With Truncation"""
 
 objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
@@ -59,7 +58,6 @@ def eval_deep_WITH_trunc():
 def plot_deep_WITH_trunc():
     checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED} best.tar')
     plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
-
 
 
 
