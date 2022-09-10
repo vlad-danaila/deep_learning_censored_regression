@@ -54,14 +54,14 @@ tobit_loader_test = t.utils.data.DataLoader(dataset_test, batch_size = len(datas
 """# Scaled Deep Tobit"""
 
 objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_SCALED}/{CHECKPOINT_DEEP_TOBIT_SCALED}', plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_SCALED}/{CHECKPOINT_DEEP_TOBIT_SCALED}')
 
 def tpe_opt_deep_NO_trunc():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, objective_deep_NO_trunc)
 
 def eval_deep_NO_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                            ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, is_optimized= True)
+                                            ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, model_fn = DenseNetwork, is_optimized = True)
 
 def plot_deep_NO_trunc():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED}/{CHECKPOINT_DEEP_TOBIT_SCALED} best.tar')
@@ -74,14 +74,14 @@ def plot_deep_NO_trunc():
 """# Scaled Deep Tobit With Truncation"""
 
 objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}', plot = False, log = False, truncated_low = zero_normalized)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED}', truncated_low = zero_normalized)
 
 def tpe_opt_deep_WITH_trunc():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, objective_deep_WITH_trunc)
 
 def eval_deep_WITH_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                            ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, model_fn = DenseNetwork, is_optimized= True)
+                                            ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, model_fn = DenseNetwork, is_optimized = True)
 
 def plot_deep_WITH_trunc():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED} best.tar')
@@ -102,7 +102,7 @@ def tpe_opt_lin_NO_trunc():
 
 def eval_lin_NO_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                            ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), is_optimized= True)
+                                            ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), is_optimized = True)
 
 def plot_lin_NO_trunc():
     checkpoint = t.load(f'{ROOT_LINEAR_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TOBIT_SCALED} best.tar')
@@ -117,7 +117,7 @@ def plot_lin_NO_trunc():
 
 objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}',
-    model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False, truncated_low = zero_normalized)
+    model_fn = lambda: t.nn.Linear(1, 1), truncated_low = zero_normalized)
 
 
 def tpe_opt_lin_WITH_trunc():
@@ -125,8 +125,13 @@ def tpe_opt_lin_WITH_trunc():
 
 def eval_linear_tobit_WITH_trunc():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                            ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), is_optimized= True)
+                                            ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, model_fn = lambda: t.nn.Linear(1, 1), is_optimized = True)
 
 def plot_linear_tobit_WITH_trunc():
     checkpoint = t.load(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED} best.tar')
     plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+
+# eval_deep_tobit_WITH_trunc()
+# eval_deep_tobit_NO_trunc()
+# eval_linear_tobit_WITH_trunc()
+# eval_linear_tobit_NO_trunc()
