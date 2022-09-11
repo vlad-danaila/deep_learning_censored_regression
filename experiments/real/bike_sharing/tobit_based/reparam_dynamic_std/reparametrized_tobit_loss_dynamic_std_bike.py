@@ -26,11 +26,11 @@ objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, datase
 def tpe_opt_deep_WITH_trunc_dyn_std_reparam():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, objective_deep_WITH_trunc)
 
-def eval_deep_reparam_tobit_WITH_trunc_dyn_std():
+def eval_deep_reparam_WITH_trunc_dyn_std():
     plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                           ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, is_optimized = True, is_reparam = True)
 
-def plot_deep_reparam_tobit_WITH_trunc_dyn_std():
+def plot_deep_reparam_WITH_trunc_dyn_std():
     checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
     scale_model = get_scale_network(INPUT_SIZE)
     scale_model.load_state_dict(checkpoint['gamma'])

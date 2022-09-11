@@ -5,7 +5,7 @@ from experiments.real.bike_sharing.tobit_based.scaled_fixed_std.scaled_tobit_bik
 from experiments.real.bike_sharing.tobit_based.scaled_dynamic_std.scaled_tobit_loss_dynamic_std_bike import plot_deep_tobit_WITH_trunc_dyn_std
 
 from experiments.real.bike_sharing.tobit_based.reparam_fixed_std.reparametrized_tobit_bike import plot_deep_tobit_WITH_trunc_reparam
-from experiments.real.bike_sharing.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_bike import plot_deep_reparam_tobit_WITH_trunc_dyn_std
+from experiments.real.bike_sharing.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_bike import plot_deep_reparam_WITH_trunc_dyn_std
 
 def plot_composed_pm25_dyn_std():
     ax1, ax2, ax3, ax4 = setup_composed_4_items_plot()
@@ -23,7 +23,7 @@ def plot_composed_pm25_dyn_std():
     plt.title('(c) Fixed Standard Deviation Reparametrized')
 
     plt.axes(ax4)
-    plot_deep_reparam_tobit_WITH_trunc_dyn_std()
+    plot_deep_reparam_WITH_trunc_dyn_std()
     plt.title('(d) Dynamic Standard Deviation Reparametrized')
 
     plt.show()
