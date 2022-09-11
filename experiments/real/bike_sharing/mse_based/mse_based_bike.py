@@ -79,7 +79,7 @@ def bounded_loss_with_penalty(y_pred, y):
 objective_mse_bounded_pen = get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max,
         ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, model_fn = lambda: get_model(INPUT_SIZE))
 
-def tpe_opt_mae_cens_WITH_trunc():
+def tpe_opt_mse_cens_WITH_trunc():
     return tpe_opt_hyperparam(ROOT_BOUNDED_MSE_WITH_PENALTY, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, objective_mse_bounded_pen)
 
 def eval_mse_cens_WITH_trunc():

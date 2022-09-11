@@ -1,5 +1,5 @@
-from experiments.real.bike_sharing.mae_based.mae_based_bike import eval_mae_simple, eval_mae_cens_NO_trunc, eval_mae_cens_WITH_trunc
-from experiments.real.bike_sharing.mse_based.mse_based_bike import eval_mse_simple, eval_mse_cens_NO_trunc, eval_mse_cens_WITH_trunc
+from experiments.real.bike_sharing.mae_based.mae_based_bike import tpe_opt_mae_simple, tpe_opt_mae_cens_NO_trunc, tpe_opt_mae_cens_WITH_trunc
+from experiments.real.bike_sharing.mse_based.mse_based_bike import tpe_opt_mse_simple, tpe_opt_mse_cens_NO_trunc, tpe_opt_mse_cens_WITH_trunc
 from experiments.real.bike_sharing.tobit_based.scaled_fixed_std.scaled_gll_bike import tpe_opt_gll_scaled
 from experiments.real.bike_sharing.tobit_based.scaled_fixed_std.scaled_tobit_bike import tpe_opt_deep_NO_trunc, tpe_opt_deep_WITH_trunc, \
     tpe_opt_lin_NO_trunc, tpe_opt_lin_WITH_trunc
@@ -10,14 +10,14 @@ from experiments.real.bike_sharing.tobit_based.scaled_dynamic_std.scaled_tobit_l
 from experiments.real.bike_sharing.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_bike import tpe_opt_deep_WITH_trunc_dyn_std_reparam
 
 # MAE Based
-eval_mae_simple()
-eval_mae_cens_NO_trunc()
-eval_mae_cens_WITH_trunc()
+tpe_opt_mae_simple()
+tpe_opt_mae_cens_NO_trunc()
+tpe_opt_mae_cens_WITH_trunc()
 
 # MSE Based
-eval_mse_simple()
-eval_mse_cens_NO_trunc()
-eval_mse_cens_WITH_trunc()
+tpe_opt_mse_simple()
+tpe_opt_mse_cens_NO_trunc()
+tpe_opt_mse_cens_WITH_trunc()
 
 # Tobit
 
