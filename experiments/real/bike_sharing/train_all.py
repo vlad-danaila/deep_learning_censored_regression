@@ -7,7 +7,7 @@ from experiments.real.bike_sharing.tobit_based.reparam_fixed_std.reparam_gll_bik
 from experiments.real.bike_sharing.tobit_based.reparam_fixed_std.reparametrized_tobit_bike import tpe_opt_deep_NO_trunc_reparam, \
     tpe_opt_deep_WITH_trunc_reparam, tpe_opt_lin_NO_trunc_reparam, tpe_opt_lin_WITH_trunc_reparam
 from experiments.real.bike_sharing.tobit_based.scaled_dynamic_std.scaled_tobit_loss_dynamic_std_bike import tpe_opt_deep_WITH_trunc_dyn_std
-from experiments.real.bike_sharing.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_bike import tpe_opt_deep_WITH_trunc_reparam_dyn_std
+from experiments.real.bike_sharing.tobit_based.reparam_dynamic_std.reparametrized_tobit_loss_dynamic_std_bike import tpe_opt_deep_WITH_trunc_dyn_std_reparam
 
 # MAE Based
 eval_mae_simple()
@@ -51,4 +51,4 @@ tpe_opt_deep_WITH_trunc_dyn_std()
 
 # Dynamic Std Reparametrized
 print('-' * 20, 'tpe_opt_deep_WITH_trunc_reparam_dyn_std', '-' * 20)
-tpe_opt_deep_WITH_trunc_reparam_dyn_std()
+tpe_opt_deep_WITH_trunc_dyn_std_reparam()
