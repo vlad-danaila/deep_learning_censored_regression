@@ -51,7 +51,7 @@ objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
 def tpe_opt_deep_WITH_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, objective_deep_WITH_trunc)
 
-def eval_deep_tobit_WITH_trunc_reparam():
+def eval_deep_WITH_trunc_reparam():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
                                             ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, is_optimized = True)
 
