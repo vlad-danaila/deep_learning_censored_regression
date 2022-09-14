@@ -2,9 +2,7 @@ from experiments.constants import GRID_RESULTS_FILE
 from experiments.synthetic.constants import *
 from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
-from experiments.grid_search import grid_search, config_validation, get_grid_search_space
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_fixed_std
-from experiments.grid_train import train_and_evaluate_tobit_fixed_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
 from experiments.synthetic.models import DenseNetwork
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
