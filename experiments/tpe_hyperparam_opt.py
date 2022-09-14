@@ -17,7 +17,7 @@ import os
 PREVIOUS_BEST = 'PREVIOUS_BEST'
 CHECKPOINT = 'CHECKPOINT'
 
-def propose_conf(trial: optuna.trial.Trial, include_grad_clip = False):
+def propose_conf(trial: optuna.trial.Trial, include_scaling_network = False):
     config = {
         'max_lr': trial.suggest_float('max_lr', 1e-5, 1e-2),
         'epochs': trial.suggest_int('epochs', 5, 20),
@@ -33,8 +33,10 @@ def propose_conf(trial: optuna.trial.Trial, include_grad_clip = False):
         'layer_size': trial.suggest_int('layer_size', 5, 32),
         'dropout_rate': trial.suggest_float('dropout_rate', 0, .5)
     }
-    if include_grad_clip:
+    if include_scaling_network:
         config['grad_clip'] = trial.suggest_float('grad_clip', 1e-2, 1e2)
+        config['nb_layers_scale_net'] = trial.suggest_int('nb_layers_scale_net', 1, 3)
+        config['layer_size_scale_net'] = trial.suggest_int('layer_size_scale_net', 2, 10)
     return config
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
@@ -159,7 +161,7 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
 def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = False,
                                      truncated_low = None, truncated_high = None, is_reparam = False):
     def objective_fn(trial: optuna.trial.Trial):
-        conf = propose_conf(trial, include_grad_clip=True)
+        conf = propose_conf(trial, include_scaling_network=True)
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
