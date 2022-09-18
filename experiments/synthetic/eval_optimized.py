@@ -9,7 +9,7 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.util import save_fig_in_checkpoint_folder
+from experiments.util import save_fig_in_checkpoint_folder, get_device
 
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -101,9 +101,9 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
-        loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Reparametrized_Scaled_Tobit_Loss(checkpoint['gamma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
-        loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], 'cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Scaled_Tobit_Loss(checkpoint['sigma'], get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     else:
         raise 'sigma or gamma must be provided in checkpoint'
 
@@ -145,9 +145,9 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
-        loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
     elif 'sigma' in checkpoint:
-        loss_fn = Heteroscedastic_Scaled_Tobit_Loss('cpu', truncated_low = truncated_low, truncated_high = truncated_high)
+        loss_fn = Heteroscedastic_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
 
     loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
     val_metrics = eval_network_tobit_dyn_std(bound_min, bound_max, model, scale_model, loader_val, loss_fn, len(dataset_val), is_reparam = is_reparam)
