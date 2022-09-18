@@ -6,6 +6,7 @@ import random
 import torch as t
 from experiments.synthetic.constants import ALPHA, BETA, NOISE
 from experiments.synthetic.constants import DATASET_LEN
+from experiments.util import get_device
 
 
 def calculate_mean_std(lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
@@ -39,7 +40,7 @@ class TruncatedBetaDistributionDataset(t.utils.data.Dataset):
         y = np.clip(y, self.lower_bound, self.upper_bound)
         x = normalize(x, mean = self.x_mean, std = self.x_std)
         y = normalize(y, mean = self.y_mean, std = self.y_std)
-        return t.tensor([x], requires_grad = True, dtype=t.float32), t.tensor([y], requires_grad = True, dtype=t.float32)
+        return t.tensor([x], requires_grad = True, dtype=t.float32, device=get_device()), t.tensor([y], requires_grad = True, dtype=t.float32, device=get_device())
 
     def __len__(self):
         return self.nb_samples
@@ -56,8 +57,8 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
         self.y = normalize(self.y, mean = y_mean, std = y_std)
         self.x = np.expand_dims(self.x, axis = 1)
         self.y = np.expand_dims(self.y, axis = 1)
-        self.x = t.tensor(self.x, requires_grad = False, dtype = t.float32)
-        self.y = t.tensor(self.y, requires_grad = False, dtype = t.float32)
+        self.x = t.tensor(self.x, requires_grad = False, dtype = t.float32, device=get_device())
+        self.y = t.tensor(self.y, requires_grad = False, dtype = t.float32, device=get_device())
 
     def __getitem__(self, i):
         return self.x[i], self.y[i]
