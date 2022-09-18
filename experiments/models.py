@@ -1,5 +1,6 @@
 import torch as t
 from torch.nn import Linear, BatchNorm1d, ReLU, Dropout
+from experiments.constants import IS_CUDA_AVILABLE
 
 def get_dense_net(nb_layers, input_size, hidden_size, dropout_rate):
     if nb_layers == 1:
@@ -15,6 +16,9 @@ def get_dense_net(nb_layers, input_size, hidden_size, dropout_rate):
         sequential.append(ReLU())
         sequential.append(Dropout(p = dropout_rate))
     sequential.append(Linear(hidden_size, 1))
+    if IS_CUDA_AVILABLE:
+        sequential = sequential.cuda()
+    sequential = t.nn.DataParallel(sequential)
     return sequential
 
 # Testing
