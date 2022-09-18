@@ -18,8 +18,7 @@ set_random_seed()
 """# Scaled Deep Tobit With Truncation"""
 objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max,
     f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}',
-    model_fn = lambda: get_model(INPUT_SIZE),
-    scale_model_fn = lambda: get_scale_network(INPUT_SIZE),
+    input_size = INPUT_SIZE,
     truncated_low = zero_normalized,
     is_reparam=True)
 

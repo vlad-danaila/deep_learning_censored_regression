@@ -26,9 +26,9 @@ set_random_seed()
 
 """# Reparametrized Deep Tobit"""
 
-objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED}', model_fn = lambda: get_model(INPUT_SIZE), isReparam=True)
 
+objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED}', input_size = INPUT_SIZE, isReparam=True)
 def tpe_opt_deep_NO_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, objective_deep_NO_trunc)
 
@@ -46,7 +46,7 @@ def plot_deep_NO_trunc_reparam():
 """# Reparametrized Deep Tobit With Truncation"""
 
 objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}', model_fn = lambda: get_model(INPUT_SIZE), truncated_low = zero_normalized, isReparam=True)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}', input_size = INPUT_SIZE, truncated_low = zero_normalized, isReparam=True)
 
 def tpe_opt_deep_WITH_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, objective_deep_WITH_trunc)
@@ -66,7 +66,7 @@ def plot_deep_tobit_WITH_trunc_reparam():
 """# Reparametrized Linear Tobit"""
 
 objective_lin_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED}', model_fn = lambda: linear_model(INPUT_SIZE), isReparam=True)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED}', input_size = INPUT_SIZE, is_liniar=True, isReparam=True)
 
 def tpe_opt_lin_NO_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, objective_lin_NO_trunc)
@@ -88,7 +88,7 @@ def plot_linear_NO_trunc_reparam():
 
 objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}',
-    model_fn = lambda: linear_model(INPUT_SIZE), truncated_low = zero_normalized, isReparam=True)
+    input_size = INPUT_SIZE, is_liniar=True, truncated_low = zero_normalized, isReparam=True)
 
 def tpe_opt_lin_WITH_trunc_reparam():
     return tpe_opt_hyperparam(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, objective_lin_WITH_trunc)

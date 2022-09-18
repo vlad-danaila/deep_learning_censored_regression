@@ -95,7 +95,7 @@ def plot_deep_WITH_trunc():
 """# Scaled Linear Tobit"""
 
 objective_lin_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TOBIT_SCALED}', model_fn = lambda: t.nn.Linear(1, 1), plot = False, log = False)
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TOBIT_SCALED}', is_liniar = True, plot = False, log = False)
 
 def tpe_opt_lin_NO_trunc():
     return tpe_opt_hyperparam(ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, objective_lin_NO_trunc)
@@ -117,7 +117,7 @@ def plot_lin_NO_trunc():
 
 objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
     dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED}',
-    model_fn = lambda: t.nn.Linear(1, 1), truncated_low = zero_normalized)
+    is_liniar = True, truncated_low = zero_normalized)
 
 
 def tpe_opt_lin_WITH_trunc():

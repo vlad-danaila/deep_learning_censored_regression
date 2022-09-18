@@ -21,7 +21,7 @@ set_random_seed()
 """# MSE"""
 
 objective_mse_simple = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss, model_fn = lambda: get_model(INPUT_SIZE))
+    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss, input_size = INPUT_SIZE)
 
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mse_simple():
@@ -50,7 +50,7 @@ def bounded_loss(y_pred, y):
     return mse(y_pred, y)
 
 objective_mse_bounded = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, model_fn = lambda: get_model(INPUT_SIZE))
+    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, input_size = INPUT_SIZE)
 
 def tpe_opt_mse_cens_NO_trunc():
     return tpe_opt_hyperparam(ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, objective_mse_bounded)
@@ -77,7 +77,7 @@ def bounded_loss_with_penalty(y_pred, y):
     return bounded_loss(y_pred, y) + below_zero_mse_penalty(y_pred)
 
 objective_mse_bounded_pen = get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max,
-                                                     ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, model_fn = lambda: get_model(INPUT_SIZE))
+                                                     ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, input_size = INPUT_SIZE)
 
 def tpe_opt_mse_cens_WITH_trunc():
     return tpe_opt_hyperparam(ROOT_BOUNDED_MSE_WITH_PENALTY, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, objective_mse_bounded_pen)

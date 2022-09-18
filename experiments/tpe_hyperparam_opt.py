@@ -13,6 +13,7 @@ from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
 from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED, PRUNNER_WARMUP_TRIALS, PRUNNER_PERCENTILE
 import os
+from experiments.models import get_dense_net
 
 PREVIOUS_BEST = 'PREVIOUS_BEST'
 CHECKPOINT = 'CHECKPOINT'
@@ -36,7 +37,8 @@ def propose_conf(trial: optuna.trial.Trial, include_scaling_network = False):
     if include_scaling_network:
         config['grad_clip'] = trial.suggest_float('grad_clip', 1e-2, 1e2)
         config['nb_layers_scale_net'] = trial.suggest_int('nb_layers_scale_net', 1, 3)
-        config['layer_size_scale_net'] = trial.suggest_int('layer_size_scale_net', 2, 10)
+        config['layer_size_scale_net'] = trial.suggest_int('layer_size_scale_net', 2, 10),
+        config['dropout_rate_scale_net'] = trial.suggest_float('dropout_rate_scale_net', 0, .5)
     return config
 
 def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.FrozenTrial):
@@ -62,10 +64,10 @@ def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
     logging.info(study.best_params)
     dump_json(study.best_params, f'{root_folder}/{checkpoint} hyperparam.json')
 
-def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = False):
+def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, input_size = 1, is_liniar = False, plot = False, log = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
-        model = model_fn()
+        model = get_dense_net(1 if is_liniar else conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
         loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = True, num_workers = 0)
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
         loss_fn = criterion()
@@ -90,10 +92,10 @@ def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, c
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, model_fn = DenseNetwork, plot = False, log = False):
+def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, checkpoint, criterion, input_size = 1, is_liniar = False, plot = False, log = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
-        model = model_fn()
+        model = get_dense_net(1 if is_liniar else conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
         loader_train = t.utils.data.DataLoader(dataset_train, conf['batch'], shuffle = True, num_workers = 0)
         loader_val = t.utils.data.DataLoader(dataset_val, len(dataset_val), shuffle = False, num_workers = 0)
         scale = get_scale() # could be sigma or gamma
@@ -122,11 +124,11 @@ def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, check
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, plot = False, log = False, truncated_low = None, truncated_high = None, isReparam = False):
+def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, input_size = 1, is_liniar = False, plot = False, log = False, truncated_low = None, truncated_high = None, isReparam = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial)
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
-        model = model_fn()
+        model = get_dense_net(1 if is_liniar else conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
         scale = get_scale()
@@ -158,15 +160,15 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
         return best[ABS_ERR]
     return objective_fn
 
-def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, model_fn = DenseNetwork, scale_model_fn = get_scale_network, plot = False, log = False,
+def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max, checkpoint, input_size = 1, plot = False, log = False,
                                      truncated_low = None, truncated_high = None, is_reparam = False):
     def objective_fn(trial: optuna.trial.Trial):
         conf = propose_conf(trial, include_scaling_network=True)
         censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
         loader_train = t.utils.data.DataLoader(dataset_train, batch_size = conf['batch'], shuffle = True, num_workers = 0, collate_fn = censored_collate_fn)
         loader_val = t.utils.data.DataLoader(dataset_val, batch_size = len(dataset_val), shuffle = False, num_workers = 0, collate_fn = censored_collate_fn)
-        model = model_fn()
-        scale_model = scale_model_fn()
+        model = get_dense_net(conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
+        scale_model = get_dense_net(conf['nb_layers_scale_net'], input_size, conf['layer_size_scale_net'], conf['dropout_rate_scale_net']) # could be sigma or gamma
         if is_reparam:
             loss_fn = Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(get_device(), truncated_low = truncated_low, truncated_high = truncated_high)
         else:
