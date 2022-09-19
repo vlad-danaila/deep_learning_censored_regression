@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from experiments.constants import IS_CUDA_AVILABLE, DOT_SIZE,PLOT_FONT_SIZE, SEED
 import optuna
+from models import get_dense_net
 
 def dump_json(obj, path):
     with open(path, mode='w') as file:
@@ -107,3 +108,13 @@ def get_best_metrics_and_hyperparams_from_optuna_study(root_folder, checkpoint):
     trials = [t for t in study.get_trials() if t.state == optuna.trial.TrialState.COMPLETE]
     best_trial = min(trials, key = lambda t: t.value)
     return best_trial.value, best_trial.params
+
+def get_model_from_checkpoint(input_size, checkpoint, is_liniar = False):
+    conf = checkpoint['conf']
+    return get_dense_net(
+        1 if is_liniar else conf['nb_layers'],
+        input_size,
+        conf['layer_size'],
+        conf['dropout_rate']
+    )
+

@@ -9,8 +9,9 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.util import save_fig_in_checkpoint_folder, get_device
+from experiments.util import save_fig_in_checkpoint_folder, get_device, get_model_from_checkpoint
 from experiments.models import get_dense_net
+
 
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -40,9 +41,9 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
-    model = model_fn()
     loss_fn = criterion()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -61,8 +62,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
                                 checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
 
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    conf = checkpoint['conf']
-    model = get_dense_net(1 if is_liniar else conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
+    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
@@ -92,8 +92,8 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
                                             is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    model = model_fn()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
@@ -130,8 +130,8 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
                                           checkpoint_name, is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    model = model_fn()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
