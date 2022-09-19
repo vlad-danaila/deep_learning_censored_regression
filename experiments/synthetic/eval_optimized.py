@@ -39,7 +39,7 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
         lgnd.legendHandles[3]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, is_optimized = True, model_fn = DenseNetwork, loader_val = None):
+                                    checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
     model = model_fn()
     loss_fn = criterion()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
@@ -59,9 +59,10 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
-    # TODO save the hyperparams of the network in the checkpoint, so that you can retrieve the shape of the network here
-    model = get_dense_net()
+
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    conf = checkpoint['conf']
+    model = get_dense_net(1 if is_liniar else conf['nb_layers'], input_size, conf['layer_size'], conf['dropout_rate'])
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
@@ -88,7 +89,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     print('R2 - test', test_metrics[R_SQUARED])
 
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name,
-                                            is_optimized = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None):
+                                            is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
@@ -126,7 +127,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
 
 
 def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                          checkpoint_name, is_optimized = True, model_fn = DenseNetwork, truncated_low = None, truncated_high = None, is_reparam=False):
+                                          checkpoint_name, is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     model = model_fn()
