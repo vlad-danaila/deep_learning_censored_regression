@@ -85,7 +85,7 @@ def get_objective_fn_mae_mse(dataset_train, dataset_val, bound_min, bound_max, c
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, conf, bound_min, bound_max,
                 model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -117,7 +117,7 @@ def get_objective_fn_gll(dataset_train, dataset_val, bound_min, bound_max, check
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_mae_mse_gll(trial, conf, bound_min, bound_max,
                 model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -153,7 +153,7 @@ def get_objective_fn_tobit_fixed_std(dataset_train, dataset_val, bound_min, boun
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit_fixed_std(trial, bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_tobit_fixed_std(trial, conf, bound_min, bound_max,
                                                                          model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'], len(dataset_val), conf['epochs'], log = log)
         if plot:
             plot_epochs(train_metrics, val_metrics)
@@ -190,7 +190,7 @@ def get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_
             div_factor = conf['div_factor'],
             final_div_factor = conf['final_div_factor']
         )
-        train_metrics, val_metrics, best = train_network_tobit_dyn_std(trial, bound_min, bound_max,
+        train_metrics, val_metrics, best = train_network_tobit_dyn_std(trial, conf, bound_min, bound_max,
                                                                        model, scale_model, loss_fn, optimizer, scheduler, loader_train, loader_val, checkpoint, conf['batch'],
                                                                        len(dataset_val), conf['epochs'], grad_clip = conf['grad_clip'], log = log, is_reparam=is_reparam)
         if plot:

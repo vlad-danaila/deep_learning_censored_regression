@@ -10,6 +10,7 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.util import save_fig_in_checkpoint_folder, get_device
+from experiments.models import get_dense_net
 
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
     model.load_state_dict(checkpoint['model'])
@@ -57,8 +58,9 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     print('R2 - test', test_metrics[R_SQUARED])
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                checkpoint_name, criterion, is_optimized = True, model_fn = DenseNetwork, loader_val = None):
-    model = model_fn()
+                                checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
+    # TODO save the hyperparams of the network in the checkpoint, so that you can retrieve the shape of the network here
+    model = get_dense_net()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
 
     plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
