@@ -50,7 +50,7 @@ def tpe_opt_deep_WITH_trunc_dyn_std():
 
 def eval_deep_WITH_trunc_dyn_std():
     plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                          ROOT_DEEP_TOBIT_TRUNCATED, CHECKPOINT_DEEP_TOBIT_TRUNCATED, model_fn = DenseNetwork, is_optimized= True)
+                                          ROOT_DEEP_TOBIT_TRUNCATED, CHECKPOINT_DEEP_TOBIT_TRUNCATED, is_optimized= True)
 
 def plot_deep_tobit_WITH_trunc_dyn_std():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_TRUNCATED} best.tar')
