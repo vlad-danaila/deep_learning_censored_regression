@@ -10,7 +10,6 @@ from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
 from experiments.util import save_fig_in_checkpoint_folder, get_device, get_model_from_checkpoint
-from experiments.models import get_dense_net
 
 
 def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
