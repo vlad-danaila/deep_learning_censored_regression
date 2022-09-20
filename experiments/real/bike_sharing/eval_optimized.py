@@ -85,7 +85,6 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-# TODO Am ramas aici cu verificarile
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder, checkpoint_name,
             is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
@@ -123,7 +122,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     elif 'sigma' in checkpoint:
         print('\nstd', checkpoint['sigma'])
 
-
+# TODO Am ramas aici cu verificarile
 def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
             checkpoint_name, is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)

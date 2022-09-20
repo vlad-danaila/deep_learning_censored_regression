@@ -73,7 +73,7 @@ def tpe_opt_lin_NO_trunc_reparam():
 
 def eval_linear_NO_trunc_reparam():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
-                                            ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, model_fn = linear_model, is_optimized = True)
+        ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, is_liniar=True, is_optimized = True)
 
 def plot_linear_NO_trunc_reparam():
     checkpoint = load_checkpoint(f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED} best.tar')
@@ -95,7 +95,7 @@ def tpe_opt_lin_WITH_trunc_reparam():
 
 def eval_linear_tobit_WITH_trunc_reparam():
     plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
-                                            ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, model_fn = linear_model, is_optimized = True)
+        ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, is_liniar=True, is_optimized = True)
 
 def plot_linear_tobit_WITH_trunc_reparam():
     checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED} best.tar')
