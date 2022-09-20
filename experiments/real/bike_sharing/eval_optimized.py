@@ -38,10 +38,10 @@ def plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_mo
         lgnd.legendHandles[2]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, is_optimized = True, is_liniar = False, loader_val = None):
+                                    checkpoint_name, criterion, is_optimized = True, loader_val = None):
     loss_fn = criterion()
     checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
     plot_dataset_and_net(checkpoint, model, testing_df, with_std=False, scale_model=None)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -56,12 +56,11 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
-# TODO Am ramas aici cu verificarile
 def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
-                                checkpoint_name, criterion, is_optimized = True, is_liniar = False, loader_val = None):
+                                checkpoint_name, criterion, is_optimized = True, loader_val = None):
 
     checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
     plot_dataset_and_net(checkpoint, model, testing_df)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -86,6 +85,7 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, d
     print('Absolute error - test', test_metrics[ABS_ERR])
     print('R2 - test', test_metrics[R_SQUARED])
 
+# TODO Am ramas aici cu verificarile
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder, checkpoint_name,
             is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
