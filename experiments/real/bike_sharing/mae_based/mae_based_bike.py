@@ -29,7 +29,7 @@ def tpe_opt_mae_simple():
 
 def eval_mae_simple():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df),
-                                    dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, is_optimized= True)
+        dataset_val, dataset_test, ROOT_MAE, CHECKPOINT_MAE, t.nn.L1Loss, is_optimized= True)
 
 def plot_mae_simple():
     checkpoint = load_checkpoint(f'{ROOT_MAE}/{CHECKPOINT_MAE} best.tar')
@@ -57,7 +57,7 @@ def tpe_opt_mae_cens_NO_trunc():
 
 def eval_mae_cens_NO_trunc():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df), dataset_val, dataset_test,
-                                    ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, is_optimized = True)
+        ROOT_BOUNDED_MAE, CHECKPOINT_BOUNDED_MAE, lambda: bounded_loss, is_optimized = True)
 
 def plot_mae_cens_NO_trunc():
     checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MAE}/{CHECKPOINT_BOUNDED_MAE} best.tar')
@@ -84,7 +84,7 @@ def tpe_opt_mae_cens_WITH_trunc():
 
 def eval_mae_cens_WITH_trunc():
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, test_df(df), dataset_val, dataset_test, ROOT_BOUNDED_MAE_WITH_PENALTY,
-                                    CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= True)
+        CHECKPOINT_BOUNDED_MAE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= True)
 
 def plot_mae_cens_WITH_trunc():
     checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MAE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MAE_WITH_PENALTY} best.tar')
