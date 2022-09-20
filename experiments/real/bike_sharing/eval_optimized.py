@@ -122,13 +122,12 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     elif 'sigma' in checkpoint:
         print('\nstd', checkpoint['sigma'])
 
-# TODO Am ramas aici cu verificarile
 def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
-            checkpoint_name, is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None, is_reparam=False):
+            checkpoint_name, is_optimized = True, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
