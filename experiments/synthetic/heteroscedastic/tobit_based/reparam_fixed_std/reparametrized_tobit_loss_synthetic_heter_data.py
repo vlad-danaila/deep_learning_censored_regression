@@ -66,7 +66,7 @@ def eval_deep_NO_trunc_reparam():
 
 def plot_deep_tobit_NO_trunc_reparam():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 
@@ -89,7 +89,7 @@ def eval_deep_WITH_trunc_reparam():
 
 def plot_deep_WITH_trunc_reparam():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 
@@ -111,7 +111,7 @@ def eval_linear_tobit_NO_trunc_reparam():
 
 def plot_linear_tobit_NO_trunc_reparam():
     checkpoint = t.load(f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED} best.tar')
-    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=True)
 
 
 
@@ -134,4 +134,4 @@ def eval_linear_tobit_WITH_trunc_reparam():
 
 def plot_linear_tobit_WITH_trunc_reparam():
     checkpoint = t.load(f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED} best.tar')
-    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=True)

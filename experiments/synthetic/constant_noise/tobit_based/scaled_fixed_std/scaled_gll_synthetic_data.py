@@ -54,4 +54,4 @@ def eval_gll_scaled():
 
 def plot_gll_scaled():
     checkpoint = t.load(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)

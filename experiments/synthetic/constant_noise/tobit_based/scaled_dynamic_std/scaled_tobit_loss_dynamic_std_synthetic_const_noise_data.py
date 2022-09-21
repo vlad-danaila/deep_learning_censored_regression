@@ -57,6 +57,6 @@ def plot_deep_tobit_WITH_trunc_dyn_std():
     scale_model = get_scale_network()
     scale_model.load_state_dict(checkpoint['sigma'])
     scale_model.eval()
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
 
 

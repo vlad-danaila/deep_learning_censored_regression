@@ -65,7 +65,7 @@ def eval_deep_NO_trunc():
 
 def plot_deep_NO_trunc():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED}/{CHECKPOINT_DEEP_TOBIT_SCALED} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 
@@ -85,7 +85,7 @@ def eval_deep_WITH_trunc():
 
 def plot_deep_WITH_trunc():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 
@@ -106,7 +106,7 @@ def eval_lin_NO_trunc():
 
 def plot_lin_NO_trunc():
     checkpoint = t.load(f'{ROOT_LINEAR_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TOBIT_SCALED} best.tar')
-    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=True)
 
 
 
@@ -129,7 +129,7 @@ def eval_linear_tobit_WITH_trunc():
 
 def plot_linear_tobit_WITH_trunc():
     checkpoint = t.load(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED} best.tar')
-    plot_dataset_and_net(checkpoint, t.nn.Linear(1, 1), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=True)
 
 # eval_deep_tobit_WITH_trunc()
 # eval_deep_tobit_NO_trunc()

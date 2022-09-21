@@ -53,7 +53,7 @@ def eval_mse_simple():
 
 def plot_mse_simple():
     checkpoint = t.load(f'{ROOT_MSE}/{CHECKPOINT_MSE} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 # tpe_opt_mse_simple()
 # eval_mse_simple()
@@ -82,7 +82,7 @@ def eval_mse_cens_NO_trunc():
 
 def plot_mse_cens_NO_trunc():
     checkpoint = t.load(f'{ROOT_BOUNDED_MSE}/{CHECKPOINT_BOUNDED_MSE} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 
@@ -111,7 +111,7 @@ def eval_mse_cens_WITH_trunc():
 
 def plot_mse_cens_WITH_trunc():
     checkpoint = t.load(f'{ROOT_BOUNDED_MSE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MSE_WITH_PENALTY} best.tar')
-    plot_dataset_and_net(checkpoint, DenseNetwork(), x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
 # tpe_opt_mse_simple()

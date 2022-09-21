@@ -97,10 +97,10 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar, with_std=True)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar, with_std=True)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
