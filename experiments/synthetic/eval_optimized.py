@@ -12,7 +12,8 @@ from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed
 from experiments.util import save_fig_in_checkpoint_folder, get_device, get_model_from_checkpoint
 
 
-def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=False, scale_model=None):
+def plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar = False, with_std=False, scale_model=None):
+    model = get_model_from_checkpoint(1, checkpoint, is_liniar = is_liniar)
     model.load_state_dict(checkpoint['model'])
     plot_beta(x_mean, x_std, y_mean, y_std, label = 'true distribution')
     plot_dataset(dataset_val, label = 'validation data')
@@ -39,11 +40,11 @@ def plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, datase
         lgnd.legendHandles[3]._sizes = [10]
 
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                    checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
+                                    checkpoint_name, criterion, is_optimized = True, loader_val = None):
     loss_fn = criterion()
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
+    model = get_model_from_checkpoint(1, checkpoint, False)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
     if not loader_val:
@@ -58,15 +59,15 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
     print('R2 - test', test_metrics[R_SQUARED])
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                checkpoint_name, criterion, is_optimized = True, input_size = 1, is_liniar = False, loader_val = None):
+                                checkpoint_name, criterion, is_optimized = True, loader_val = None):
 
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(1, checkpoint, False)
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'sigma' in checkpoint:
@@ -88,18 +89,18 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
     print('R2 - test', test_metrics[R_SQUARED])
 
 def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder, checkpoint_name,
-                                            is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None):
+                                            is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(1, checkpoint, is_liniar)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val)
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, with_std=True)
+    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar=is_liniar, with_std=True)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
@@ -126,11 +127,11 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
 
 
 def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, root_folder,
-                                          checkpoint_name, is_optimized = True, input_size = 1, is_liniar = False, truncated_low = None, truncated_high = None, is_reparam=False):
+                                          checkpoint_name, is_optimized = True, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     checkpoint = t.load(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
-    model = get_model_from_checkpoint(input_size, checkpoint, is_liniar)
+    model = get_model_from_checkpoint(1, checkpoint, False)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
@@ -140,10 +141,10 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
     scale_model.eval()
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
-    plot_dataset_and_net(checkpoint, model, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model, with_std=True)
+    plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model, with_std=True)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name, suffix='-with-std')
 
     if 'gamma' in checkpoint:
