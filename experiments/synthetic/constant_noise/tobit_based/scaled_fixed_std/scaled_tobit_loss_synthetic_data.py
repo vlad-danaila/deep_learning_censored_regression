@@ -3,7 +3,6 @@ from experiments.util import set_random_seed
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_fixed_std
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
-from experiments.synthetic.models import DenseNetwork
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_fixed_std, tpe_opt_hyperparam
 

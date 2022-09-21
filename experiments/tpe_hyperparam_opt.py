@@ -7,7 +7,6 @@ from experiments.constants import ABS_ERR
 from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss, \
     Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, Heteroscedastic_Scaled_Tobit_Loss
 from deep_tobit.util import distinguish_censored_versus_observed_data
-from experiments.synthetic.models import DenseNetwork, get_scale_network
 from experiments.util import get_scale, get_device, dump_json
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std

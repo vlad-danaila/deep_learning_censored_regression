@@ -2,7 +2,6 @@ from experiments.synthetic.constants import *
 from experiments.util import set_random_seed, get_device
 from experiments.synthetic.constant_noise.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_gll, plot_dataset_and_net
-from experiments.synthetic.models import DenseNetwork
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""

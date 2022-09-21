@@ -3,7 +3,7 @@ from experiments.util import set_random_seed
 from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
-from experiments.synthetic.models import DenseNetwork, get_scale_network
+from experiments.synthetic.models import get_scale_network
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""

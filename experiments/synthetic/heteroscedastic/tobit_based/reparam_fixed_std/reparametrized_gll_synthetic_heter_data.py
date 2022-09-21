@@ -3,7 +3,6 @@ from experiments.util import set_random_seed, get_device
 from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_gll
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
-from experiments.synthetic.models import DenseNetwork
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""
