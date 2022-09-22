@@ -118,3 +118,11 @@ def get_model_from_checkpoint(input_size, checkpoint, is_liniar = False):
         conf['dropout_rate']
     )
 
+def get_scale_model_from_checkpoint(input_size, checkpoint):
+    conf = checkpoint['conf']
+    return get_dense_net(
+        conf['nb_layers_scale_net'],
+        input_size,
+        conf['layer_size_scale_net'],
+        conf['dropout_rate_scale_net']
+    )
