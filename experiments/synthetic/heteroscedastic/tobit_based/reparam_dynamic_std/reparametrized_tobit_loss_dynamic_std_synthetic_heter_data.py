@@ -1,9 +1,8 @@
 from experiments.synthetic.constants import *
-from experiments.util import set_random_seed
+from experiments.util import set_random_seed, get_scale_model_from_checkpoint
 from experiments.synthetic.heteroscedastic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from deep_tobit.util import normalize, distinguish_censored_versus_observed_data
-from experiments.synthetic.models import get_scale_network
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""
@@ -55,7 +54,7 @@ def eval_deep_WITH_trunc_reparam_dyn_std():
 
 def plot_deep_tobit_WITH_trunc_reparam_dyn_std():
     checkpoint = t.load(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
-    scale_model = get_scale_network()
+    scale_model = get_scale_model_from_checkpoint(1, checkpoint)
     scale_model.load_state_dict(checkpoint['gamma'])
     scale_model.eval()
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, scale_model=scale_model)

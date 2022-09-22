@@ -6,10 +6,9 @@ from deep_tobit.loss import Reparametrized_Scaled_Tobit_Loss, Scaled_Tobit_Loss,
 from deep_tobit.util import distinguish_censored_versus_observed_data
 
 from experiments.constants import ABS_ERR, R_SQUARED
-from experiments.synthetic.models import get_scale_network
 from experiments.synthetic.plot import plot_beta, plot_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.util import save_fig_in_checkpoint_folder, get_device, get_model_from_checkpoint
+from experiments.util import save_fig_in_checkpoint_folder, get_device, get_model_from_checkpoint, get_scale_model_from_checkpoint
 
 
 def plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val, is_liniar = False, with_std=False, scale_model=None):
@@ -137,7 +136,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     model.load_state_dict(checkpoint['model'])
     model.eval()
 
-    scale_model = get_scale_network()
+    scale_model = get_scale_model_from_checkpoint(1, checkpoint)
     scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
     scale_model.eval()
 
