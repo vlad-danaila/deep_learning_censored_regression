@@ -1,7 +1,6 @@
 from experiments.util import set_random_seed, load_checkpoint, get_device
 from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_gll, plot_dataset_and_net
-from experiments.real.models import get_model
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""

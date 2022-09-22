@@ -1,7 +1,7 @@
 from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.real.pm25.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
-from experiments.real.models import get_model, linear_model, get_scale_network
+from experiments.real.models import get_scale_network
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""

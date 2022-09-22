@@ -1,7 +1,6 @@
 from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
-from experiments.real.models import get_model
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 
 """Constants"""
