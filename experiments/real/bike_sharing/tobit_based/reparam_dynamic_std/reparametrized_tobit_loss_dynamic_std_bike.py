@@ -1,7 +1,6 @@
-from experiments.util import set_random_seed, load_checkpoint
+from experiments.util import set_random_seed, load_checkpoint, get_scale_model_from_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
-from experiments.real.models import get_scale_network
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""
@@ -31,7 +30,7 @@ def eval_deep_reparam_WITH_trunc_dyn_std():
 
 def plot_deep_reparam_WITH_trunc_dyn_std():
     checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
-    scale_model = get_scale_network(INPUT_SIZE)
+    scale_model = get_scale_model_from_checkpoint(INPUT_SIZE, checkpoint)
     scale_model.load_state_dict(checkpoint['gamma'])
     scale_model.eval()
     plot_dataset_and_net(checkpoint, test_df(df), scale_model=scale_model)
