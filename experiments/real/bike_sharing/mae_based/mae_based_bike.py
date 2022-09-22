@@ -33,7 +33,7 @@ def eval_mae_simple():
 
 def plot_mae_simple():
     checkpoint = load_checkpoint(f'{ROOT_MAE}/{CHECKPOINT_MAE} best.tar')
-    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+    plot_dataset_and_net(checkpoint, test_df(df))
 
 # tpe_opt_mae_simple()
 # eval_mae_simple()
@@ -61,7 +61,7 @@ def eval_mae_cens_NO_trunc():
 
 def plot_mae_cens_NO_trunc():
     checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MAE}/{CHECKPOINT_BOUNDED_MAE} best.tar')
-    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+    plot_dataset_and_net(checkpoint, test_df(df))
 
 
 
@@ -88,7 +88,7 @@ def eval_mae_cens_WITH_trunc():
 
 def plot_mae_cens_WITH_trunc():
     checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MAE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MAE_WITH_PENALTY} best.tar')
-    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+    plot_dataset_and_net(checkpoint, test_df(df))
 
 # tpe_opt_mae_simple()
 # eval_mae_simple()

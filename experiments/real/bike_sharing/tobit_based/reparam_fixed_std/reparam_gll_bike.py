@@ -37,4 +37,4 @@ def eval_gll_reparam():
 
 def plot_gll_reparam():
     checkpoint = load_checkpoint(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
-    plot_dataset_and_net(checkpoint, get_model(INPUT_SIZE), test_df(df))
+    plot_dataset_and_net(checkpoint, test_df(df))
