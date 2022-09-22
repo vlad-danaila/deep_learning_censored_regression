@@ -35,7 +35,7 @@ def propose_conf(trial: optuna.trial.Trial, include_scaling_network = False):
     }
     if include_scaling_network:
         config['grad_clip'] = trial.suggest_float('grad_clip', 1e-2, 1e2)
-        config['nb_layers_scale_net'] = trial.suggest_int('nb_layers_scale_net', 1, 3)
+        config['nb_layers_scale_net'] = trial.suggest_int('nb_layers_scale_net', 2, 6, step = 2)
         config['layer_size_scale_net'] = trial.suggest_int('layer_size_scale_net', 2, 10),
         config['dropout_rate_scale_net'] = trial.suggest_float('dropout_rate_scale_net', 0, .5)
     return config
