@@ -9,8 +9,7 @@ from experiments.constants import ABS_ERR, R_SQUARED
 from experiments.real.models import get_model, get_scale_network
 from experiments.real.bike_sharing.plot import plot_full_dataset, plot_net
 from experiments.train import eval_network_mae_mse_gll, eval_network_tobit_fixed_std, eval_network_tobit_dyn_std
-from experiments.util import load_checkpoint, get_device, save_fig_in_checkpoint_folder
-from experiments.util import get_dense_net, get_model_from_checkpoint
+from experiments.util import load_checkpoint, get_device, save_fig_in_checkpoint_folder, get_model_from_checkpoint
 
 def plot_dataset_and_net(checkpoint, testing_df, is_liniar=False, with_std=False, scale_model=None):
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
@@ -59,9 +58,9 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, is_optimized = True, loader_val = None):
-
     checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
+
     plot_dataset_and_net(checkpoint, testing_df)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -92,6 +91,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
+
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
