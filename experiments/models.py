@@ -4,7 +4,10 @@ from experiments.constants import IS_CUDA_AVILABLE
 
 def get_dense_net(nb_layers, input_size, hidden_size, dropout_rate):
     if nb_layers == 1:
-        return t.nn.Linear(input_size, 1)
+        liniar_model = t.nn.DataParallel(t.nn.Linear(input_size, 1))
+        if IS_CUDA_AVILABLE:
+            liniar_model = liniar_model.cuda()
+        return liniar_model
     sequential = t.nn.Sequential(
         Linear(input_size, hidden_size), BatchNorm1d(hidden_size, affine = False), ReLU(), Dropout(p = dropout_rate)
     )
