@@ -236,7 +236,7 @@ def train_network_tobit_fixed_std(trial: optuna.trial.Trial, conf, bound_min, bo
                 raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
-                break
+                raise optuna.TrialPruned()
         print('Best absolute error:', best[ABS_ERR], 'R2:', best[R_SQUARED])
         return metrics_train_per_epochs, metrics_test_per_epochs, best
     except KeyboardInterrupt as e:
@@ -316,7 +316,7 @@ def train_network_tobit_dyn_std(trial: optuna.trial.Trial, conf, bound_min, boun
                 raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
-                break
+                raise optuna.TrialPruned()
         print('Best absolute error:', best[ABS_ERR], 'R2:', best[R_SQUARED])
         return metrics_train_per_epochs, metrics_test_per_epochs, best
     except KeyboardInterrupt as e:
