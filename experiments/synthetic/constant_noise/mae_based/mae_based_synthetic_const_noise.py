@@ -108,6 +108,7 @@ def plot_mae_cens_WITH_trunc():
     checkpoint = t.load(f'{ROOT_BOUNDED_MAE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MAE_WITH_PENALTY} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
+
 # tpe_opt_mae_simple()
 # eval_mae_simple()
 #
