@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 from experiments.constants import IS_CUDA_AVILABLE, DOT_SIZE,PLOT_FONT_SIZE, SEED
 import optuna
-from models import get_dense_net
+from experiments.models import get_dense_net
 
 def dump_json(obj, path):
     with open(path, mode='w') as file:
