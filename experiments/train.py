@@ -166,7 +166,7 @@ def train_network_mae_mse_gll(trial: optuna.trial.Trial, conf, bound_min, bound_
                 raise pruneError
             except Exception as e:
                 print(traceback.format_exc())
-                break
+                raise optuna.TrialPruned()
         print('Best absolute error:', best[ABS_ERR], 'R2:', best[R_SQUARED])
         return metrics_train_per_epochs, metrics_test_per_epochs, best
     except KeyboardInterrupt as e:
