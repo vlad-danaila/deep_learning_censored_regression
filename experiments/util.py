@@ -126,3 +126,11 @@ def get_scale_model_from_checkpoint(input_size, checkpoint):
         conf['layer_size_scale_net'],
         conf['dropout_rate_scale_net']
     )
+
+def load_checkpoint(root_folder, checkpoint_name, is_optimized):
+    checkpoint_path = root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar')
+    if IS_CUDA_AVILABLE:
+        checkpoint = t.load(checkpoint_path)
+    else:
+        checkpoint = t.load(checkpoint_path, map_location=t.device('cpu'))
+    return checkpoint
