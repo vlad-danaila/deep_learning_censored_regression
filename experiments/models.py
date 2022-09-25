@@ -8,17 +8,24 @@ def get_dense_net(nb_layers, input_size, hidden_size, dropout_rate):
         if IS_CUDA_AVILABLE:
             liniar_model = liniar_model.cuda()
         return liniar_model
-    sequential = t.nn.Sequential(
-        Linear(input_size, hidden_size), BatchNorm1d(hidden_size, affine = False), ReLU(), Dropout(p = dropout_rate)
-    )
+
+    layers = [
+        Linear(input_size, hidden_size),
+        BatchNorm1d(hidden_size, affine=False),
+        ReLU(),
+        Dropout(p=dropout_rate)
+    ]
     # start from 1 since the input layer is already setup
     # end at -1 since we setup the output layer separately
     for i in range(1, nb_layers - 1):
-        sequential.append(Linear(hidden_size, hidden_size))
-        sequential.append(BatchNorm1d(hidden_size, affine = False))
-        sequential.append(ReLU())
-        sequential.append(Dropout(p = dropout_rate))
-    sequential.append(Linear(hidden_size, 1))
+        layers.append(Linear(hidden_size, hidden_size))
+        layers.append(BatchNorm1d(hidden_size, affine=False))
+        layers.append(ReLU())
+        layers.append(Dropout(p=dropout_rate))
+    # Output layer
+    layers.append(Linear(hidden_size, 1))
+
+    sequential = t.nn.Sequential(*layers)
     if IS_CUDA_AVILABLE:
         sequential = sequential.cuda()
     sequential = t.nn.DataParallel(sequential)
