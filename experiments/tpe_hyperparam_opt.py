@@ -45,7 +45,7 @@ def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.Froz
     checkpoint = study.user_attrs.get(CHECKPOINT)
     checkpoint_file = checkpoint + '.tar'
     best_checkpoint_file = checkpoint + ' best.tar'
-    if trial.value < prev_best:
+    if trial.value and trial.value < prev_best:
         study.set_user_attr(PREVIOUS_BEST, trial.value)
         if os.path.exists(best_checkpoint_file):
             os.remove(best_checkpoint_file)
