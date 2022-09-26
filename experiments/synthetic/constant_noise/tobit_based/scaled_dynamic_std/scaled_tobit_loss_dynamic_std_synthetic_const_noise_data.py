@@ -45,7 +45,8 @@ objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, datase
                                                            f'{ROOT_DEEP_TOBIT_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_TRUNCATED}', truncated_low = zero_normalized)
 
 def tpe_opt_deep_WITH_trunc_dyn_std():
-    return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_TRUNCATED, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc)
+    return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_TRUNCATED, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc,
+                              n_trials = 5000, n_startup_trials = 2500, prunner_warmup_trials = 2500)
 
 def eval_deep_WITH_trunc_dyn_std():
     plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
