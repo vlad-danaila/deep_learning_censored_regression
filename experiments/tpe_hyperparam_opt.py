@@ -51,15 +51,16 @@ def save_checkpoint_callback(study: optuna.study.Study, trial: optuna.trial.Froz
             os.remove(best_checkpoint_file)
         os.rename(checkpoint_file, best_checkpoint_file)
 
-def tpe_opt_hyperparam(root_folder, checkpoint, train_callback):
+def tpe_opt_hyperparam(root_folder, checkpoint, train_callback, n_trials = NB_TRIALS,
+                       n_startup_trials = TPE_STARTUP_TRIALS, prunner_warmup_trials = PRUNNER_WARMUP_TRIALS):
     study_name = f'study {checkpoint}'
-    sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = TPE_STARTUP_TRIALS, seed=SEED)
-    pruner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = PRUNNER_WARMUP_TRIALS)
+    sampler = optuna.samplers.TPESampler(multivariate = True, n_startup_trials = n_startup_trials, seed=SEED)
+    pruner = optuna.pruners.PercentilePruner(PRUNNER_PERCENTILE, n_startup_trials = prunner_warmup_trials)
     study = optuna.create_study(sampler=sampler, pruner = pruner, study_name = study_name, direction = optuna.study.StudyDirection.MINIMIZE,
                                 storage = f'sqlite:///{root_folder}/{checkpoint}.db', load_if_exists = True)
     study.set_user_attr(PREVIOUS_BEST, math.inf)
     study.set_user_attr(CHECKPOINT, f'{root_folder}/{checkpoint}')
-    study.optimize(train_callback, n_trials = NB_TRIALS, callbacks=[save_checkpoint_callback])
+    study.optimize(train_callback, n_trials = n_trials, callbacks=[save_checkpoint_callback])
     logging.info(study.best_params)
     dump_json(study.best_params, f'{root_folder}/{checkpoint} hyperparam.json')
 
