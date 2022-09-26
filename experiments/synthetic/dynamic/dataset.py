@@ -10,11 +10,12 @@ from experiments.util import get_device
 
 class TruncatedBetaDistributionConfig:
 
-    def __init__(self, censor_low_bound, censor_high_bound, alpha, beta):
+    def __init__(self, censor_low_bound, censor_high_bound, alpha, beta, is_heteroscedastic):
         self.censor_low_bound = censor_low_bound
         self.censor_high_bound = censor_high_bound
         self.alpha = alpha
         self.beta = beta
+        self.is_heteroscedastic = is_heteroscedastic
 
 def calculate_mean_std(lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
     assert lower_bound <= upper_bound
