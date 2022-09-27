@@ -1,1 +1,1 @@
-{"batch": 142, "div_factor": 9, "dropout_rate": 0.11232301716205281, "dropout_rate_scale_net": 0.025357971612229094, "epochs": 14, "grad_clip": 4.927899241713514, "layer_size": 11, "layer_size_scale_net": 4, "max_lr": 0.007460432282370641, "nb_layers": 6, "nb_layers_scale_net": 6}
+{"batch": 40, "div_factor": 8, "dropout_rate": 0.12863462206316528, "dropout_rate_scale_net": 0.05197696099645421, "epochs": 14, "grad_clip": 19.752726787458045, "layer_size": 16, "layer_size_scale_net": 2, "max_lr": 0.00016547692150120473, "nb_layers": 9, "nb_layers_scale_net": 5}
