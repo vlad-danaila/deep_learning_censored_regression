@@ -42,7 +42,11 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean,
                                     checkpoint_name, criterion, is_optimized = True, loader_val = None):
     loss_fn = criterion()
     checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
+
     model = get_model_from_checkpoint(1, checkpoint, False)
+    model.load_state_dict(checkpoint['model'])
+    model.eval()
+
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
 
@@ -62,6 +66,8 @@ def plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_s
 
     checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(1, checkpoint, False)
+    model.load_state_dict(checkpoint['model'])
+    model.eval()
 
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
@@ -91,8 +97,12 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, x_mean, x_std,
                                             is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
+
     checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(1, checkpoint, is_liniar)
+    model.load_state_dict(checkpoint['model'])
+    model.eval()
+
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'
 
@@ -130,11 +140,13 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, x_mean, x_std, y
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
     checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
+
     model = get_model_from_checkpoint(1, checkpoint, False)
-    if not ('gamma' in checkpoint or 'sigma' in checkpoint):
-        raise 'Sigma or gamma must be found in checkpoint'
     model.load_state_dict(checkpoint['model'])
     model.eval()
+
+    if not ('gamma' in checkpoint or 'sigma' in checkpoint):
+        raise 'Sigma or gamma must be found in checkpoint'
 
     scale_model = get_scale_model_from_checkpoint(1, checkpoint)
     scale_model.load_state_dict(checkpoint['gamma' if is_reparam else 'sigma'])
