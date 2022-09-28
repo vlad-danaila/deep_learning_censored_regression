@@ -2,6 +2,7 @@ from experiments.synthetic.dynamic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_fixed_std
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_fixed_std, tpe_opt_hyperparam
+from experiments.util import TruncatedBetaDistributionConfig
 
 """Constants"""
 ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'

@@ -1,25 +1,13 @@
 import math
 import numpy as np
 from scipy.stats import beta
-from deep_tobit.util import to_torch, to_numpy, normalize, unnormalize
+from deep_tobit.util import normalize
 import random
 import torch as t
 from experiments.synthetic.constants import ALPHA, BETA, NOISE
 from experiments.synthetic.constants import DATASET_LEN
-from experiments.util import get_device, set_random_seed
+from experiments.util import get_device, set_random_seed, TruncatedBetaDistributionConfig
 
-class TruncatedBetaDistributionConfig:
-
-    def __init__(self, censor_low_bound, censor_high_bound, alpha, beta, is_heteroscedastic):
-        self.censor_low_bound = censor_low_bound
-        self.censor_high_bound = censor_high_bound
-        self.alpha = alpha
-        self.beta = beta
-        self.is_heteroscedastic = is_heteroscedastic
-
-def name_from_distribution_config(c: TruncatedBetaDistributionConfig):
-    heteroscedastic = "h" if c.is_heteroscedastic else ''
-    return f'{heteroscedastic}_a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
 
 def calculate_mean_std(is_heteroscedastic, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
     assert lower_bound <= upper_bound

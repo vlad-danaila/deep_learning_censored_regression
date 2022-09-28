@@ -8,6 +8,10 @@ from experiments.constants import IS_CUDA_AVILABLE, DOT_SIZE,PLOT_FONT_SIZE, SEE
 import optuna
 from experiments.models import get_dense_net
 
+def create_folder(path):
+    if not os.path.isdir(path):
+        os.mkdir(path)
+
 def dump_json(obj, path):
     with open(path, mode='w') as file:
         json.dump(obj, file)
@@ -126,6 +130,28 @@ def get_scale_model_from_checkpoint(input_size, checkpoint):
 
 def load_checkpoint(root_folder, checkpoint_name, is_optimized):
     checkpoint_path = root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar')
+    if IS_CUDA_AVILABLE:
+        checkpoint = t.load(checkpoint_path)
+    else:
+        checkpoint = t.load(checkpoint_path, map_location=t.device('cpu'))
+    return checkpoint
+
+
+class TruncatedBetaDistributionConfig:
+
+    def __init__(self, censor_low_bound, censor_high_bound, alpha, beta, is_heteroscedastic):
+        self.censor_low_bound = censor_low_bound
+        self.censor_high_bound = censor_high_bound
+        self.alpha = alpha
+        self.beta = beta
+        self.is_heteroscedastic = is_heteroscedastic
+
+def name_from_distribution_config(c: TruncatedBetaDistributionConfig):
+    heteroscedastic = "h" if c.is_heteroscedastic else ''
+    return f'{heteroscedastic}_a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
+
+def load_checkpoint_synthetic(root_folder: str, checkpoint_name: str, conf: TruncatedBetaDistributionConfig, is_optimized: bool):
+    checkpoint_path = root_folder + '/' + name_from_distribution_config(conf) + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar')
     if IS_CUDA_AVILABLE:
         checkpoint = t.load(checkpoint_path)
     else:
