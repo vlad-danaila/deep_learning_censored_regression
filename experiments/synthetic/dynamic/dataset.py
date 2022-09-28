@@ -18,20 +18,24 @@ class TruncatedBetaDistributionConfig:
         self.beta = beta
         self.is_heteroscedastic = is_heteroscedastic
 
-def calculate_mean_std(lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
+def calculate_mean_std(is_heteroscedastic, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
     assert lower_bound <= upper_bound
     beta_distribution = beta(a = distribution_alpha, b = distribution_beta)
     x = np.linspace(start, end, nb_samples)
     y = beta_distribution.pdf(x)
-    y += (np.random.normal(0, noise, nb_samples) * y)
+    noise = np.random.normal(0, noise, nb_samples)
+    if is_heteroscedastic:
+        noise = noise * y
+    y += noise
     y = np.clip(y, lower_bound, upper_bound)
     return x.mean(), x.std(), y.mean(), y.std()
 
 class TruncatedBetaDistributionDataset(t.utils.data.Dataset):
 
-    def __init__(self, x_mean, x_std, y_mean, y_std, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, noise = NOISE):
+    def __init__(self, is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, noise = NOISE):
         super().__init__()
         assert lower_bound <= upper_bound
+        self.is_heteroscedastic = is_heteroscedastic
         self.beta_distribution = beta(a = distribution_alpha, b = distribution_beta)
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
@@ -45,7 +49,9 @@ class TruncatedBetaDistributionDataset(t.utils.data.Dataset):
     def __getitem__(self, i):
         x = random.uniform(0, 1)
         y = self.beta_distribution.pdf(x)
-        noise = random.gauss(0, self.noise) * y
+        noise = random.gauss(0, self.noise)
+        if self.is_heteroscedastic:
+            noise = noise * y
         y += noise
         y = np.clip(y, self.lower_bound, self.upper_bound)
         x = normalize(x, mean = self.x_mean, std = self.x_std)
@@ -57,11 +63,13 @@ class TruncatedBetaDistributionDataset(t.utils.data.Dataset):
 
 class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDataset):
 
-    def __init__(self, x_mean, x_std, y_mean, y_std, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
-        super().__init__(x_mean, x_std, y_mean, y_std, lower_bound, upper_bound, nb_samples, distribution_alpha, distribution_beta)
+    def __init__(self, is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = -math.inf, upper_bound = math.inf, nb_samples = DATASET_LEN, distribution_alpha = ALPHA, distribution_beta = BETA, start = 0, end = 1, noise = NOISE):
+        super().__init__(is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound, upper_bound, nb_samples, distribution_alpha, distribution_beta)
         self.x = np.linspace(start, end, nb_samples)
         self.y = self.beta_distribution.pdf(self.x)
-        noise = np.random.normal(0, noise, nb_samples) * self.y
+        noise = np.random.normal(0, noise, nb_samples)
+        if is_heteroscedastic:
+            noise = noise * self.y
         self.y += noise
         self.y = np.clip(self.y, self.lower_bound, self.upper_bound)
         self.x = normalize(self.x, mean = x_mean, std = x_std)
@@ -75,17 +83,18 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
         return self.x[i], self.y[i]
 
 def get_experiment_data(dataset_config: TruncatedBetaDistributionConfig):
+    is_heteroscedastic = dataset_config.is_heteroscedastic
     # Reproducible experiments
     set_random_seed()
     # Censoring Tresholds
     low = dataset_config.censor_low_bound
     high = dataset_config.censor_high_bound
     # Mean / Std
-    x_mean, x_std, y_mean, y_std = calculate_mean_std(lower_bound = low, upper_bound = high)
+    x_mean, x_std, y_mean, y_std = calculate_mean_std(is_heteroscedastic, lower_bound = low, upper_bound = high)
     # Datasets
-    dataset_train = TruncatedBetaDistributionDataset(x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high)
-    dataset_val = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high, nb_samples = 1000)
-    dataset_test = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std)
+    dataset_train = TruncatedBetaDistributionDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high)
+    dataset_val = TruncatedBetaDistributionValidationDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high, nb_samples = 1000)
+    dataset_test = TruncatedBetaDistributionValidationDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std)
     # Normalization
     bound_min = normalize(low, y_mean, y_std)
     bound_max = normalize(high, y_mean, y_std)
