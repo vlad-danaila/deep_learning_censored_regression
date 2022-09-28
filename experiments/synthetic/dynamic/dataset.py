@@ -7,6 +7,7 @@ import torch as t
 from experiments.synthetic.constants import ALPHA, BETA, NOISE
 from experiments.synthetic.constants import DATASET_LEN
 from experiments.util import get_device
+from experiments.util import set_random_seed
 
 class TruncatedBetaDistributionConfig:
 
@@ -74,4 +75,19 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
         return self.x[i], self.y[i]
 
 def get_experiment_data(dataset_config: TruncatedBetaDistributionConfig):
-    pass
+    # Reproducible experiments
+    set_random_seed()
+    # Censoring Tresholds
+    low = dataset_config.censor_low_bound
+    high = dataset_config.censor_high_bound
+    # Mean / Std
+    x_mean, x_std, y_mean, y_std = calculate_mean_std(lower_bound = low, upper_bound = high)
+    # Datasets
+    dataset_train = TruncatedBetaDistributionDataset(x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high)
+    dataset_val = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high, nb_samples = 1000)
+    dataset_test = TruncatedBetaDistributionValidationDataset(x_mean, x_std, y_mean, y_std)
+    # Normalization
+    bound_min = normalize(low, y_mean, y_std)
+    bound_max = normalize(high, y_mean, y_std)
+    zero_normalized = normalize(0, y_mean, y_std)
+    return dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std
