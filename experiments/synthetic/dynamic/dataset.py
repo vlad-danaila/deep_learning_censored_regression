@@ -72,3 +72,6 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
 
     def __getitem__(self, i):
         return self.x[i], self.y[i]
+
+def get_experiment_data(dataset_config: TruncatedBetaDistributionConfig):
+    pass
