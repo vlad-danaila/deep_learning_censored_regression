@@ -45,10 +45,11 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 """# Reparametrized Deep Tobit"""
 
-objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED}', plot = False, log = False, isReparam=True)
 
 def tpe_opt_deep_NO_trunc_reparam():
+    objective_deep_NO_trunc = get_objective_fn_tobit_fixed_std(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED}',
+        plot = False, log = False, isReparam=True)
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, objective_deep_NO_trunc)
 
 def eval_deep_NO_trunc_reparam():
@@ -67,11 +68,10 @@ def plot_deep_tobit_NO_trunc_reparam():
 
 """# Reparametrized Deep Tobit With Truncation"""
 
-objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}',
-    plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
-
 def tpe_opt_deep_WITH_trunc_reparam():
+    objective_deep_WITH_trunc = get_objective_fn_tobit_fixed_std(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}',
+        plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
     return tpe_opt_hyperparam(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, objective_deep_WITH_trunc)
 
 def eval_deep_WITH_trunc_reparam():
@@ -89,11 +89,10 @@ def plot_deep_WITH_trunc_reparam():
 
 """# Reparametrized Linear Tobit"""
 
-objective_lin_NO_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED}',
-    is_liniar = True, plot = False, log = False, isReparam=True)
-
 def tpe_opt_lin_NO_trunc_reparam():
+    objective_lin_NO_trunc = get_objective_fn_tobit_fixed_std(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED}',
+        is_liniar = True, plot = False, log = False, isReparam=True)
     return tpe_opt_hyperparam(ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, objective_lin_NO_trunc)
 
 def eval_linear_tobit_NO_trunc_reparam():
@@ -112,11 +111,10 @@ def plot_linear_tobit_NO_trunc_reparam():
 
 """# Reparametrized Linear Tobit With Truncation"""
 
-objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}',
-    is_liniar = True, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
-
 def tpe_opt_lin_WITH_trunc_reparam():
+    objective_lin_WITH_trunc = get_objective_fn_tobit_fixed_std(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}',
+        is_liniar = True, plot = False, log = False, truncated_low = zero_normalized, isReparam=True)
     return tpe_opt_hyperparam(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, objective_lin_WITH_trunc)
 
 def eval_linear_tobit_WITH_trunc_reparam():

@@ -42,15 +42,10 @@ class GausianLogLikelihoodLoss(t.nn.Module):
     gamma = t.abs(self.gamma)
     return -t.sum(t.log(gamma + self.epsilon) - ((gamma * y_true - y_pred) ** 2) / 2)
 
-"""### Grid Search"""
-
-objective_gll = get_objective_fn_gll(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_GLL}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss, plot = False, log = False)
-
-
 def tpe_opt_gll_reparam():
+    objective_gll = get_objective_fn_gll(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_GLL}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss, plot = False, log = False)
     return tpe_opt_hyperparam(ROOT_GLL, CHECKPOINT_GLL, objective_gll)
-
 
 def eval_gll_reparam():
   plot_and_evaluate_model_gll(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,

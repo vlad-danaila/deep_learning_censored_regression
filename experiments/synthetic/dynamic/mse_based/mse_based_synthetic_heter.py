@@ -40,11 +40,10 @@ zero_normalized = normalize(0, y_mean, y_std)
 
 """# MSE"""
 
-objective_mse_simple = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss)
-
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mse_simple():
+    objective_mse_simple = get_objective_fn_mae_mse(
+        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss)
     return tpe_opt_hyperparam(ROOT_MSE, CHECKPOINT_MSE, objective_mse_simple)
 
 def eval_mse_simple():
@@ -69,10 +68,9 @@ def bounded_loss(y_pred, y):
   y_pred = t.clamp(y_pred, min = bound_min, max = bound_max)
   return mse(y_pred, y)
 
-objective_mse_bounded = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss)
-
 def tpe_opt_mse_cens_NO_trunc():
+    objective_mse_bounded = get_objective_fn_mae_mse(
+        dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss)
     best = tpe_opt_hyperparam(ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, objective_mse_bounded)
     return best
 
@@ -97,12 +95,11 @@ def below_zero_mse_penalty(y_pred):
 def bounded_loss_with_penalty(y_pred, y):
   return bounded_loss(y_pred, y) + below_zero_mse_penalty(y_pred)
 
-objective_mse_bounded_pen = get_objective_fn_mae_mse(
-    dataset_train, dataset_val, bound_min, bound_max,
-    ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY,
-    lambda: bounded_loss_with_penalty, plot = False, log = False)
-
 def tpe_opt_mse_cens_WITH_trunc():
+    objective_mse_bounded_pen = get_objective_fn_mae_mse(
+        dataset_train, dataset_val, bound_min, bound_max,
+        ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY,
+        lambda: bounded_loss_with_penalty, plot = False, log = False)
     return tpe_opt_hyperparam(ROOT_BOUNDED_MSE_WITH_PENALTY, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, objective_mse_bounded_pen)
 
 def eval_mse_cens_WITH_trunc():
