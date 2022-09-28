@@ -36,7 +36,7 @@ def eval_deep_NO_trunc_reparam():
                                             ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, is_optimized = True)
 
 def plot_deep_NO_trunc_reparam():
-    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED} best.tar')
+    checkpoint = load_checkpoint(ROOT_DEEP_TOBIT_REPARAMETRIZED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 
@@ -55,7 +55,7 @@ def eval_deep_WITH_trunc_reparam():
                                             ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, is_optimized = True)
 
 def plot_deep_tobit_WITH_trunc_reparam():
-    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED} best.tar')
+    checkpoint = load_checkpoint(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 
@@ -75,7 +75,7 @@ def eval_linear_NO_trunc_reparam():
                                             ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, is_liniar=True, is_optimized = True)
 
 def plot_linear_NO_trunc_reparam():
-    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED} best.tar')
+    checkpoint = load_checkpoint(ROOT_LINEAR_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df), is_liniar=True)
 
 
@@ -97,7 +97,7 @@ def eval_linear_tobit_WITH_trunc_reparam():
                                             ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, is_liniar=True, is_optimized = True)
 
 def plot_linear_tobit_WITH_trunc_reparam():
-    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED} best.tar')
+    checkpoint = load_checkpoint(ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df), is_liniar=True)
 
 # eval_deep_tobit_WITH_trunc_reparam()

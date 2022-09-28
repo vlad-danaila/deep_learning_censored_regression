@@ -35,5 +35,5 @@ def eval_gll_reparam():
                               ROOT_GLL, CHECKPOINT_GLL, GausianLogLikelihoodLoss, is_optimized= True)
 
 def plot_gll_reparam():
-    checkpoint = load_checkpoint(f'{ROOT_GLL}/{CHECKPOINT_GLL} best.tar')
+    checkpoint = load_checkpoint(ROOT_GLL, CHECKPOINT_GLL, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))

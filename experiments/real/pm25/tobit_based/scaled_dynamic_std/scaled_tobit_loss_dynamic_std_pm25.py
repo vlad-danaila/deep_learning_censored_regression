@@ -29,7 +29,7 @@ def eval_deep_WITH_trunc_dyn_std():
                                           ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, is_optimized = True)
 
 def plot_deep_tobit_WITH_trunc_dyn_std():
-    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED} best.tar')
+    checkpoint = load_checkpoint(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, is_optimized=True)
     scale_model = get_scale_model_from_checkpoint(INPUT_SIZE, checkpoint)
     scale_model.load_state_dict(checkpoint['sigma'])
     scale_model.eval()

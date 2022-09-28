@@ -38,7 +38,7 @@ def plot_dataset_and_net(checkpoint, testing_df, is_liniar=False, with_std=False
 def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                     checkpoint_name, criterion, is_optimized = True, loader_val = None):
     loss_fn = criterion()
-    checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
     plot_dataset_and_net(checkpoint, testing_df, with_std=False, scale_model=None)
     save_fig_in_checkpoint_folder(root_folder, checkpoint_name)
@@ -56,7 +56,7 @@ def plot_and_evaluate_model_mae_mse(bound_min, bound_max, testing_df, dataset_va
 
 def plot_and_evaluate_model_gll(bound_min, bound_max, testing_df, dataset_val, dataset_test, root_folder,
                                 checkpoint_name, criterion, is_optimized = True, loader_val = None):
-    checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
 
     plot_dataset_and_net(checkpoint, testing_df)
@@ -87,7 +87,7 @@ def plot_and_evaluate_model_tobit_fixed_std(bound_min, bound_max, testing_df, da
             is_optimized = True, is_liniar = False, truncated_low = None, truncated_high = None):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, is_liniar)
 
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
@@ -125,7 +125,7 @@ def plot_and_evaluate_model_tobit_dyn_std(bound_min, bound_max, testing_df, data
             checkpoint_name, is_optimized = True, truncated_low = None, truncated_high = None, is_reparam=False):
     censored_collate_fn = distinguish_censored_versus_observed_data(bound_min, bound_max)
     uncensored_collate_fn = distinguish_censored_versus_observed_data(-math.inf, math.inf)
-    checkpoint = load_checkpoint(root_folder + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar'))
+    checkpoint = load_checkpoint(root_folder, checkpoint_name, is_optimized)
     model = get_model_from_checkpoint(INPUT_SIZE, checkpoint, False)
     if not ('gamma' in checkpoint or 'sigma' in checkpoint):
         raise 'Sigma or gamma must be found in checkpoint'

@@ -36,7 +36,7 @@ def eval_deep_NO_trunc():
                                             ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, is_optimized = True)
 
 def plot_deep_NO_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED}/{CHECKPOINT_DEEP_TOBIT_SCALED} best.tar')
+    checkpoint = load_checkpoint(ROOT_DEEP_TOBIT_SCALED, CHECKPOINT_DEEP_TOBIT_SCALED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 
@@ -55,7 +55,7 @@ def eval_deep_WITH_trunc():
                                             ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, is_optimized = True)
 
 def plot_deep_WITH_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_DEEP_TOBIT_SCALED_TRUNCATED}/{CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED} best.tar')
+    checkpoint = load_checkpoint(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 
@@ -75,7 +75,7 @@ def eval_linear_NO_trunc():
                                             ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, is_liniar=True, is_optimized = True)
 
 def plot_linear_NO_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TOBIT_SCALED} best.tar')
+    checkpoint = load_checkpoint(ROOT_LINEAR_TOBIT_SCALED, CHECKPOINT_LINEAR_TOBIT_SCALED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df), is_liniar=True)
 
 
@@ -98,7 +98,7 @@ def eval_linear_tobit_WITH_trunc():
                                             ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, is_liniar=True, is_optimized = True)
 
 def plot_linear_tobit_WITH_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_LINEAR_TRUNCATED_TOBIT_SCALED}/{CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED} best.tar')
+    checkpoint = load_checkpoint(ROOT_LINEAR_TRUNCATED_TOBIT_SCALED, CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df), is_liniar=True)
 
 # eval_deep_tobit_WITH_trunc()

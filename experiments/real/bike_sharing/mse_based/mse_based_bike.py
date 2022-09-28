@@ -31,7 +31,7 @@ def eval_mse_simple():
                                   dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, is_optimized= True)
 
 def plot_mse_simple():
-    checkpoint = load_checkpoint(f'{ROOT_MSE}/{CHECKPOINT_MSE} best.tar')
+    checkpoint = load_checkpoint(ROOT_MSE, CHECKPOINT_MSE, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 # tpe_opt_mae_simple()
@@ -59,7 +59,7 @@ def eval_mse_cens_NO_trunc():
                                     CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, is_optimized = True)
 
 def plot_mse_cens_NO_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MSE}/{CHECKPOINT_BOUNDED_MSE} best.tar')
+    checkpoint = load_checkpoint(ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 
@@ -86,7 +86,7 @@ def eval_mse_cens_WITH_trunc():
                                     CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized = True)
 
 def plot_mse_cens_WITH_trunc():
-    checkpoint = load_checkpoint(f'{ROOT_BOUNDED_MSE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MSE_WITH_PENALTY} best.tar')
+    checkpoint = load_checkpoint(ROOT_BOUNDED_MSE_WITH_PENALTY, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, is_optimized=True)
     plot_dataset_and_net(checkpoint, test_df(df))
 
 # tpe_opt_mae_simple()
