@@ -2,6 +2,7 @@ from experiments.synthetic.dynamic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
+from experiments.synthetic.constants import *
 
 """Constants"""
 ROOT_MAE = 'experiments/synthetic/dynamic/mae_based/mae_simple'
@@ -38,9 +39,13 @@ def plot_mae_simple(dataset_config: TruncatedBetaDistributionConfig):
     checkpoint = t.load(f'{root}/{CHECKPOINT_MAE} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
-# tpe_opt_mae_simple()
-# eval_mae_simple()
-# plot_mae_simple()
+
+# default_config = TruncatedBetaDistributionConfig(
+#     censor_low_bound = CENSOR_LOW_BOUND, censor_high_bound = CENSOR_HIGH_BOUND, alpha = ALPHA, beta = BETA, is_heteroscedastic = False
+# )
+# tpe_opt_mae_simple(default_config)
+# eval_mae_simple(default_config)
+# plot_mae_simple(default_config)
 
 
 

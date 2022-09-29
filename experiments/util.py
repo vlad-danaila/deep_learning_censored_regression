@@ -148,8 +148,8 @@ class TruncatedBetaDistributionConfig:
         self.is_heteroscedastic = is_heteroscedastic
 
 def name_from_distribution_config(c: TruncatedBetaDistributionConfig):
-    heteroscedastic = "h" if c.is_heteroscedastic else ''
-    return f'{heteroscedastic}_a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
+    heteroscedastic = "h_" if c.is_heteroscedastic else ''
+    return f'{heteroscedastic}a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
 
 def load_checkpoint_synthetic(root_folder: str, checkpoint_name: str, conf: TruncatedBetaDistributionConfig, is_optimized: bool):
     checkpoint_path = root_folder + '/' + name_from_distribution_config(conf) + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar')
