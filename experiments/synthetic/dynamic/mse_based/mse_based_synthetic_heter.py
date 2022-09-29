@@ -2,7 +2,7 @@ from experiments.synthetic.dynamic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
-from experiments.util import TruncatedBetaDistributionConfig
+from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config
 
 """Constants"""
 ROOT_MSE = 'experiments/synthetic/heteroscedastic/mse_based/mse_simple'
@@ -22,18 +22,21 @@ CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
 """TPE Hyperparameter Optimisation"""
 def tpe_opt_mse_simple(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
+    root = ROOT_MSE + '/' + name_from_distribution_config(dataset_config)
     objective_mse_simple = get_objective_fn_mae_mse(
-        dataset_train, dataset_val, bound_min, bound_max, f'{ROOT_MSE}/{CHECKPOINT_MSE}', t.nn.MSELoss)
-    return tpe_opt_hyperparam(ROOT_MSE, CHECKPOINT_MSE, objective_mse_simple)
+        dataset_train, dataset_val, bound_min, bound_max, f'{root}/{CHECKPOINT_MSE}', t.nn.MSELoss)
+    return tpe_opt_hyperparam(root, CHECKPOINT_MSE, objective_mse_simple)
 
 def eval_mse_simple(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
+    root = ROOT_MSE + '/' + name_from_distribution_config(dataset_config)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std,
-                                    dataset_val, dataset_test, ROOT_MSE, CHECKPOINT_MSE, t.nn.MSELoss, is_optimized= True)
+                                    dataset_val, dataset_test, root, CHECKPOINT_MSE, t.nn.MSELoss, is_optimized= True)
 
 def plot_mse_simple(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
-    checkpoint = t.load(f'{ROOT_MSE}/{CHECKPOINT_MSE} best.tar')
+    root = ROOT_MSE + '/' + name_from_distribution_config(dataset_config)
+    checkpoint = t.load(f'{root}/{CHECKPOINT_MSE} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 # tpe_opt_mse_simple()
@@ -55,20 +58,23 @@ def get_bounded_loss_lambda(bound_min, bound_max):
 def tpe_opt_mse_cens_NO_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     bounded_loss = get_bounded_loss_lambda(bound_min, bound_max)
+    root = ROOT_BOUNDED_MSE + '/' + name_from_distribution_config(dataset_config)
     objective_mse_bounded = get_objective_fn_mae_mse(
-        dataset_train, dataset_val, bound_min, bound_max, ROOT_BOUNDED_MSE + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss)
-    best = tpe_opt_hyperparam(ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, objective_mse_bounded)
+        dataset_train, dataset_val, bound_min, bound_max, root + '/' + CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss)
+    best = tpe_opt_hyperparam(root, CHECKPOINT_BOUNDED_MSE, objective_mse_bounded)
     return best
 
 def eval_mse_cens_NO_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     bounded_loss = get_bounded_loss_lambda(bound_min, bound_max)
+    root = ROOT_BOUNDED_MSE + '/' + name_from_distribution_config(dataset_config)
     plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
-                                    ROOT_BOUNDED_MSE, CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, is_optimized= True)
+                                    root, CHECKPOINT_BOUNDED_MSE, lambda: bounded_loss, is_optimized= True)
 
 def plot_mse_cens_NO_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
-    checkpoint = t.load(f'{ROOT_BOUNDED_MSE}/{CHECKPOINT_BOUNDED_MSE} best.tar')
+    root = ROOT_BOUNDED_MSE + '/' + name_from_distribution_config(dataset_config)
+    checkpoint = t.load(f'{root}/{CHECKPOINT_BOUNDED_MSE} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
@@ -89,21 +95,24 @@ def get_bounded_loss_with_penalty_lambda(bound_min, bound_max, zero_normalized):
 def tpe_opt_mse_cens_WITH_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     bounded_loss_with_penalty = get_bounded_loss_with_penalty_lambda(bound_min, bound_max, zero_normalized)
+    root = ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + name_from_distribution_config(dataset_config)
     objective_mse_bounded_pen = get_objective_fn_mae_mse(
         dataset_train, dataset_val, bound_min, bound_max,
-        ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY,
+        root + '/' + CHECKPOINT_BOUNDED_MSE_WITH_PENALTY,
         lambda: bounded_loss_with_penalty, plot = False, log = False)
-    return tpe_opt_hyperparam(ROOT_BOUNDED_MSE_WITH_PENALTY, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, objective_mse_bounded_pen)
+    return tpe_opt_hyperparam(root, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, objective_mse_bounded_pen)
 
 def eval_mse_cens_WITH_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     bounded_loss_with_penalty = get_bounded_loss_with_penalty_lambda(bound_min, bound_max, zero_normalized)
-    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test, ROOT_BOUNDED_MSE_WITH_PENALTY,
-                                    CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= True)
+    root = ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + name_from_distribution_config(dataset_config)
+    plot_and_evaluate_model_mae_mse(bound_min, bound_max, x_mean, x_std, y_mean, y_std, dataset_val, dataset_test,
+                                root, CHECKPOINT_BOUNDED_MSE_WITH_PENALTY, lambda: bounded_loss_with_penalty, is_optimized= True)
 
 def plot_mse_cens_WITH_trunc(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
-    checkpoint = t.load(f'{ROOT_BOUNDED_MSE_WITH_PENALTY}/{CHECKPOINT_BOUNDED_MSE_WITH_PENALTY} best.tar')
+    root = ROOT_BOUNDED_MSE_WITH_PENALTY + '/' + name_from_distribution_config(dataset_config)
+    checkpoint = t.load(f'{root}/{CHECKPOINT_BOUNDED_MSE_WITH_PENALTY} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
 
