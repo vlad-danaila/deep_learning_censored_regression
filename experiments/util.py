@@ -7,6 +7,7 @@ import matplotlib.gridspec as gridspec
 from experiments.constants import IS_CUDA_AVILABLE, DOT_SIZE,PLOT_FONT_SIZE, SEED
 import optuna
 from experiments.models import get_dense_net
+import os
 
 def create_folder(path):
     if not os.path.isdir(path):

@@ -1,4 +1,4 @@
-from experiments.util import get_scale_model_from_checkpoint, name_from_distribution_config
+from experiments.util import get_scale_model_from_checkpoint, name_from_distribution_config, create_folder
 from experiments.synthetic.dynamic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
@@ -15,6 +15,7 @@ CHECKPOINT_DEEP_TOBIT_TRUNCATED = 'scaled truncated deep tobit model'
 def tpe_opt_deep_WITH_trunc_dyn_std(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     root = ROOT_DEEP_TOBIT_TRUNCATED + '/' + name_from_distribution_config(dataset_config)
+    create_folder(root)
     objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max,
         f'{root}/{CHECKPOINT_DEEP_TOBIT_TRUNCATED}', truncated_low = zero_normalized)
     return tpe_opt_hyperparam(root, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc,

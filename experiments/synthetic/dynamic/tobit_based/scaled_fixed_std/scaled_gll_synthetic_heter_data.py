@@ -2,7 +2,7 @@ from experiments.synthetic.dynamic.dataset import *
 from experiments.synthetic.eval_optimized import plot_and_evaluate_model_gll
 from experiments.synthetic.eval_optimized import plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
-from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config
+from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
 
 """Constants"""
 ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/gll'
@@ -26,6 +26,7 @@ class GausianLogLikelihoodLoss(t.nn.Module):
 def tpe_opt_gll_scaled(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)
     root = ROOT_GLL + '/' + name_from_distribution_config(dataset_config)
+    create_folder(root)
     objective_gll = get_objective_fn_gll(
         dataset_train, dataset_val, bound_min, bound_max, f'{root}/{CHECKPOINT_GLL}', GausianLogLikelihoodLoss,
         plot = False, log = False)
