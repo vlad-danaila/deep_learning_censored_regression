@@ -1,1 +1,1 @@
-{"batch": 56, "div_factor": 4, "dropout_rate": 0.03361166685012406, "epochs": 9, "layer_size": 14, "max_lr": 0.00967099993003279, "nb_layers": 5}
+{"batch": 44, "div_factor": 6, "dropout_rate": 0.48703605873691747, "epochs": 19, "layer_size": 30, "max_lr": 0.00694467367357831, "nb_layers": 5}
