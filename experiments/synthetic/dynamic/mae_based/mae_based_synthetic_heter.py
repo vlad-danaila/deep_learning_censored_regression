@@ -39,6 +39,7 @@ def plot_mae_simple(dataset_config: TruncatedBetaDistributionConfig):
     checkpoint = t.load(f'{root}/{CHECKPOINT_MAE} best.tar')
     plot_dataset_and_net(checkpoint, x_mean, x_std, y_mean, y_std, dataset_val)
 
+# TODO --> Test the hyperparameter json is saved in the right place
 
 # default_config = TruncatedBetaDistributionConfig(
 #     censor_low_bound = CENSOR_LOW_BOUND, censor_high_bound = CENSOR_HIGH_BOUND, alpha = ALPHA, beta = BETA, is_heteroscedastic = False
