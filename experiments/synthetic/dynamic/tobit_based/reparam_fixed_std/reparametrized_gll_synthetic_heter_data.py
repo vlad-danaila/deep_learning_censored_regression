@@ -5,7 +5,7 @@ from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperpa
 from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
 
 """Constants"""
-ROOT_GLL = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_fixed_std/gll'
+ROOT_GLL = 'experiments/synthetic/dynamic/tobit_based/reparam_fixed_std/gll'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
 

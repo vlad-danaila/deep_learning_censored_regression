@@ -5,16 +5,16 @@ from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_fixed_std, tpe
 from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
 
 """Constants"""
-ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
+ROOT_DEEP_TOBIT_SCALED = 'experiments/synthetic/dynamic/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
 CHECKPOINT_DEEP_TOBIT_SCALED = 'scaled deep tobit model'
 
-ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/synthetic/dynamic/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'scaled truncated deep tobit model'
 
-ROOT_LINEAR_TOBIT_SCALED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc'
+ROOT_LINEAR_TOBIT_SCALED = 'experiments/synthetic/dynamic/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc'
 CHECKPOINT_LINEAR_TOBIT_SCALED = 'scaled linear tobit model'
 
-ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/synthetic/heteroscedastic/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
+ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/synthetic/dynamic/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED = 'scaled truncated linear tobit model'
 
 

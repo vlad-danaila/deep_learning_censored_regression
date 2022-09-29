@@ -4,13 +4,13 @@ from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyp
 from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
 
 """Constants"""
-ROOT_MAE = 'experiments/synthetic/heteroscedastic/mae_based/mae_simple'
+ROOT_MAE = 'experiments/synthetic/dynamic/mae_based/mae_simple'
 CHECKPOINT_MAE = 'mae model'
 
-ROOT_BOUNDED_MAE = 'experiments/synthetic/heteroscedastic/mae_based/mae_cens_NO_trunc'
+ROOT_BOUNDED_MAE = 'experiments/synthetic/dynamic/mae_based/mae_cens_NO_trunc'
 CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
-ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/heteroscedastic/mae_based/mae_cens_WITH_trunc'
+ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/dynamic/mae_based/mae_cens_WITH_trunc'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 

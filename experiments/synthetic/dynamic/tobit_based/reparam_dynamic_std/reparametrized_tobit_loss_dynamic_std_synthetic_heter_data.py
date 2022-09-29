@@ -4,7 +4,7 @@ from experiments.synthetic.eval_optimized import plot_and_evaluate_model_tobit_d
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/heteroscedastic/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/synthetic/dynamic/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
 
