@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import torch as t
 from experiments.util import scatterplot
 
-def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf, label = None, std = None):
+def plot_beta(x_mean, x_std, y_mean, y_std, lower = -math.inf, upper = math.inf, label = None, std = None, a = ALPHA, b = BETA):
     x = np.linspace(0, 1, 1000)
-    beta_distribution = beta(a = ALPHA, b = BETA)
+    beta_distribution = beta(a = a, b = b)
     y = beta_distribution.pdf(x)
     y = np.clip(y, lower, upper)
     x = normalize(x, x_mean, x_std)
