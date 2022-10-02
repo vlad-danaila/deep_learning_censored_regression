@@ -74,18 +74,34 @@ class TruncatedBetaDistributionValidationDataset(TruncatedBetaDistributionDatase
         return self.x[i], self.y[i]
 
 def get_experiment_data(dataset_config: TruncatedBetaDistributionConfig):
-    is_heteroscedastic = dataset_config.is_heteroscedastic
     # Reproducible experiments
     set_random_seed()
-    # Censoring Tresholds
+    # Configurations
+    is_heteroscedastic = dataset_config.is_heteroscedastic
     low = dataset_config.censor_low_bound
     high = dataset_config.censor_high_bound
+    alpha = dataset_config.alpha
+    beta = dataset_config.beta
     # Mean / Std
-    x_mean, x_std, y_mean, y_std = calculate_mean_std(is_heteroscedastic, lower_bound = low, upper_bound = high)
+    x_mean, x_std, y_mean, y_std = calculate_mean_std(
+        is_heteroscedastic, lower_bound = low, upper_bound = high, distribution_alpha=alpha, distribution_beta=beta
+    )
     # Datasets
-    dataset_train = TruncatedBetaDistributionDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high)
-    dataset_val = TruncatedBetaDistributionValidationDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std, lower_bound = low, upper_bound = high, nb_samples = 1000)
-    dataset_test = TruncatedBetaDistributionValidationDataset(is_heteroscedastic, x_mean, x_std, y_mean, y_std)
+    dataset_train = TruncatedBetaDistributionDataset(
+        is_heteroscedastic, x_mean, x_std, y_mean, y_std,
+        lower_bound = low, upper_bound = high,
+        distribution_alpha=alpha, distribution_beta=beta
+    )
+    dataset_val = TruncatedBetaDistributionValidationDataset(
+        is_heteroscedastic, x_mean, x_std, y_mean, y_std,
+        lower_bound = low, upper_bound = high,
+        distribution_alpha=alpha, distribution_beta=beta,
+        nb_samples = 1000
+    )
+    dataset_test = TruncatedBetaDistributionValidationDataset(
+        is_heteroscedastic, x_mean, x_std, y_mean, y_std,
+        distribution_alpha=alpha, distribution_beta=beta,
+    )
     # Normalization
     bound_min = normalize(low, y_mean, y_std)
     bound_max = normalize(high, y_mean, y_std)
