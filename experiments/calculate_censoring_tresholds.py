@@ -16,15 +16,11 @@ from scipy.stats import beta as beta_distr
 # Synthetic
 is_heteroscedastic, alpha, beta = False, 2.5, 4
 config = TruncatedBetaDistributionConfig(
-    censor_low_bound = CENSOR_LOW_BOUND, censor_high_bound = CENSOR_HIGH_BOUND,
+    censor_low_bound = -math.inf, censor_high_bound = math.inf,
     alpha = alpha, beta = beta,
     is_heteroscedastic = is_heteroscedastic
 )
 dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(config)
-plot_dataset_synt(dataset_test)
-config.censor_low_bound, config.censor_high_bound = np.percentile(dataset_test.y, [20, 80])
-dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(config)
-# plot_beta(x_mean, x_std, y_mean, y_std, a=alpha, b=beta)
 plot_dataset_synt(dataset_train)
 
 
