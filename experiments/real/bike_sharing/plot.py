@@ -8,9 +8,11 @@ import numpy as np
 import torch as t
 from experiments.util import scatterplot
 
-def plot_full_dataset(df: pd.DataFrame, label = None, censored = False, show_bounds = True):
+def plot_full_dataset(df: pd.DataFrame, label = None, censored = False, show_bounds = True,
+                      lower_bound=CENSOR_LOW_BOUND, upper_bound=CENSOR_HIGH_BOUND,
+                      bound_min=bound_min, bound_max=bound_max):
     if censored:
-        x, y = extract_features(df, lower_bound = CENSOR_LOW_BOUND, upper_bound = CENSOR_HIGH_BOUND)
+        x, y = extract_features(df, lower_bound=lower_bound, upper_bound=upper_bound)
     else:
         x, y = extract_features(df)
     x = pca(x)
