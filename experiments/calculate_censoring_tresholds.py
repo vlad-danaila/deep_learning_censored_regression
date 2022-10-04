@@ -12,16 +12,29 @@ from experiments.real.bike_sharing.plot import plot_full_dataset as plot_full_da
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import beta as beta_distr
+from experiments.synthetic.constants import ALPHA, BETA, NOISE
+
+# TODO: Find the unnormalized tresholds, because otherwise it impacts normalization
 
 # Synthetic
 is_heteroscedastic, alpha, beta = False, 2.5, 4
-config = TruncatedBetaDistributionConfig(
-    censor_low_bound = -math.inf, censor_high_bound = math.inf,
-    alpha = alpha, beta = beta,
-    is_heteroscedastic = is_heteroscedastic
-)
-dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(config)
-plot_dataset_synt(dataset_train)
+nb_samples = 10_000
+
+x = np.linspace(0, 1, nb_samples)
+beta_distribution = beta_distr(a = alpha, b = beta)
+y = beta_distribution.pdf(x)
+noise = np.random.normal(0, NOISE, nb_samples)
+if is_heteroscedastic:
+    noise = noise * y
+y += noise
+
+bound_min, bound_max = np.percentile(y, [20, 80])
+print(bound_min, bound_max)
+
+plt.scatter(x, y, s = .1)
+plt.plot([0, 1], [bound_min] * 2, color = 'red', linewidth=.5)
+plt.plot([0, 1], [bound_max] * 2, color = 'red', linewidth=.5)
+
 
 
 
