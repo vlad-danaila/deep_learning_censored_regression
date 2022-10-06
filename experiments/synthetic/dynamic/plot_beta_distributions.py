@@ -1,13 +1,11 @@
 from experiments.synthetic.dynamic.dataset import *
-from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
-from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
-from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
+from experiments.util import TruncatedBetaDistributionConfig
 from experiments.synthetic.constants import *
 from experiments.synthetic.plot import plot_beta, plot_dataset
 
-def plot_distribution(is_heteroscedastic, alpha, beta):
+def plot_distribution(is_heteroscedastic, alpha, beta, censor_low_bound, censor_high_bound):
     config = TruncatedBetaDistributionConfig(
-        censor_low_bound = CENSOR_LOW_BOUND, censor_high_bound = CENSOR_HIGH_BOUND,
+        censor_low_bound = censor_low_bound, censor_high_bound = censor_high_bound,
         alpha = alpha, beta = beta,
         is_heteroscedastic = is_heteroscedastic
     )
@@ -21,4 +19,4 @@ def get_distirbution_variations():
         (True, 1, 4), (True, 2.5, 4), (True, 4, 4), (True, 4, 2.5), (True, 4, 1)
     ]
 
-plot_distribution(True, 2.5, 4)
+plot_distribution(True, 1, 4, CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND)
