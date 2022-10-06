@@ -21,4 +21,4 @@ def get_distirbution_variations():
         (True, 1, 4), (True, 2, 4), (True, 4, 4),
     ]
 
-plot_distribution(False, 2, 4, 10, 90)
+plot_distribution(False, 1, 4, 20, 80)
