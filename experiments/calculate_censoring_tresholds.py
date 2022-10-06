@@ -30,9 +30,9 @@ def tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percen
 
     return bound_min, bound_max
 
-is_heteroscedastic, alpha, beta = False, 2, 4
-percentile_low, percentile_high = 10, 90
-tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high, plot = True)
+# is_heteroscedastic, alpha, beta = False, 1, 4
+# percentile_low, percentile_high = 10, 90
+# tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high, plot = True)
 
 
 # PM25
@@ -55,7 +55,7 @@ def tresholds_from_percentiles_pm25(percentile_low, percentile_high, plot = Fals
         plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
     return bound_min, bound_max
 
-tresholds_from_percentiles_pm25(10, 90)
+# tresholds_from_percentiles_pm25(10, 90)
 
 
 
@@ -83,7 +83,7 @@ def tresholds_from_percentiles_bike(percentile_low, percentile_high, plot = Fals
         plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
     return bound_min, bound_max
 
-tresholds_from_percentiles_bike(10, 90)
+# tresholds_from_percentiles_bike(10, 90)
 
 
 

@@ -2,8 +2,10 @@ from experiments.synthetic.dynamic.dataset import *
 from experiments.util import TruncatedBetaDistributionConfig
 from experiments.synthetic.constants import *
 from experiments.synthetic.plot import plot_beta, plot_dataset
+from experiments.calculate_censoring_tresholds import tresholds_from_percentiles_synthetic
 
-def plot_distribution(is_heteroscedastic, alpha, beta, censor_low_bound, censor_high_bound):
+def plot_distribution(is_heteroscedastic, alpha, beta, percentile_low, percentile_high):
+    censor_low_bound, censor_high_bound = tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high)
     config = TruncatedBetaDistributionConfig(
         censor_low_bound = censor_low_bound, censor_high_bound = censor_high_bound,
         alpha = alpha, beta = beta,
@@ -19,4 +21,4 @@ def get_distirbution_variations():
         (True, 1, 4), (True, 2.5, 4), (True, 4, 4), (True, 4, 2.5), (True, 4, 1)
     ]
 
-plot_distribution(True, 1, 4, CENSOR_LOW_BOUND, CENSOR_HIGH_BOUND)
+plot_distribution(False, 1, 4, 10, 90)
