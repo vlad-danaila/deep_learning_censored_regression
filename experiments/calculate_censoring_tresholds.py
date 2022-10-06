@@ -1,23 +1,13 @@
-from experiments.real.pm25.mse_based.mse_based_pm25 import bounded_loss
 from experiments.synthetic.dynamic.dataset import *
-from experiments.synthetic.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
-from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
-from experiments.util import TruncatedBetaDistributionConfig, name_from_distribution_config, create_folder
-from experiments.synthetic.constants import *
-from experiments.synthetic.plot import plot_beta, plot_dataset as plot_dataset_synt
 from experiments.real.pm25.dataset import extract_features as extract_features_pm25, load_dataframe as load_dataframe_pm25, \
     numeric_features_column_names as numeric_features_pm25, x_numeric_fetures_mean as x_mean_pm25, x_numeric_fetures_std as x_std_pm25, pca
-from experiments.real.pm25.plot import plot_full_dataset as plot_full_dataset_pm25
 from experiments.real.bike_sharing.dataset import extract_features as extract_features_bike, load_dataframe as load_dataframe_bike, y_variable_label, \
     numeric_features_column_names as numeric_features_bike, x_numeric_fetures_mean as x_mean_bike, x_numeric_fetures_std as x_std_bike
-from experiments.real.bike_sharing.plot import plot_full_dataset as plot_full_dataset_bike
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import beta as beta_distr
 from experiments.synthetic.constants import ALPHA, BETA, NOISE
 import sklearn as sk
-
-# TODO: Find the unnormalized tresholds, because otherwise it impacts normalization
 
 # Synthetic
 def plot_tresholds_for_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high):
@@ -43,8 +33,6 @@ percentile_low, percentile_high = 20, 80
 plot_tresholds_for_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high)
 
 
-
-
 # PM25
 def plot_tresholds_for_pm25(percentile_low, percentile_high):
     df = load_dataframe_pm25()
@@ -65,7 +53,6 @@ def plot_tresholds_for_pm25(percentile_low, percentile_high):
     plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
 
 plot_tresholds_for_pm25(20, 80)
-
 
 
 
