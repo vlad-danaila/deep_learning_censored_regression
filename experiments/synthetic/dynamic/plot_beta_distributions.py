@@ -17,8 +17,8 @@ def plot_distribution(is_heteroscedastic, alpha, beta, percentile_low, percentil
 
 def get_distirbution_variations():
     return [
-        (False, 1, 4), (False, 2.5, 4), (False, 4, 4), (False, 4, 2.5), (False, 4, 1),
-        (True, 1, 4), (True, 2.5, 4), (True, 4, 4), (True, 4, 2.5), (True, 4, 1)
+        (False, 1, 4), (False, 2, 4), (False, 4, 4),
+        (True, 1, 4), (True, 2, 4), (True, 4, 4),
     ]
 
-plot_distribution(False, 1, 4, 10, 90)
+plot_distribution(False, 2, 4, 10, 90)
