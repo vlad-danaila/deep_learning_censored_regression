@@ -14,7 +14,8 @@ CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/synthetic/dynamic/mae_based/mae_cens_WITH_trunc'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
-
+for dir in [ROOT_MAE, ROOT_BOUNDED_MAE, ROOT_BOUNDED_MAE_WITH_PENALTY]:
+    create_folder(dir)
 
 """# MAE"""
 

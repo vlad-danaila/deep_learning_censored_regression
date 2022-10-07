@@ -17,8 +17,8 @@ CHECKPOINT_LINEAR_TOBIT_SCALED = 'scaled linear tobit model'
 ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/synthetic/dynamic/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED = 'scaled truncated linear tobit model'
 
-
-
+for dir in [ROOT_DEEP_TOBIT_SCALED, ROOT_DEEP_TOBIT_SCALED_TRUNCATED, ROOT_LINEAR_TOBIT_SCALED, ROOT_LINEAR_TRUNCATED_TOBIT_SCALED]:
+    create_folder(dir)
 
 
 """# Scaled Deep Tobit"""

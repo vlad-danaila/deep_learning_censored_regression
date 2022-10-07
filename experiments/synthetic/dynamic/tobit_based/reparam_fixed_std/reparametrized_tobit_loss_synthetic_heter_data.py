@@ -17,7 +17,9 @@ CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED = 'reparametrized linear tobit model'
 ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'experiments/synthetic/dynamic/tobit_based/reparam_fixed_std/liniar_tobit_WITH_trunc'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'reparametrized truncated linear tobit model'
 
-
+for dir in [ROOT_DEEP_TOBIT_REPARAMETRIZED, ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED,
+            ROOT_LINEAR_TOBIT_REPARAMETRIZED, ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED]:
+    create_folder(dir)
 
 
 

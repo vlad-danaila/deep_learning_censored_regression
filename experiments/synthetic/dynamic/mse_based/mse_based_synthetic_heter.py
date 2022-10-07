@@ -14,8 +14,8 @@ CHECKPOINT_BOUNDED_MSE = 'mse bounded model'
 ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/synthetic/dynamic/mse_based/mse_cens_WITH_trunc'
 CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
 
-
-
+for dir in [ROOT_MSE, ROOT_BOUNDED_MSE, ROOT_BOUNDED_MSE_WITH_PENALTY]:
+    create_folder(dir)
 
 """# MSE"""
 

@@ -8,7 +8,7 @@ from experiments.util import TruncatedBetaDistributionConfig, name_from_distribu
 ROOT_GLL = 'experiments/synthetic/dynamic/tobit_based/reparam_fixed_std/gll'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
-
+create_folder(ROOT_GLL)
 
 
 """# PDF Log-Likelihood"""
