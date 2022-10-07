@@ -16,9 +16,12 @@ def plot_distribution(is_heteroscedastic, alpha, beta, percentile_low, percentil
     plot_dataset(dataset_train)
 
 def get_distirbution_variations():
-    return [
-        (False, 1, 4), (False, 2, 4), (False, 4, 4),
-        (True, 1, 4), (True, 2, 4), (True, 4, 4),
-    ]
+    beta = 4
+    for is_heteroscedastic in [False, True]:
+        for alpha in [1, 2, 4]:
+            for percentile_low in [0, 10, 20, 30]:
+                percentile_high = 100 - percentile_low
+                yield is_heteroscedastic, alpha, beta, percentile_low, percentile_high
+
 
 plot_distribution(False, 1, 4, 20, 80)
