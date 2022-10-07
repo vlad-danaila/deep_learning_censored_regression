@@ -152,7 +152,9 @@ class TruncatedBetaDistributionConfig:
 
 def name_from_distribution_config(c: TruncatedBetaDistributionConfig):
     heteroscedastic = "h_" if c.is_heteroscedastic else ''
-    return f'{heteroscedastic}a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
+    low = truncate_float_str(c.censor_low_bound)
+    high = truncate_float_str(c.censor_high_bound)
+    return f'{heteroscedastic}a{c.alpha}_b{c.beta}_cl{low}_ch{high}'
 
 def load_checkpoint_synthetic(root_folder: str, checkpoint_name: str, conf: TruncatedBetaDistributionConfig, is_optimized: bool):
     checkpoint_path = root_folder + '/' + name_from_distribution_config(conf) + '/' + checkpoint_name + (' best.tar' if is_optimized else '.tar')
@@ -161,3 +163,12 @@ def load_checkpoint_synthetic(root_folder: str, checkpoint_name: str, conf: Trun
     else:
         checkpoint = t.load(checkpoint_path, map_location=t.device('cpu'))
     return checkpoint
+
+def truncate_float_str(nb: float, decimals = 1):
+    s = str(nb).split('.')
+    if len(s) == 2:
+        return f'{s[0]}.{s[1][:decimals]}'
+    elif len(s) == 1:
+        return str(nb)
+    else:
+        raise 'Can not truncate float string'
