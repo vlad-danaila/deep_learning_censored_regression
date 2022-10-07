@@ -147,6 +147,9 @@ class TruncatedBetaDistributionConfig:
         self.beta = beta
         self.is_heteroscedastic = is_heteroscedastic
 
+    def __repr__(self):
+        return name_from_distribution_config(self)
+
 def name_from_distribution_config(c: TruncatedBetaDistributionConfig):
     heteroscedastic = "h_" if c.is_heteroscedastic else ''
     return f'{heteroscedastic}a{c.alpha}_b{c.beta}_cl{c.censor_low_bound}_ch{c.censor_high_bound}'
