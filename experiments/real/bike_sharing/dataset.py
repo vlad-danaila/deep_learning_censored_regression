@@ -61,11 +61,9 @@ def val_df(df: pd.DataFrame):
 def test_df(df: pd.DataFrame):
     return df[ df.index.isin(test_samples) ]
 
-def y_train_mean_std(max_iterations = 10_000, early_stop_patience = 5, lr = 1e-6, epsilon = 1e-6):
+def y_train_mean_std():
     df = train_df(load_dataframe())
     ys = df[y_variable_label].values
-
-    real_mean, real_std = ys.mean(), ys.std()
 
     y_single_valued, y_left_censored, y_right_censored = [], [], []
 
@@ -163,5 +161,3 @@ def pca(x, n_components = 1):
 
 n = len(dataset_train)
 k = len(dataset_train[0][0])
-
-
