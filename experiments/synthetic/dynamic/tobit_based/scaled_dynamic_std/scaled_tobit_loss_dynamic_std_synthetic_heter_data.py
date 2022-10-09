@@ -17,8 +17,7 @@ def tpe_opt_deep_WITH_trunc_dyn_std(dataset_config: TruncatedBetaDistributionCon
     create_folder(root)
     objective_deep_WITH_trunc = get_objective_fn_tobit_dyn_std(dataset_train, dataset_val, bound_min, bound_max,
         f'{root}/{CHECKPOINT_DEEP_TOBIT_TRUNCATED}', truncated_low = zero_normalized)
-    return tpe_opt_hyperparam(root, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc,
-        n_trials = 5000, n_startup_trials = 2500, prunner_warmup_trials = 2500)
+    return tpe_opt_hyperparam(root, CHECKPOINT_DEEP_TOBIT_TRUNCATED, objective_deep_WITH_trunc, n_trials = 5000)
 
 def eval_deep_WITH_trunc_dyn_std(dataset_config: TruncatedBetaDistributionConfig):
     dataset_train, dataset_val, dataset_test, bound_min, bound_max, zero_normalized, x_mean, x_std, y_mean, y_std = get_experiment_data(dataset_config)

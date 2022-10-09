@@ -10,7 +10,7 @@ from deep_tobit.util import distinguish_censored_versus_observed_data
 from experiments.util import get_scale, get_device, dump_json
 from experiments.synthetic.plot import plot_epochs
 from experiments.train import train_network_mae_mse_gll, train_network_tobit_fixed_std, train_network_tobit_dyn_std
-from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED, PRUNNER_WARMUP_TRIALS, PRUNNER_PERCENTILE
+from experiments.constants import NB_TRIALS, TPE_STARTUP_TRIALS, SEED, PRUNNER_WARMUP_TRIALS, PRUNNER_PERCENTILE, TIMEOUT
 import os
 from experiments.models import get_dense_net
 
@@ -60,7 +60,7 @@ def tpe_opt_hyperparam(root_folder, checkpoint, train_callback, n_trials = NB_TR
                                 storage = f'sqlite:///{root_folder}/{checkpoint}.db', load_if_exists = True)
     study.set_user_attr(PREVIOUS_BEST, math.inf)
     study.set_user_attr(CHECKPOINT, f'{root_folder}/{checkpoint}')
-    study.optimize(train_callback, n_trials = n_trials, callbacks=[save_checkpoint_callback])
+    study.optimize(train_callback, n_trials = n_trials, timeout=TIMEOUT, callbacks=[save_checkpoint_callback])
     logging.info(study.best_params)
     dump_json(study.best_params, f'{root_folder}/{checkpoint} hyperparam.json')
 
