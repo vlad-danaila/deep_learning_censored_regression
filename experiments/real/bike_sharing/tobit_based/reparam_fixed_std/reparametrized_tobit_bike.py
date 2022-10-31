@@ -2,18 +2,19 @@ from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_fixed_std, tpe_opt_hyperparam
+from experiments.constants import REAL_EXPERIMENTS_PREFIX
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/deep_tobit_cens_NO_trunc/original'
+ROOT_DEEP_TOBIT_REPARAMETRIZED = f'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/deep_tobit_cens_NO_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED = 'reparametrized deep tobit model'
 
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/deep_tobit_cens_WITH_trunc/original'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = f'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/deep_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
-ROOT_LINEAR_TOBIT_REPARAMETRIZED = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/liniar_tobit_cens_NO_trunc/original'
+ROOT_LINEAR_TOBIT_REPARAMETRIZED = f'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/liniar_tobit_cens_NO_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_LINEAR_TOBIT_REPARAMETRIZED = 'reparametrized linear tobit model'
 
-ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/liniar_tobit_cens_WITH_trunc/original'
+ROOT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = f'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/liniar_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_REPARAMETRIZED = 'reparametrized truncated linear tobit model'
 
 """Reproducible experiments"""

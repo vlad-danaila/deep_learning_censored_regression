@@ -2,15 +2,16 @@ from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
+from experiments.constants import REAL_EXPERIMENTS_PREFIX
 
 """Constants"""
-ROOT_MAE = 'experiments/real/bike_sharing/mae_based/mae_simple/original'
+ROOT_MAE = f'experiments/real/bike_sharing/mae_based/mae_simple/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_MAE = 'mae model'
 
-ROOT_BOUNDED_MAE = 'experiments/real/bike_sharing/mae_based/mae_cens_NO_trunc/original'
+ROOT_BOUNDED_MAE = f'experiments/real/bike_sharing/mae_based/mae_cens_NO_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
-ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/real/bike_sharing/mae_based/mae_cens_WITH_trunc/original'
+ROOT_BOUNDED_MAE_WITH_PENALTY = f'experiments/real/bike_sharing/mae_based/mae_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 """Reproducible experiments"""
