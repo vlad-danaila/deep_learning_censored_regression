@@ -88,10 +88,6 @@ def y_train_mean_std():
 y_mean, y_std = y_train_mean_std()
 print(f'mean = {y_mean}; std = {y_std}')
 
-bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
-bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
-zero_normalized = normalize(0, y_mean, y_std)
-
 numeric_features_column_names = ['Temperature(C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
 
 def x_numeric_fatures_train_mean_std():
@@ -101,6 +97,38 @@ def x_numeric_fatures_train_mean_std():
     return mean, std
 
 x_numeric_fetures_mean, x_numeric_fetures_std = x_numeric_fatures_train_mean_std()
+
+def tresholds_from_percentiles_bike(percentile_low, percentile_high, plot = False):
+    df = load_dataframe()
+    one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
+    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['Hour'].values, 1))
+    seansons_one_hot = one_hot.fit_transform(np.expand_dims(df['Seasons'].values, 1))
+    holiday_one_hot = one_hot.fit_transform(np.expand_dims(df['Holiday'].values, 1))
+    functioning_day_one_hot = one_hot.fit_transform(np.expand_dims(df['Functioning Day'].values, 1))
+    # extract the numeric variables
+    numeric_fetures = df[numeric_features_column_names].values
+    numeric_fetures = normalize(numeric_fetures, x_numeric_fetures_mean, x_numeric_fetures_std)
+    # unite all features
+    x = np.hstack((hour_one_hot, seansons_one_hot, holiday_one_hot, functioning_day_one_hot, numeric_fetures))
+    x = pca(x)
+    # extract the results
+    y = df[y_variable_label].values
+    bound_min, bound_max = np.percentile(y, [percentile_low, percentile_high])
+    x_interval = [min(x), max(x)]
+    if plot:
+        plt.scatter(x, y, s = .1)
+        plt.plot(x_interval, [bound_min] * 2, color = 'red', linewidth=.5)
+        plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
+    return bound_min, bound_max
+
+PERCENTILE = 0
+c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
+CENSOR_LOW_BOUND = c_low
+CENSOR_HIGH_BOUND = c_high
+
+bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
+bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
+zero_normalized = normalize(0, y_mean, y_std)
 
 def extract_features(df: pd.DataFrame, lower_bound = -math.inf, upper_bound = math.inf):
     assert lower_bound <= upper_bound
@@ -165,30 +193,3 @@ def pca(x, n_components = 1):
 n = len(dataset_train)
 k = len(dataset_train[0][0])
 
-def tresholds_from_percentiles_bike(percentile_low, percentile_high, plot = False):
-    df = load_dataframe()
-    one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
-    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['Hour'].values, 1))
-    seansons_one_hot = one_hot.fit_transform(np.expand_dims(df['Seasons'].values, 1))
-    holiday_one_hot = one_hot.fit_transform(np.expand_dims(df['Holiday'].values, 1))
-    functioning_day_one_hot = one_hot.fit_transform(np.expand_dims(df['Functioning Day'].values, 1))
-    # extract the numeric variables
-    numeric_fetures = df[numeric_features_column_names].values
-    numeric_fetures = normalize(numeric_fetures, x_numeric_fetures_mean, x_numeric_fetures_std)
-    # unite all features
-    x = np.hstack((hour_one_hot, seansons_one_hot, holiday_one_hot, functioning_day_one_hot, numeric_fetures))
-    x = pca(x)
-    # extract the results
-    y = df[y_variable_label].values
-    bound_min, bound_max = np.percentile(y, [percentile_low, percentile_high])
-    x_interval = [min(x), max(x)]
-    if plot:
-        plt.scatter(x, y, s = .1)
-        plt.plot(x_interval, [bound_min] * 2, color = 'red', linewidth=.5)
-        plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
-    return bound_min, bound_max
-
-PERCENTILE = 0
-c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
-CENSOR_LOW_BOUND = c_low
-CENSOR_HIGH_BOUND = c_high
