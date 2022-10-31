@@ -64,30 +64,6 @@ def val_df(df: pd.DataFrame):
 def test_df(df: pd.DataFrame):
     return df[ df.index.isin(test_samples) ]
 
-def y_train_mean_std():
-    df = train_df(load_dataframe())
-    ys = df[y_variable_label].values
-
-    y_single_valued, y_left_censored, y_right_censored = [], [], []
-
-    for y in ys:
-        if y > CENSOR_LOW_BOUND and y < CENSOR_HIGH_BOUND:
-            y_single_valued.append(y)
-        elif y <= CENSOR_LOW_BOUND:
-            y_left_censored.append(CENSOR_LOW_BOUND)
-        elif y >= CENSOR_HIGH_BOUND:
-            y_right_censored.append(CENSOR_HIGH_BOUND)
-        else:
-            raise Exception('y outside of valid values, y = {}'.format(y[0]))
-
-    all = np.array(y_single_valued + y_left_censored + y_right_censored)
-    data_mean, data_std = all.mean(), all.std()
-
-    return data_mean.item(), data_std.item()
-
-y_mean, y_std = y_train_mean_std()
-print(f'mean = {y_mean}; std = {y_std}')
-
 numeric_features_column_names = ['Temperature(C)',	'Humidity(%)',	'Wind speed (m/s)',	'Visibility (10m)',	'Dew point temperature(C)',	'Solar Radiation (MJ/m2)',	'Rainfall(mm)',	'Snowfall (cm)']
 
 def x_numeric_fatures_train_mean_std():
@@ -125,6 +101,30 @@ PERCENTILE = 0
 c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
 CENSOR_LOW_BOUND = c_low
 CENSOR_HIGH_BOUND = c_high
+
+def y_train_mean_std():
+    df = train_df(load_dataframe())
+    ys = df[y_variable_label].values
+
+    y_single_valued, y_left_censored, y_right_censored = [], [], []
+
+    for y in ys:
+        if y > CENSOR_LOW_BOUND and y < CENSOR_HIGH_BOUND:
+            y_single_valued.append(y)
+        elif y <= CENSOR_LOW_BOUND:
+            y_left_censored.append(CENSOR_LOW_BOUND)
+        elif y >= CENSOR_HIGH_BOUND:
+            y_right_censored.append(CENSOR_HIGH_BOUND)
+        else:
+            raise Exception('y outside of valid values, y = {}'.format(y[0]))
+
+    all = np.array(y_single_valued + y_left_censored + y_right_censored)
+    data_mean, data_std = all.mean(), all.std()
+
+    return data_mean.item(), data_std.item()
+
+y_mean, y_std = y_train_mean_std()
+print(f'mean = {y_mean}; std = {y_std}')
 
 bound_min = normalize(CENSOR_LOW_BOUND, y_mean, y_std)
 bound_max = normalize(CENSOR_HIGH_BOUND, y_mean, y_std)
