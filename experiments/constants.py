@@ -8,7 +8,7 @@ R_SQUARED = 2
 
 IS_CUDA_AVILABLE = t.cuda.is_available()
 GRID_RESULTS_FILE = 'grid_results.tar'
-REAL_EXPERIMENTS_PREFIX = 'original'
+REAL_EXPERIMENTS_PREFIX = 'percentile_0'
 
 DOT_SIZE = 2
 LINE_WIDTH = .5

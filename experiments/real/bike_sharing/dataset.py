@@ -28,11 +28,14 @@ from experiments.constants import IS_CUDA_AVILABLE
 import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
+from experiments.calculate_censoring_tresholds import tresholds_from_percentiles_bike
 
 # URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv'
 DATASET_FILE = 'experiments/real/bike_sharing/dataset_bike_sharing.csv'
-CENSOR_LOW_BOUND = 200
-CENSOR_HIGH_BOUND = 2000
+PERCENTILE = 0
+c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
+CENSOR_LOW_BOUND = c_low
+CENSOR_HIGH_BOUND = c_high
 y_variable_label = 'Rented Bike Count'
 
 INPUT_SIZE = 40
