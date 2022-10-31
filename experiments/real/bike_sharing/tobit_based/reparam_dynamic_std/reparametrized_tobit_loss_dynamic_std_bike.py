@@ -4,7 +4,7 @@ from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 
 """Constants"""
-ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/bike_sharing/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'experiments/real/bike_sharing/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc/original'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
 
 """Reproducible experiments"""

@@ -5,13 +5,13 @@ from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyp
 
 """Constants"""
 CHECKPOINT_MSE = 'mse model'
-ROOT_MSE = 'experiments/real/bike_sharing/mse_based/mse_simple'
+ROOT_MSE = 'experiments/real/bike_sharing/mse_based/mse_simple/original'
 
 CHECKPOINT_BOUNDED_MSE = 'mse bounded model'
-ROOT_BOUNDED_MSE = 'experiments/real/bike_sharing/mse_based/mse_cens_NO_trunc'
+ROOT_BOUNDED_MSE = 'experiments/real/bike_sharing/mse_based/mse_cens_NO_trunc/original'
 
 CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
-ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/real/bike_sharing/mse_based/mse_cens_WITH_trunc'
+ROOT_BOUNDED_MSE_WITH_PENALTY = 'experiments/real/bike_sharing/mse_based/mse_cens_WITH_trunc/original'
 
 """Reproducible experiments"""
 

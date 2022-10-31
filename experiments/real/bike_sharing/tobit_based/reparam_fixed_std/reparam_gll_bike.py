@@ -4,7 +4,7 @@ from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
 
 """Constants"""
-ROOT_GLL = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/gll'
+ROOT_GLL = 'experiments/real/bike_sharing/tobit_based/reparam_fixed_std/gll/original'
 CHECKPOINT_GLL = 'gausian log likelihood model'
 
 """Reproducible experiments"""

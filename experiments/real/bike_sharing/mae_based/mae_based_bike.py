@@ -4,13 +4,13 @@ from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 
 """Constants"""
-ROOT_MAE = 'experiments/real/bike_sharing/mae_based/mae_simple'
+ROOT_MAE = 'experiments/real/bike_sharing/mae_based/mae_simple/original'
 CHECKPOINT_MAE = 'mae model'
 
-ROOT_BOUNDED_MAE = 'experiments/real/bike_sharing/mae_based/mae_cens_NO_trunc'
+ROOT_BOUNDED_MAE = 'experiments/real/bike_sharing/mae_based/mae_cens_NO_trunc/original'
 CHECKPOINT_BOUNDED_MAE = 'mae bounded model'
 
-ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/real/bike_sharing/mae_based/mae_cens_WITH_trunc'
+ROOT_BOUNDED_MAE_WITH_PENALTY = 'experiments/real/bike_sharing/mae_based/mae_cens_WITH_trunc/original'
 CHECKPOINT_BOUNDED_MAE_WITH_PENALTY = 'mae bounded with penalty model'
 
 """Reproducible experiments"""
