@@ -22,20 +22,20 @@ import pandas as pd
 import requests
 import numpy as np
 import math
+
+from matplotlib import pyplot as plt
+
 from deep_tobit.util import normalize
 import sklearn as sk
 from experiments.constants import IS_CUDA_AVILABLE
 import torch as t
 import sklearn.preprocessing
 import sklearn.decomposition
-from experiments.calculate_censoring_tresholds import tresholds_from_percentiles_bike
 
 # URL_DATA_SET = 'https://archive.ics.uci.edu/ml/machine-learning-databases/00560/SeoulBikeData.csv'
+from experiments.real.pm25.dataset import pca
+
 DATASET_FILE = 'experiments/real/bike_sharing/dataset_bike_sharing.csv'
-PERCENTILE = 0
-c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
-CENSOR_LOW_BOUND = c_low
-CENSOR_HIGH_BOUND = c_high
 y_variable_label = 'Rented Bike Count'
 
 INPUT_SIZE = 40
@@ -164,3 +164,31 @@ def pca(x, n_components = 1):
 
 n = len(dataset_train)
 k = len(dataset_train[0][0])
+
+def tresholds_from_percentiles_bike(percentile_low, percentile_high, plot = False):
+    df = load_dataframe()
+    one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
+    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['Hour'].values, 1))
+    seansons_one_hot = one_hot.fit_transform(np.expand_dims(df['Seasons'].values, 1))
+    holiday_one_hot = one_hot.fit_transform(np.expand_dims(df['Holiday'].values, 1))
+    functioning_day_one_hot = one_hot.fit_transform(np.expand_dims(df['Functioning Day'].values, 1))
+    # extract the numeric variables
+    numeric_fetures = df[numeric_features_column_names].values
+    numeric_fetures = normalize(numeric_fetures, x_numeric_fetures_mean, x_numeric_fetures_std)
+    # unite all features
+    x = np.hstack((hour_one_hot, seansons_one_hot, holiday_one_hot, functioning_day_one_hot, numeric_fetures))
+    x = pca(x)
+    # extract the results
+    y = df[y_variable_label].values
+    bound_min, bound_max = np.percentile(y, [percentile_low, percentile_high])
+    x_interval = [min(x), max(x)]
+    if plot:
+        plt.scatter(x, y, s = .1)
+        plt.plot(x_interval, [bound_min] * 2, color = 'red', linewidth=.5)
+        plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
+    return bound_min, bound_max
+
+PERCENTILE = 0
+c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
+CENSOR_LOW_BOUND = c_low
+CENSOR_HIGH_BOUND = c_high
