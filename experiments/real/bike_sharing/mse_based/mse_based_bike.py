@@ -3,6 +3,7 @@ from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_mae_mse, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_mae_mse, tpe_opt_hyperparam
 from experiments.constants import REAL_EXPERIMENTS_PREFIX
+from os import makedirs
 
 """Constants"""
 CHECKPOINT_MSE = 'mse model'
@@ -13,6 +14,9 @@ ROOT_BOUNDED_MSE = f'experiments/real/bike_sharing/mse_based/mse_cens_NO_trunc/{
 
 CHECKPOINT_BOUNDED_MSE_WITH_PENALTY = 'mse bounded with penalty model'
 ROOT_BOUNDED_MSE_WITH_PENALTY = f'experiments/real/bike_sharing/mse_based/mse_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
+
+for dir in [ROOT_MSE, ROOT_BOUNDED_MSE, ROOT_BOUNDED_MSE_WITH_PENALTY]:
+    makedirs(dir, exist_ok=True)
 
 """Reproducible experiments"""
 

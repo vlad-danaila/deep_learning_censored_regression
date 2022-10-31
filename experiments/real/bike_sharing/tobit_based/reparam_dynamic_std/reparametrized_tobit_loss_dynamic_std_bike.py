@@ -3,10 +3,13 @@ from experiments.real.bike_sharing.dataset import *
 from experiments.real.bike_sharing.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
 from experiments.constants import REAL_EXPERIMENTS_PREFIX
+from os import makedirs
 
 """Constants"""
 ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = f'experiments/real/bike_sharing/tobit_based/reparam_dynamic_std/deep_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED = 'reparametrized truncated deep tobit model'
+
+makedirs(ROOT_DEEP_TOBIT_REPARAMETRIZED_TRUNCATED, exist_ok=True)
 
 """Reproducible experiments"""
 
