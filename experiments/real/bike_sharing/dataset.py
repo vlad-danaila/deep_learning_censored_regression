@@ -97,7 +97,7 @@ def tresholds_from_percentiles_bike(percentile_low, percentile_high, plot = Fals
         plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
     return bound_min, bound_max
 
-PERCENTILE = 0
+PERCENTILE = 10
 c_low, c_high = tresholds_from_percentiles_bike(PERCENTILE, 100 - PERCENTILE)
 CENSOR_LOW_BOUND = c_low
 CENSOR_HIGH_BOUND = c_high
