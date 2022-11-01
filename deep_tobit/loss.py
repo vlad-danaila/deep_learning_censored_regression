@@ -5,7 +5,7 @@ from typing import Tuple, Union
 
 class Unscaled_Tobit_Loss(t.nn.Module):
 
-    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40):
+    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-20):
         super(Unscaled_Tobit_Loss, self).__init__()
         self.device = device
         self.truncated_low = truncated_low
@@ -44,7 +44,7 @@ class Unscaled_Tobit_Loss(t.nn.Module):
 
 class Scaled_Tobit_Loss(t.nn.Module):
 
-    def __init__(self, sigma: t.Tensor, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40, std_penalty = None):
+    def __init__(self, sigma: t.Tensor, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-20, std_penalty = None):
         super(Scaled_Tobit_Loss, self).__init__()
         self.sigma = sigma
         self.device = device
@@ -92,7 +92,7 @@ class Scaled_Tobit_Loss(t.nn.Module):
 
 class Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
 
-    def __init__(self, gamma: t.Tensor, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40):
+    def __init__(self, gamma: t.Tensor, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-20):
         super(Reparametrized_Scaled_Tobit_Loss, self).__init__()
         self.gamma = gamma
         self.device = device
@@ -137,7 +137,7 @@ class Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
 
 class Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
 
-    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40):
+    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-20):
         super(Heteroscedastic_Reparametrized_Scaled_Tobit_Loss, self).__init__()
         self.device = device
         self.truncated_low = truncated_low
@@ -178,7 +178,7 @@ class Heteroscedastic_Reparametrized_Scaled_Tobit_Loss(t.nn.Module):
 
 class Heteroscedastic_Scaled_Tobit_Loss(t.nn.Module):
 
-    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-40, std_penalty = None):
+    def __init__(self, device: Union[t.device, str, None], truncated_low: float = None, truncated_high: float = None, epsilon: float = 1e-20, std_penalty = None):
         super(Heteroscedastic_Scaled_Tobit_Loss, self).__init__()
         self.device = device
         self.truncated_low = truncated_low
