@@ -2,19 +2,24 @@ from experiments.util import set_random_seed, load_checkpoint
 from experiments.real.pm25.dataset import *
 from experiments.real.pm25.eval_optimized import plot_and_evaluate_model_tobit_fixed_std, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_fixed_std, tpe_opt_hyperparam
+from experiments.constants import REAL_EXPERIMENTS_PREFIX
+from os import makedirs
 
 """Constants"""
-ROOT_DEEP_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc'
+ROOT_DEEP_TOBIT_SCALED = f'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_NO_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_SCALED = 'scaled deep tobit model'
 
-ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_SCALED_TRUNCATED = f'experiments/real/pm25/tobit_based/scaled_fixed_std/deep_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'scaled truncated deep tobit model'
 
-ROOT_LINEAR_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc'
+ROOT_LINEAR_TOBIT_SCALED = f'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_NO_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_LINEAR_TOBIT_SCALED = 'scaled linear tobit model'
 
-ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = 'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc'
+ROOT_LINEAR_TRUNCATED_TOBIT_SCALED = f'experiments/real/pm25/tobit_based/scaled_fixed_std/liniar_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_LINEAR_TRUNCATED_TOBIT_SCALED = 'scaled truncated linear tobit model'
+
+for dir in [ROOT_DEEP_TOBIT_SCALED, ROOT_DEEP_TOBIT_SCALED_TRUNCATED, ROOT_LINEAR_TOBIT_SCALED, ROOT_LINEAR_TRUNCATED_TOBIT_SCALED]:
+    makedirs(dir, exist_ok=True)
 
 """Reproducible experiments"""
 

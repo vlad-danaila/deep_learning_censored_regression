@@ -2,10 +2,14 @@ from experiments.util import set_random_seed, load_checkpoint, get_device
 from experiments.real.pm25.dataset import *
 from experiments.real.pm25.eval_optimized import plot_and_evaluate_model_gll, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_gll, tpe_opt_hyperparam
+from experiments.constants import REAL_EXPERIMENTS_PREFIX
+from os import makedirs
 
 """Constants"""
-ROOT_GLL = 'experiments/real/pm25/tobit_based/reparam_fixed_std/gll'
+ROOT_GLL = f'experiments/real/pm25/tobit_based/reparam_fixed_std/gll/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_GLL = 'gausian log likelihood model'
+
+makedirs(ROOT_GLL, exist_ok=True)
 
 """Reproducible experiments"""
 

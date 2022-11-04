@@ -32,33 +32,8 @@ def tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percen
 # percentile_low, percentile_high = 10, 90
 # tresholds_from_percentiles_synthetic(is_heteroscedastic, alpha, beta, percentile_low, percentile_high, plot = True)
 
-
-# PM25
-def tresholds_from_percentiles_pm25(percentile_low, percentile_high, plot = False):
-    df = load_dataframe_pm25()
-    one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
-    month_one_hot = one_hot.fit_transform(np.expand_dims(df['month'].values, 1))
-    hour_one_hot = one_hot.fit_transform(np.expand_dims(df['hour'].values, 1))
-    combined_wind_direction_one_hot = one_hot.fit_transform(np.expand_dims(df['cbwd'].values, 1))
-    numeric_fetures = df[numeric_features_pm25].values
-    numeric_fetures = normalize(numeric_fetures, x_mean_pm25, x_std_pm25)
-    x = np.hstack((month_one_hot, hour_one_hot, combined_wind_direction_one_hot, numeric_fetures))
-    x = pca(x)
-    y = df['pm2.5'].values
-    bound_min, bound_max = np.percentile(y, [percentile_low, percentile_high])
-    x_interval = [min(x), max(x)]
-    if plot:
-        plt.scatter(x, y, s = .1)
-        plt.plot(x_interval, [bound_min] * 2, color = 'red', linewidth=.5)
-        plt.plot(x_interval, [bound_max] * 2, color = 'red', linewidth=.5)
-    return bound_min, bound_max
-
+# Need to import them from datasets
 # tresholds_from_percentiles_pm25(10, 90, plot=True)
-
-
-
-
-
 # tresholds_from_percentiles_bike(10, 90, plot=True)
 
 

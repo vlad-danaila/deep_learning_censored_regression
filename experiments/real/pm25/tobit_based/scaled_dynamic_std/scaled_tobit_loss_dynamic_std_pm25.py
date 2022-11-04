@@ -2,10 +2,14 @@ from experiments.util import set_random_seed, load_checkpoint, get_scale_model_f
 from experiments.real.pm25.dataset import *
 from experiments.real.pm25.eval_optimized import plot_and_evaluate_model_tobit_dyn_std, plot_dataset_and_net
 from experiments.tpe_hyperparam_opt import get_objective_fn_tobit_dyn_std, tpe_opt_hyperparam
+from experiments.constants import REAL_EXPERIMENTS_PREFIX
+from os import makedirs
 
 """Constants"""
-ROOT_DEEP_TOBIT_SCALED_TRUNCATED = 'experiments/real/pm25/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc'
+ROOT_DEEP_TOBIT_SCALED_TRUNCATED = f'experiments/real/pm25/tobit_based/scaled_dynamic_std/deep_tobit_cens_WITH_trunc/{REAL_EXPERIMENTS_PREFIX}'
 CHECKPOINT_DEEP_TOBIT_SCALED_TRUNCATED = 'heteroscedastic scaled truncated deep tobit model'
+
+makedirs(ROOT_DEEP_TOBIT_SCALED_TRUNCATED, exist_ok=True)
 
 """Reproducible experiments"""
 
