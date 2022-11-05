@@ -57,6 +57,10 @@ def x_numeric_fatures_train_mean_std():
 
 x_numeric_fetures_mean, x_numeric_fetures_std = x_numeric_fatures_train_mean_std()
 
+def pca(x, n_components = 1):
+    pca_encoder = sk.decomposition.PCA(n_components = n_components)
+    return pca_encoder.fit_transform(x)
+
 def tresholds_from_percentiles_pm25(percentile_low, percentile_high, plot = False):
     df = load_dataframe()
     one_hot = sk.preprocessing.OneHotEncoder(sparse = False)
@@ -164,10 +168,6 @@ def parse_datasets():
     return dataset_train, dataset_val, dataset_test
 
 dataset_train, dataset_val, dataset_test = parse_datasets()
-
-def pca(x, n_components = 1):
-    pca_encoder = sk.decomposition.PCA(n_components = n_components)
-    return pca_encoder.fit_transform(x)
 
 n = len(dataset_train)
 k = len(dataset_train[0][0])
